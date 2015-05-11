@@ -1,0 +1,1 @@
+docker build -t $1/$2 -f ../dockerfile/$2 ../dockerfile/ && docker push $1/$2
