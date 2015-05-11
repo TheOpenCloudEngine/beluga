@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.opencloudengine.garuda</groupId>
+	<artifactId>garuda-dist</artifactId>
+	<name>garuda-dist</name>
+	<description>garuda/dist</description>
+	<packaging>pom</packaging>
+	<parent>
+        <groupId>org.opencloudengine</groupId>
+        <artifactId>garuda</artifactId>
+        <version>1.0-SNAPSHOT</version>
+	</parent>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<packageBaseDir>${project.basedir}/..</packageBaseDir>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.2</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${project.parent.build.directory}/${project.parent.artifactId}-${project.version}/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.parent.basedir}/production</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-lib</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${project.parent.build.directory}/${project.parent.artifactId}-${project.version}/lib</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.parent.basedir}/master/target/lib</directory>
+								</resource>
+								<resource>
+									<directory>${project.parent.basedir}/master/target</directory>
+									<includes>
+										<include>${project.parent.artifactId}-*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
