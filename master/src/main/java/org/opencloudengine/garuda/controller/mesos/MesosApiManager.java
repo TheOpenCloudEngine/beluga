@@ -1,6 +1,5 @@
 package org.opencloudengine.garuda.controller.mesos;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -43,7 +42,7 @@ public class MesosApiManager {
 	@PreDestroy
 	public void destroy() {
 		if (client != null) {
-			IOUtils.closeQuietly(client);
+//			IOUtils.closeQuietly(client);
 		}
 	}
 

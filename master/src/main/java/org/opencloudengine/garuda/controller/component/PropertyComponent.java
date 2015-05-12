@@ -28,8 +28,8 @@ public class PropertyComponent {
 	public final String vmPwdOrKeyPath = null;
 	@Value("${vm.haproxy.loc}")
 	public final String vmHaProxyLoc = null;
-	@Value("${vm.connection.type}")
-	public final SshClient.LoginTypeType vmConnectionType = null;
+//	@Value("${vm.connection.type}")
+//	public final SshClient.LoginTypeType vmConnectionType = null;
 
 	/**
 	 * ************************************************

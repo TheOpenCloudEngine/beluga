@@ -1,7 +1,5 @@
 package org.opencloudengine.garuda.controller.mesos.marathon;
 
-import com.github.dockerjava.api.*;
-import org.apache.commons.io.IOUtils;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
@@ -28,20 +26,20 @@ public class ResponseStatusExceptionFilter implements ClientResponseFilter {
 			case 201:
 			case 204:
 				return;
-			case 304:
-				throw new NotModifiedException(getBodyAsMessage(responseContext));
-			case 400:
-				throw new BadRequestException(getBodyAsMessage(responseContext));
-			case 401:
-				throw new UnauthorizedException(getBodyAsMessage(responseContext));
-			case 404:
-				throw new NotFoundException(getBodyAsMessage(responseContext));
-			case 406:
-				throw new NotAcceptableException(getBodyAsMessage(responseContext));
-			case 409:
-				throw new ConflictException(getBodyAsMessage(responseContext));
-			case 500:
-				throw new InternalServerErrorException(getBodyAsMessage(responseContext));
+//			case 304:
+//				throw new NotModifiedException(getBodyAsMessage(responseContext));
+//			case 400:
+//				throw new BadRequestException(getBodyAsMessage(responseContext));
+//			case 401:
+//				throw new UnauthorizedException(getBodyAsMessage(responseContext));
+//			case 404:
+//				throw new NotFoundException(getBodyAsMessage(responseContext));
+//			case 406:
+//				throw new NotAcceptableException(getBodyAsMessage(responseContext));
+//			case 409:
+//				throw new ConflictException(getBodyAsMessage(responseContext));
+//			case 500:
+//				throw new InternalServerErrorException(getBodyAsMessage(responseContext));
 			default:
 				throw new RuntimeException(getBodyAsMessage(responseContext));
 		}
@@ -55,7 +53,7 @@ public class ResponseStatusExceptionFilter implements ClientResponseFilter {
 				byte[] buffer = new byte[contentLength];
 				try {
 					InputStream entityStream = responseContext.getEntityStream();
-					IOUtils.readFully(entityStream, buffer);
+//					IOUtils.readFully(entityStream, buffer);
 					entityStream.close();
 				} catch (EOFException e) {
 					return null;

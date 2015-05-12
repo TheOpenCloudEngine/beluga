@@ -71,18 +71,18 @@ public class MesosMasterApiClient implements MesosApiClient {
 
 		String apiUri = String.format("http://%s:%s", domain, port);
 		if (webResourceMap.get(ip) == null) {
-			WebResourceConfigBuilder builder = new WebResourceConfigBuilder();
-			builder.withMaxTotalConnections(mesosApiManager.MAX_CONNECTION)
-				.withReadTimeout(mesosApiManager.READ_TIMEOUT)
-				.withUri(apiUri);
-
-			WebResourceConfig webResourceConfig = builder.build();
-			Client webClient = WebResourceClient.getWebClient(webResourceConfig);
-			WebTarget webResource = webClient.target(webResourceConfig.getUri());
-
-			webClientMap.put(ip, webClient);
-			webResourceMap.put(ip, webResource);
-			logger.info("Connect to mesos master node - {}, available nodes:{}", new Object[]{apiUri, webResourceMap.size()});
+//			WebResourceConfigBuilder builder = new WebResourceConfigBuilder();
+//			builder.withMaxTotalConnections(mesosApiManager.MAX_CONNECTION)
+//				.withReadTimeout(mesosApiManager.READ_TIMEOUT)
+//				.withUri(apiUri);
+//
+//			WebResourceConfig webResourceConfig = builder.build();
+//			Client webClient = WebResourceClient.getWebClient(webResourceConfig);
+//			WebTarget webResource = webClient.target(webResourceConfig.getUri());
+//
+//			webClientMap.put(ip, webClient);
+//			webResourceMap.put(ip, webResource);
+//			logger.info("Connect to mesos master node - {}, available nodes:{}", new Object[]{apiUri, webResourceMap.size()});
 		}
 		checkLeader();
 	}

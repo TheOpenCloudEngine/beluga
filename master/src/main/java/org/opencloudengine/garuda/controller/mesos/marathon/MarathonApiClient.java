@@ -1,16 +1,9 @@
 package org.opencloudengine.garuda.controller.mesos.marathon;
 
-import org.apache.commons.io.IOUtils;
+import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.PortMapping;
+import org.springframework.stereotype.Component;
+
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.controller.mesos.*;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Container;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.CreateApp;
@@ -28,15 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.org.mozilla.javascript.internal.ScriptRuntime;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -58,351 +49,351 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component("marathonApiClient")
 public class MarathonApiClient implements MesosApiClient {
-	private static final Logger logger = LoggerFactory.getLogger(MarathonApiClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(MarathonApiClient.class);
 
-	@Autowired
-	private MesosApiManager mesosApiManager;
+    @Autowired
+    private MesosApiManager mesosApiManager;
 
-	//Web Client
-	private Map<String, Client> webClientMap = new ConcurrentHashMap<>();
-	private Map<String, WebTarget> webResourceMap = new ConcurrentHashMap<>();
+    //Web Client
+    private Map<String, Client> webClientMap = new ConcurrentHashMap<>();
+    private Map<String, WebTarget> webResourceMap = new ConcurrentHashMap<>();
 
-	//zookeeper monitor setting
-	private PathChildrenCache cache;
-	private final String MARATHON_ZNODE = "/marathon/leader";
+    //zookeeper monitor setting
+    private PathChildrenCache cache;
+    private final String MARATHON_ZNODE = "/marathon/leader";
 
-	@PostConstruct
-	public void init() throws Exception {
-		//marathon node monitoring
-		cache = new PathChildrenCache(mesosApiManager.getClient(), MARATHON_ZNODE, true);
-		cache.start();
-		new MesosServerMonitor("marathon", this, cache);
-	}
+    @PostConstruct
+    public void init() throws Exception {
+        //marathon node monitoring
+        cache = new PathChildrenCache(mesosApiManager.getClient(), MARATHON_ZNODE, true);
+        cache.start();
+        new MesosServerMonitor("marathon", this, cache);
+    }
 
-	@PreDestroy
-	public void destroy() {
-		if (cache != null) {
-			IOUtils.closeQuietly(cache);
-		}
+    @PreDestroy
+    public void destroy() {
+        if (cache != null) {
+//            IOUtils.closeQuietly(cache);
+        }
 
-		if (webClientMap != null) {
-			Iterator<String> iter = webClientMap.keySet().iterator();
-			while (iter.hasNext()) {
-				webClientMap.get(iter.next()).close();
-			}
-		}
-	}
+        if (webClientMap != null) {
+            Iterator<String> iter = webClientMap.keySet().iterator();
+            while (iter.hasNext()) {
+                webClientMap.get(iter.next()).close();
+            }
+        }
+    }
 
-	/**
-	 * 인자로 받은 Marathon Host에 연결한다.
-	 *
-	 * @param host
-	 */
-	@Override
-	public void createNodeConnection(String host) {
-		if (webResourceMap.get(host) == null) {
-			String marathonApiUri = String.format("http://%s", host);
-			WebResourceConfigBuilder builder = new WebResourceConfigBuilder();
-			builder.withMaxTotalConnections(6000)
-				.withReadTimeout(10)
-				.withUri(marathonApiUri);
+    /**
+     * 인자로 받은 Marathon Host에 연결한다.
+     *
+     * @param host
+     */
+    @Override
+    public void createNodeConnection(String host) {
+        if (webResourceMap.get(host) == null) {
+//            String marathonApiUri = String.format("http://%s", host);
+//            WebResourceConfigBuilder builder = new WebResourceConfigBuilder();
+//            builder.withMaxTotalConnections(6000)
+//                    .withReadTimeout(10)
+//                    .withUri(marathonApiUri);
+//
+//            WebResourceConfig webResourceConfig = builder.build();
+//            Client webClient = WebResourceClient.getWebClient(webResourceConfig);
+//            WebTarget webResource = webClient.target(webResourceConfig.getUri());
+//
+//            webClientMap.put(host, webClient);
+//            webResourceMap.put(host, webResource);
+//            logger.info("Connect to marathon node - {}, available nodes:{}", new Object[]{marathonApiUri, webResourceMap.size()});
+        }
+    }
 
-			WebResourceConfig webResourceConfig = builder.build();
-			Client webClient = WebResourceClient.getWebClient(webResourceConfig);
-			WebTarget webResource = webClient.target(webResourceConfig.getUri());
+    /**
+     * Marathon Cluster 에서 제외된 노드를 제거한다.
+     *
+     * @param host
+     */
+    @Override
+    public void closeResource(String host) {
+        Client webClient = webClientMap.remove(host);
+        webResourceMap.remove(host);
 
-			webClientMap.put(host, webClient);
-			webResourceMap.put(host, webResource);
-			logger.info("Connect to marathon node - {}, available nodes:{}", new Object[]{marathonApiUri, webResourceMap.size()});
-		}
-	}
+        if (webClient != null) {
+            webClient.close();
+            logger.info("Disconnect to marathon node - {}, available nodes:{}", new Object[]{host, webResourceMap.size()});
+        }
+    }
 
-	/**
-	 * Marathon Cluster 에서 제외된 노드를 제거한다.
-	 *
-	 * @param host
-	 */
-	@Override
-	public void closeResource(String host) {
-		Client webClient = webClientMap.remove(host);
-		webResourceMap.remove(host);
+    private WebTarget getWebResource() {
+        if (webResourceMap == null || webResourceMap.size() == 0) {
+            throw new RuntimeException("Not exists web resource");
+        }
 
-		if (webClient != null) {
-			webClient.close();
-			logger.info("Disconnect to marathon node - {}, available nodes:{}", new Object[]{host, webResourceMap.size()});
-		}
-	}
+        Iterator<String> iter = webResourceMap.keySet().iterator();
+        return webResourceMap.get(iter.next());
+    }
 
-	private WebTarget getWebResource() {
-		if (webResourceMap == null || webResourceMap.size() == 0) {
-			throw new RuntimeException("Not exists web resource");
-		}
+    /**
+     * POST /v2/apps: Create and start a new app
+     *
+     * @param createApp
+     * @return
+     */
+    public CreateAppRes createApp(CreateApp createApp, boolean force) {
+        WebTarget resource = getWebResource().path("/v2/apps").queryParam("force", force);
 
-		Iterator<String> iter = webResourceMap.keySet().iterator();
-		return webResourceMap.get(iter.next());
-	}
+        return resource.request(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.json(createApp), new GenericType<CreateAppRes>() {
+                });
+    }
 
-	/**
-	 * POST /v2/apps: Create and start a new app
-	 *
-	 * @param createApp
-	 * @return
-	 */
-	public CreateAppRes createApp(CreateApp createApp, boolean force) {
-		WebTarget resource = getWebResource().path("/v2/apps").queryParam("force", force);
+    /**
+     * GET /v2/apps: List all running apps
+     *
+     * @return
+     */
+    public List<App> searchAppList() {
+        WebTarget resource = getWebResource().path("/v2/apps");
 
-		return resource.request(MediaType.APPLICATION_JSON_TYPE)
-			.accept(MediaType.APPLICATION_JSON)
-			.post(Entity.json(createApp), new GenericType<CreateAppRes>() {
-			});
-	}
+        Map<String, List<App>> result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<Map<String, List<App>>>() {
+                });
 
-	/**
-	 * GET /v2/apps: List all running apps
-	 *
-	 * @return
-	 */
-	public List<App> searchAppList() {
-		WebTarget resource = getWebResource().path("/v2/apps");
+        return result.get("apps");
+    }
 
-		Map<String, List<App>> result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<Map<String, List<App>>>() {
-			});
+    /**
+     * GET /v2/apps/{appId}: List the app appId
+     *
+     * @param appId
+     * @return
+     */
+    public App searchApp(String appId) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId);
 
-		return result.get("apps");
-	}
+        Map<String, App> result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<Map<String, App>>() {
+                });
 
-	/**
-	 * GET /v2/apps/{appId}: List the app appId
-	 *
-	 * @param appId
-	 * @return
-	 */
-	public App searchApp(String appId) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId);
+        return result.get("app");
+    }
 
-		Map<String, App> result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<Map<String, App>>() {
-			});
+    /**
+     * PUT /v2/apps/{appId}: Change config of the app appId
+     *
+     * @param putAppReq
+     * @param appId
+     * @param force
+     * @return
+     */
+    public PutAppRes modifyApp(PutAppReq putAppReq, String appId, boolean force) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId).queryParam("force", force);
 
-		return result.get("app");
-	}
+        return resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .put(Entity.json(putAppReq), new GenericType<PutAppRes>() {
+                });
+    }
 
-	/**
-	 * PUT /v2/apps/{appId}: Change config of the app appId
-	 *
-	 * @param putAppReq
-	 * @param appId
-	 * @param force
-	 * @return
-	 */
-	public PutAppRes modifyApp(PutAppReq putAppReq, String appId, boolean force) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId).queryParam("force", force);
+    /**
+     * POST /v2/apps/{appId}/restart: Rolling restart of all tasks of the given app
+     *
+     * @param appId
+     * @param force
+     * @return
+     */
+    public PutAppRes restartApp(String appId, boolean force) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/restart").queryParam("force", force);
 
-		return resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.put(Entity.json(putAppReq), new GenericType<PutAppRes>() {
-			});
-	}
+        return resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.json(null), new GenericType<PutAppRes>() {
+                });
+    }
 
-	/**
-	 * POST /v2/apps/{appId}/restart: Rolling restart of all tasks of the given app
-	 *
-	 * @param appId
-	 * @param force
-	 * @return
-	 */
-	public PutAppRes restartApp(String appId, boolean force) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/restart").queryParam("force", force);
+    /**
+     * DELETE /v2/apps/{appId}: Destroy app appId
+     */
+    public PutAppRes removeApp(String appId) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId);
 
-		return resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.post(Entity.json(null), new GenericType<PutAppRes>() {
-			});
-	}
+        return resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .delete(new GenericType<PutAppRes>() {
+                });
+    }
 
-	/**
-	 * DELETE /v2/apps/{appId}: Destroy app appId
-	 */
-	public PutAppRes removeApp(String appId) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId);
+    /**
+     * GET /v2/apps/{appId}/tasks: List running tasks for app appId
+     *
+     * @param appId
+     * @return
+     */
+    public List<Task> searchTasksWithAppId(String appId) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks");
 
-		return resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.delete(new GenericType<PutAppRes>() {
-			});
-	}
+        GetTasks result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<GetTasks>() {
+                });
 
-	/**
-	 * GET /v2/apps/{appId}/tasks: List running tasks for app appId
-	 *
-	 * @param appId
-	 * @return
-	 */
-	public List<Task> searchTasksWithAppId(String appId) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks");
+        return result.getTasks();
+    }
 
-		GetTasks result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<GetTasks>() {
-			});
+    /**
+     * GET /v2/tasks: List all running tasks
+     *
+     * @return
+     */
+    public List<Task> searchTasks() {
+        WebTarget resource = getWebResource().path("/v2/tasks");
 
-		return result.getTasks();
-	}
+        GetTasks result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<GetTasks>() {
+                });
 
-	/**
-	 * GET /v2/tasks: List all running tasks
-	 *
-	 * @return
-	 */
-	public List<Task> searchTasks() {
-		WebTarget resource = getWebResource().path("/v2/tasks");
+        return result.getTasks();
+    }
 
-		GetTasks result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<GetTasks>() {
-			});
+    /**
+     * DELETE /v2/apps/{appId}/tasks: kill tasks belonging to app appId
+     *
+     * @param host
+     * @param scale
+     * @return
+     */
+    public List<Task> removeTasksWithAppId(String appId, String host, boolean scale) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks")
+                .queryParam(host == null ? "none" : host)
+                .queryParam("scale", scale);
 
-		return result.getTasks();
-	}
+        GetTasks result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .delete(new GenericType<GetTasks>() {
+                });
 
-	/**
-	 * DELETE /v2/apps/{appId}/tasks: kill tasks belonging to app appId
-	 *
-	 * @param host
-	 * @param scale
-	 * @return
-	 */
-	public List<Task> removeTasksWithAppId(String appId, String host, boolean scale) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks")
-			.queryParam(host == null ? "none" : host)
-			.queryParam("scale", scale);
+        return result.getTasks();
+    }
 
-		GetTasks result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.delete(new GenericType<GetTasks>() {
-			});
+    /**
+     * DELETE /v2/apps/{appId}/tasks/{taskId}: Kill the task taskId that belongs to the application ap
+     *
+     * @param appId
+     * @param taskId
+     * @param scale
+     * @return
+     */
+    public Task removeTasksWithTaskId(String appId, String taskId, boolean scale) {
+        WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks/" + taskId)
+                .queryParam("scale", scale);
 
-		return result.getTasks();
-	}
+        return resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .delete(new GenericType<Task>() {
+                });
+    }
 
-	/**
-	 * DELETE /v2/apps/{appId}/tasks/{taskId}: Kill the task taskId that belongs to the application ap
-	 *
-	 * @param appId
-	 * @param taskId
-	 * @param scale
-	 * @return
-	 */
-	public Task removeTasksWithTaskId(String appId, String taskId, boolean scale) {
-		WebTarget resource = getWebResource().path("/v2/apps/" + appId + "/tasks/" + taskId)
-			.queryParam("scale", scale);
+    /**
+     * GET /v2/groups: List all groups
+     *
+     * @return
+     */
+    public GetGroups searchGroups() {
+        WebTarget resource = getWebResource().path("/v2/groups");
 
-		return resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.delete(new GenericType<Task>() {
-			});
-	}
+        GetGroups result = resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<GetGroups>() {
+                });
 
-	/**
-	 * GET /v2/groups: List all groups
-	 *
-	 * @return
-	 */
-	public GetGroups searchGroups() {
-		WebTarget resource = getWebResource().path("/v2/groups");
+        return result;
+    }
 
-		GetGroups result = resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<GetGroups>() {
-			});
+    /**
+     * GET /v2/groups/{groupId}: List the group with the specified ID
+     *
+     * @param groupId
+     */
+    public Group searchGroupWithGroupId(String groupId) {
+        WebTarget resource = getWebResource().path("/v2/groups/" + groupId);
 
-		return result;
-	}
+        return resource.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get(new GenericType<Group>() {
+                });
+    }
 
-	/**
-	 * GET /v2/groups/{groupId}: List the group with the specified ID
-	 *
-	 * @param groupId
-	 */
-	public Group searchGroupWithGroupId(String groupId) {
-		WebTarget resource = getWebResource().path("/v2/groups/" + groupId);
+    /**
+     * POST /v2/groups: Create and start a new groups
+     * todo dependency 및 group 안에 group이 들어갈 수 있으므로 해당 부분에 맞게 파라미터 변경 필요
+     *
+     * @param createGroup
+     * @return
+     */
+    public PutAppRes createGroups(CreateGroup createGroup) {
+        WebTarget resource = getWebResource().path("/v2/groups");
+        return resource.request(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.json(createGroup), new GenericType<PutAppRes>() {
+                });
+    }
 
-		return resource.request()
-			.accept(MediaType.APPLICATION_JSON)
-			.get(new GenericType<Group>() {
-			});
-	}
-
-	/**
-	 * POST /v2/groups: Create and start a new groups
-	 * todo dependency 및 group 안에 group이 들어갈 수 있으므로 해당 부분에 맞게 파라미터 변경 필요
-	 *
-	 * @param createGroup
-	 * @return
-	 */
-	public PutAppRes createGroups(CreateGroup createGroup) {
-		WebTarget resource = getWebResource().path("/v2/groups");
-		return resource.request(MediaType.APPLICATION_JSON_TYPE)
-			.accept(MediaType.APPLICATION_JSON)
-			.post(Entity.json(createGroup), new GenericType<PutAppRes>() {
-			});
-	}
-
-	/**
-	 * DELETE /v2/groups/{groupId}: Destroy a group
-	 *
-	 * @param groupId
-	 * @return
-	 */
-	public PutAppRes removeGroup(String groupId, boolean force) {
-		WebTarget resource = getWebResource().path("/v2/groups/" + groupId).queryParam("force", force);
-		return resource.request(MediaType.APPLICATION_JSON_TYPE)
-			.accept(MediaType.APPLICATION_JSON)
-			.delete(new GenericType<PutAppRes>() {
-			});
-	}
-
-
-	public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
-		MarathonApiClient marathonApiClient = new MarathonApiClient();
-		CreateApp createApp = marathonApiClient.getDefaultApp();
-
-		URI uri = new URI("http://104.236.248.7:8080/v2/apps") ;
-
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httpPost = new HttpPost(uri);
-
-		StringEntity input = new StringEntity(JsonUtils.format(createApp));
-		input.setContentType("application/json");
-		httpPost.setEntity(input);
-
-		HttpResponse response = httpclient.execute(httpPost);
-
-		System.out.println(response);
+    /**
+     * DELETE /v2/groups/{groupId}: Destroy a group
+     *
+     * @param groupId
+     * @return
+     */
+    public PutAppRes removeGroup(String groupId, boolean force) {
+        WebTarget resource = getWebResource().path("/v2/groups/" + groupId).queryParam("force", force);
+        return resource.request(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON)
+                .delete(new GenericType<PutAppRes>() {
+                });
+    }
 
 
-	}
+    public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
+        MarathonApiClient marathonApiClient = new MarathonApiClient();
+        CreateApp createApp = marathonApiClient.getDefaultApp();
 
-	private CreateApp getDefaultApp() {
-		Docker docker = new Docker();
-		docker.setImage("128.199.80.104:5000/ubuntu14.04x64_php5_apachex_sample:1.0");
-		docker.setNetwork("BRIDGE");
-		docker.setPrivileged(true);
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://10.132.37.106:8080").path("/v2/apps");
 
-		Container container = new Container();
-		container.setDocker(docker);
-		container.setType("DOCKER");
+        target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
 
-		CreateApp createApp = new CreateApp();
-		createApp.setId("oce-app-test-01");
-		createApp.setContainer(container);
-		createApp.setInstances(1);
-		createApp.setCpus(0.5f);
-		createApp.setMem(128f);
+        System.out.println(target.getUri().toString());
 
-		return createApp;
-	}
+    }
+
+    private CreateApp getDefaultApp() {
+        List<PortMapping> portMappings = new ArrayList<>();
+        PortMapping portMapping = new PortMapping();
+        portMapping.setContainerPort(80);
+        portMapping.setServicePort(83);
+        portMappings.add(portMapping);
+
+        Docker docker = new Docker();
+        docker.setImage("128.199.80.104:5000/php-sample-img");
+        docker.setNetwork("BRIDGE");
+        docker.setPrivileged(true);
+        docker.setPortMappings(portMappings);
+
+        Container container = new Container();
+        container.setDocker(docker);
+        container.setType("DOCKER");
+
+        CreateApp createApp = new CreateApp();
+        createApp.setId("oce-app-test-01");
+        createApp.setContainer(container);
+        createApp.setInstances(1);
+        createApp.setCpus(0.5f);
+        createApp.setMem(128f);
+
+        return createApp;
+    }
 }
