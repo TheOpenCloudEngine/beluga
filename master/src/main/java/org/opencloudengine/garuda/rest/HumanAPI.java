@@ -24,9 +24,9 @@ public class HumanAPI {
 	public List<Human> getAllParties() throws Exception
 	{
 		List<Human> list = new ArrayList<Human>();
-		list.add(new Human("Mr. Hong", 20));
-		list.add(new Human("Mr. Kim", 30));
-		list.add(new Human("Mr. Lee", 40));
+		list.add(new Human(1,  "Mr. Hong", 20));
+		list.add(new Human(2, "Mr. Kim", 30));
+		list.add(new Human(3, "Mr. Lee", 40));
 		return list;
 	}
 

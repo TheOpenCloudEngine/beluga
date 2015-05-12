@@ -43,7 +43,6 @@ public class RESTService extends AbstractService {
 
 		try {
 			jettyServer.start();
-//			jettyServer.join();
 			return true;
 		} catch (Exception e) {
 			throw new GarudaException(e);
@@ -53,7 +52,7 @@ public class RESTService extends AbstractService {
 	@Override
 	protected boolean doStop() throws GarudaException {
 		try {
-			jettyServer.destroy();
+			jettyServer.stop();
 			return true;
 		} catch (Exception e) {
 			throw new GarudaException(e);
@@ -63,6 +62,7 @@ public class RESTService extends AbstractService {
 	@Override
 	protected boolean doClose() throws GarudaException {
 		try {
+			jettyServer.destroy();
 			jettyServer = null;
 			return true;
 		} catch (Exception e) {

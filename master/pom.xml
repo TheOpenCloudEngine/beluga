@@ -98,6 +98,10 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -115,8 +119,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <excludes>
-                                <exclude>**/Bootstrap.class</exclude>
-                                <exclude>**/BootstrapServlet.class</exclude>
+                                <exclude>**/server/Bootstrap.class</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -131,8 +134,7 @@
                             <finalName>${project.artifactId}</finalName>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <includes>
-                                <include>org/fastcatsearch/server/Bootstrap.class</include>
-                                <include>org/fastcatsearch/server/BootstrapServlet.class</include>
+                                <include>**/server/Bootstrap.class</include>
                             </includes>
                         </configuration>
                     </execution>
