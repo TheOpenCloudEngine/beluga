@@ -44,7 +44,7 @@ public class RESTService extends AbstractService {
 //		jerseyServlet.setInitOrder(0);
 
 		ResourceConfig resourceConfig = new ResourceConfig();
-		resourceConfig.packages(garuda_rest_api_package);
+		resourceConfig.packages(true, garuda_rest_api_package);
 		resourceConfig.register(JacksonFeature.class);
 		ServletContainer servletContainer = new ServletContainer(resourceConfig);
 		ServletHolder sh = new ServletHolder(servletContainer);

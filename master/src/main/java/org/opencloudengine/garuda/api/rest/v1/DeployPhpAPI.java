@@ -4,9 +4,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
@@ -17,7 +15,7 @@ import java.io.*;
  * @author Sang Wook, Song
  *
  */
-@Path("/v1/deploy/php")
+@Path("/v1/deploy")
 public class DeployPhpAPI {
 
 	private static final String SERVER_UPLOAD_LOCATION_FOLDER = "/tmp";
@@ -26,7 +24,7 @@ public class DeployPhpAPI {
 	 * Upload a File
 	 */
 	@POST
-	@Path("/upload")
+	@Path("php")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadFile(
 			@FormDataParam("appFile") InputStream fileInputStream,
@@ -69,6 +67,13 @@ public class DeployPhpAPI {
 			e.printStackTrace();
 		}
 
+	}
+
+	@GET
+	@Path("test")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String test() {
+		return "Test";
 	}
 
 }
