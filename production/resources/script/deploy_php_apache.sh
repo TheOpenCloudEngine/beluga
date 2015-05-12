@@ -1,8 +1,10 @@
+source ./config.sh
+
 filename=$(uuidgen -t)
 zip_file="$1"
 new_image="$2"
-registry_address="$3"
-base_image="$4"
+#registry_address=
+base_image=php5_apache2
 
 echo FROM "$registry_address"/"$base_image" >> $filename
 echo COPY "$zip_file" /var/www/html/ >> $filename
