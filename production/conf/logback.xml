@@ -1,0 +1,34 @@
+<configuration scan="true" scanPeriod="10 seconds">
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%date %level] \(%file:%line\) %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="systemlog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/system.log</file>
+
+		<encoder>
+			<pattern>[%date %level] \(%file:%line\) %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.path}/system.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<MaxHistory>7</MaxHistory>
+		</rollingPolicy>
+	</appender>
+
+
+	<logger name="org.apache.jasper" level="INFO" additivity="false">
+		<appender-ref ref="systemlog" />
+	</logger>
+	
+	<logger name="org.apache.ibatis" level="INFO" additivity="false" />
+	<logger name="org.opencloudengine.garuda.db.mapper" level="INFO" additivity="false" />
+	
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="systemlog" />
+	</root>
+
+</configuration>

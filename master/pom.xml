@@ -53,6 +53,107 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jsp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-jetty-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludes>
+                                <exclude>**/Bootstrap.class</exclude>
+                                <exclude>**/BootstrapServlet.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>bootstrap</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <classifier>bootstrap</classifier>
+                            <finalName>${project.artifactId}</finalName>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includes>
+                                <include>org/fastcatsearch/server/Bootstrap.class</include>
+                                <include>org/fastcatsearch/server/BootstrapServlet.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
