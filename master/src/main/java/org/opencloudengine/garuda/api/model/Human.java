@@ -1,5 +1,6 @@
-package org.opencloudengine.garuda.rest.vo;
+package org.opencloudengine.garuda.api.model;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -16,13 +17,15 @@ public class Human {
 	private String name;
 	private int age;
 
+	public Human(){ }
+
 	public Human(int id, String name, int age) {
 		this.id = id;
 		this.name = name;
 		this.age = age;
 	}
 
-	@XmlElement
+	@XmlAttribute
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -35,5 +38,17 @@ public class Human {
 	@XmlElement
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getAge() {
+		return age;
 	}
 }

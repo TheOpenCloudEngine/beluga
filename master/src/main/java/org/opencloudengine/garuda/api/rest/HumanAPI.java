@@ -1,6 +1,6 @@
-package org.opencloudengine.garuda.rest;
+package org.opencloudengine.garuda.api.rest;
 
-import org.opencloudengine.garuda.rest.vo.Human;
+import org.opencloudengine.garuda.api.model.Human;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,8 +21,7 @@ public class HumanAPI {
 	@GET
 	@Path("list")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public List<Human> getAllParties() throws Exception
-	{
+	public List<Human> getAllParties() throws Exception {
 		List<Human> list = new ArrayList<Human>();
 		list.add(new Human(1,  "Mr. Hong", 20));
 		list.add(new Human(2, "Mr. Kim", 30));

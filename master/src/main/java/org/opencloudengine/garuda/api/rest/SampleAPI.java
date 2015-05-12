@@ -1,4 +1,4 @@
-package org.opencloudengine.garuda.rest;
+package org.opencloudengine.garuda.api.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
