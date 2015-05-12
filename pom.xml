@@ -137,6 +137,9 @@
 
         <jclouds.version>1.9.0</jclouds.version>
         <jclouds.digitalocean.version>1.7.1</jclouds.digitalocean.version>
+        <jetty.version>9.1.0.v20131115</jetty.version>
+        <jersey.version>2.7</jersey.version>
+
     </properties>
 
     <build>
@@ -183,95 +186,95 @@
             <!--  http://slf4j.org/faq.html#excludingJCL : How do I exclude commons-logging as a Maven dependency -->
             <!--  Exclude commons-logging  -->
             <!-- ================================================================================================ -->
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>99-empty</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>commons-logging</groupId>-->
+                <!--<artifactId>commons-logging</artifactId>-->
+                <!--<version>99-empty</version>-->
+            <!--</dependency>-->
 
             <!-- ========= -->
             <!--  Ehcache  -->
             <!-- ========= -->
 
-            <dependency>
-                <groupId>net.sf.ehcache</groupId>
-                <artifactId>ehcache-core</artifactId>
-                <version>${ehcache.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>net.sf.ehcache</groupId>-->
+                <!--<artifactId>ehcache-core</artifactId>-->
+                <!--<version>${ehcache.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ====================== -->
             <!--  InfluxDB Java Client  -->
             <!-- ====================== -->
 
-            <dependency>
-                <groupId>org.influxdb</groupId>
-                <artifactId>influxdb-java</artifactId>
-                <version>${influxdb.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.influxdb</groupId>-->
+                <!--<artifactId>influxdb-java</artifactId>-->
+                <!--<version>${influxdb.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ================== -->
             <!--  Spring Framework  -->
             <!-- ================== -->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-aop</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aspects</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-aspects</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-beans</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-context</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-context-support</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-core</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jdbc</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-jdbc</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-orm</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-orm</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-oxm</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-oxm</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-web</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -279,79 +282,79 @@
                 <version>${spring.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-tx</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-tx</artifactId>-->
+                <!--<version>${spring.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ================= -->
             <!--  Spring Security  -->
             <!-- ================= -->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>${spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-core</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-config</artifactId>
-                <version>${spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-config</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-acl</artifactId>
-                <version>${spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-acl</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-taglibs</artifactId>
-                <version>${spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-taglibs</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-web</artifactId>
-                <version>${spring.security.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-asm</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-web</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.springframework</groupId>-->
+                        <!--<artifactId>spring-asm</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-aspects</artifactId>
-                <version>${spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-aspects</artifactId>-->
+                <!--<version>${spring.security.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ===================== -->
             <!--  Spring Dependencies  -->
             <!-- ===================== -->
 
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.aspectj</groupId>-->
+                <!--<artifactId>aspectjrt</artifactId>-->
+                <!--<version>${aspectj.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.aspectj</groupId>-->
+                <!--<artifactId>aspectjweaver</artifactId>-->
+                <!--<version>${aspectj.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>aopalliance</groupId>
-                <artifactId>aopalliance</artifactId>
-                <version>${aopalliance.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>aopalliance</groupId>-->
+                <!--<artifactId>aopalliance</artifactId>-->
+                <!--<version>${aopalliance.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ====================== -->
             <!--  MyBatis Dependencies  -->
@@ -390,11 +393,11 @@
                 <version>${mysql.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.zaxxer</groupId>
-                <artifactId>HikariCP-java6</artifactId>
-                <version>${hikaricp.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.zaxxer</groupId>-->
+                <!--<artifactId>HikariCP-java6</artifactId>-->
+                <!--<version>${hikaricp.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ====== -->
             <!--  JSON  -->
@@ -448,45 +451,45 @@
             <!--  Activiti  -->
             <!-- ========== -->
 
-            <dependency>
-                <groupId>org.activiti</groupId>
-                <artifactId>activiti-engine</artifactId>
-                <version>${activiti.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.activiti</groupId>-->
+                <!--<artifactId>activiti-engine</artifactId>-->
+                <!--<version>${activiti.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.activiti</groupId>
-                <artifactId>activiti-bpmn-model</artifactId>
-                <version>${activiti.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.activiti</groupId>-->
+                <!--<artifactId>activiti-bpmn-model</artifactId>-->
+                <!--<version>${activiti.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.activiti</groupId>
-                <artifactId>activiti-bpmn-layout</artifactId>
-                <version>${activiti.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.activiti</groupId>-->
+                <!--<artifactId>activiti-bpmn-layout</artifactId>-->
+                <!--<version>${activiti.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.activiti</groupId>
-                <artifactId>activiti-spring</artifactId>
-                <version>${activiti.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.activiti</groupId>-->
+                <!--<artifactId>activiti-spring</artifactId>-->
+                <!--<version>${activiti.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ========= -->
             <!--  Reactor  -->
             <!-- ========= -->
 
-            <dependency>
-                <groupId>org.projectreactor</groupId>
-                <artifactId>reactor-core</artifactId>
-                <version>${reactor.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.projectreactor</groupId>-->
+                <!--<artifactId>reactor-core</artifactId>-->
+                <!--<version>${reactor.version}</version>-->
+            <!--</dependency>-->
 
-            <dependency>
-                <groupId>org.projectreactor.spring</groupId>
-                <artifactId>reactor-spring-context</artifactId>
-                <version>${reactor.spring.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.projectreactor.spring</groupId>-->
+                <!--<artifactId>reactor-spring-context</artifactId>-->
+                <!--<version>${reactor.spring.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ========== -->
             <!--  Test API  -->
@@ -798,6 +801,10 @@
                 <version>${marathon.version}</version>
             </dependency>
 
+            <!-- ================= -->
+            <!--   Jcloud  -->
+            <!-- ================= -->
+
             <dependency>
                 <groupId>org.apache.jclouds</groupId>
                 <artifactId>jclouds-all</artifactId>
@@ -808,11 +815,70 @@
                 <artifactId>digitalocean</artifactId>
                 <version>${jcloud.digitalocean.version}</version>
             </dependency>
+
+            <!-- ================= -->
+            <!--   Jetty  -->
+            <!-- ================= -->
+
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-jsp</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-webapp</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+
+            <!-- ================= -->
+            <!--   Jersey  -->
+            <!-- ================= -->
+
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet-core</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-jetty-http</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-moxy</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
         </dependencies>
-
-
     </dependencyManagement>
-
 
     <scm>
         <connection>scm:git:https://github.com/TheOpenCloudEngine/garuda</connection>

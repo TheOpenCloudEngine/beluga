@@ -1,6 +1,11 @@
 package org.opencloudengine.garuda.server;
 
+import org.opencloudengine.garuda.common.util.VersionConfigurer;
+import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.RESTService;
+import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class GarudaServer {
 
+	private ServiceManager serviceManager;
 	public static long startTime;
 	public static GarudaServer instance;
 	private static Logger logger;
@@ -135,17 +141,23 @@ public class GarudaServer {
 				System.exit(1);
 			}
 		}
-//		Environment environment = new Environment(serverHome).init();
+		Environment environment = new Environment(serverHome).init();
+		this.serviceManager = new ServiceManager(environment);
+		serviceManager.asSingleton();
+
+		RESTService restService = serviceManager.createService("rest", RESTService.class);
+
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 
 		logger.info("ServerHome = {}", serverHome);
 
 		/*
-		*
-		* TODO: Start Services
-		*
+		* Start Services
 		* */
+
+		startService(restService);
+
 
  		if (shutdownHook == null) {
 			shutdownHook = new ServerShutdownHook();
@@ -154,11 +166,24 @@ public class GarudaServer {
 
 		startTime = System.currentTimeMillis();
 
-		logger.info("GarudaServer started!");
+		new VersionConfigurer().printApplicationStartInfo();
 		isRunning = true;
 
 		if (keepAlive) {
 			setKeepAlive();
+		}
+	}
+
+	private void startService(AbstractService service) {
+		if (service != null) {
+			try {
+				service.start();
+			} catch (Throwable e) {
+				logger.error("", e);
+			}
+		}else{
+			logger.error("Service is null {}", service.getClass().getSimpleName());
+
 		}
 	}
 
@@ -201,8 +226,9 @@ public class GarudaServer {
 
 	public void stop() throws GarudaException {
 		/*
-		* TODO : Stop services
+		* Stop services
 		* */
+		serviceManager.stopService(RESTService.class);
 
 		logger.info("GarudaServer shutdown!");
 		isRunning = false;
@@ -211,9 +237,10 @@ public class GarudaServer {
 	public void close() throws GarudaException {
 
 		/*
-		* TODO : Close services
+		* Close services
 		* */
-		
+		serviceManager.closeService(RESTService.class);
+
 		if (fileLock != null) {
 			try {
 				fileLock.release();
