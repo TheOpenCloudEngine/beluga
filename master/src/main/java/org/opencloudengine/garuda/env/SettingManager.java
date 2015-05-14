@@ -11,7 +11,7 @@ import java.util.Properties;
 
 /**
  * 엔진내 conf/하위 셋팅들을 가지고 있다.
- * system.properties : 시스템 설정.
+ * garuda.conf : 시스템 설정.
  *
  * @author Sang Wook, Song
  *

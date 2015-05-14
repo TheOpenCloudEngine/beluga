@@ -1,6 +1,7 @@
 package org.opencloudengine.garuda.common.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opencloudengine.garuda.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class VersionConfigurer {
 
     private static final String UNKNOWN = "Unknown";
 
-    public String printApplicationStartInfo() {
+    public String printApplicationStartInfo(Environment environment) {
         System.setProperty("PID", SystemUtils.getPid());
 
         Properties properties = new Properties();
@@ -45,13 +46,13 @@ public class VersionConfigurer {
 
         // See : http://patorjk.com/software/taag/#p=display&f=Slant&t=Garuda%20PaaS
         StringBuilder builder = new StringBuilder();
-        builder.append("\n   ______                     __         ____              _____\n" +
-            "  / ____/___ ________  ______/ /___ _   / __ \\____ _____ _/ ___/\n" +
-            " / / __/ __ `/ ___/ / / / __  / __ `/  / /_/ / __ `/ __ `/\\__ \\ \n" +
-            "/ /_/ / /_/ / /  / /_/ / /_/ / /_/ /  / ____/ /_/ / /_/ /___/ / \n" +
-            "\\____/\\__,_/_/   \\__,_/\\__,_/\\__,_/  /_/    \\__,_/\\__,_//____/  \n" +
-            "                                                                ");
-
+	    builder.append("\n" +
+			    "   ______                     __     \n" +
+			    "  / ____/___ ________  ______/ /___ _\n" +
+			    " / / __/ __ `/ ___/ / / / __  / __ `/\n" +
+			    "/ /_/ / /_/ / /  / /_/ / /_/ / /_/ / \n" +
+			    "\\____/\\__,_/_/   \\__,_/\\__,_/\\__,_/  \n" +
+			    "                                     ");
         printHeader(builder, "Application Information");
         Properties appProps = new Properties();
         appProps.put("Instance", StringUtils.isEmpty(System.getProperty("instance")) ? "** UNKNOWN **" : System.getProperty("instance"));
@@ -105,8 +106,9 @@ public class VersionConfigurer {
 
 	    logger.info(builder.toString());
         logger.info("============================================================");
-        logger.info(" " + properties.get("name") + " (" + SystemUtils.getPid() + ") starting...");
-        logger.info("============================================================");
+        logger.info(" {} ({}) started!", properties.get("name"), SystemUtils.getPid());
+	    logger.info(" Home = {}", environment.home());
+	    logger.info("============================================================");
 
 	    return builder.toString();
     }

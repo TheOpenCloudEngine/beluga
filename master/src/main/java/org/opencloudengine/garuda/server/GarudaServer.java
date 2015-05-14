@@ -150,8 +150,6 @@ public class GarudaServer {
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 
-		logger.info("ServerHome = {}", serverHome);
-
 		/*
 		* Start Services
 		* */
@@ -166,7 +164,7 @@ public class GarudaServer {
 
 		startTime = System.currentTimeMillis();
 
-		new VersionConfigurer().printApplicationStartInfo();
+		new VersionConfigurer().printApplicationStartInfo(environment);
 		isRunning = true;
 
 		if (keepAlive) {
