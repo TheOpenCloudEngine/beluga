@@ -1,7 +1,12 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
+import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.opencloudengine.garuda.common.util.CommandUtils;
+import org.opencloudengine.garuda.env.Environment;
+import org.opencloudengine.garuda.env.SettingManager;
+import org.opencloudengine.garuda.env.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +14,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Deploy App API
@@ -25,6 +32,7 @@ public class AppsAPI {
 	/**
 	 * Create apps.
 	 * Docker 이미지를 만들어서 Registry에 등록한다.
+	 *
 	 * <p/>
 	 * POST /v1/apps
 	 * <p/>
@@ -34,11 +42,14 @@ public class AppsAPI {
 	 * "status" : "complete",
 	 * "type": "create"
 	 * }
+	 *
+	 * @param stack app을 올릴 환경 stack 이름을 받는다. 이 이름을 바탕으로 deploy_<stack>.sh 스크립트를 실행한다.
 	 */
 	@POST
 	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response createApp(
+			@FormDataParam("stack") String stack,
 			@FormDataParam("instanceSize") int instanceSize,
 			@FormDataParam("port") int port,
 			@FormDataParam("userId") String userId,
@@ -53,34 +64,62 @@ public class AppsAPI {
 
 		String fileName = contentDispositionHeader.getFileName();
 
-		File tmpDir = getTempDir(UPLOAD_LOCATION_DIR);
+		File workDir = getTempDir(UPLOAD_LOCATION_DIR);
 		try {
-			File appFilePath = new File(tmpDir, fileName);
-			File scriptFilePath = new File(tmpDir, fileName);
+
+			Environment env = SettingManager.getInstance().getEnvironment();
+			Settings settings = SettingManager.getInstance().getSystemSettings();
+			String scriptPath = settings.getString("resources.script.path");
+			logger.debug("### scriptPath > {}", new File(env.home(), scriptPath));
+
+			File appFilePath = new File(workDir, fileName);
+
+			/*
+			* Script file
+			* */
+			String scriptFileName = "deploy_" + stack + ".sh";
+			File sourceScriptFilePath = new File(new File(env.home(), scriptPath), scriptFileName);
+			File targetScriptFilePath = new File(workDir, scriptFileName);
+
+			logger.debug("sourceScriptFilePath > {}", sourceScriptFilePath.getAbsolutePath());
+			FileUtils.copyFile(sourceScriptFilePath, targetScriptFilePath);
+
+			/*
+			* App file
+			* */
+
+ 			String normalizedFileName = fileName.replaceAll("[._]", "-");
+ 			String newImageName = String.format("%s_%s", userId, normalizedFileName);
+
+			Map<String, String> envParameters = new HashMap<>();
+			envParameters.put("registry_address", settings.getString("registry.address"));
+			envParameters.put("marathon_address", settings.getString("marathon-master.address"));
 
 			logger.debug("Target app filePath = {}", appFilePath);
 
 			saveFile(is, appFilePath);
 
-			//TODO deploy_php_apache.sh aaa.zip <userId>_<appFile name>_php <registry addr> "php5_apache2"
+			//실행 deploy_php_apache.sh <작업디렉토리> <App파일명> <Docker 이미지명>
+			String output = CommandUtils.executeCommand(new String[]{"/bin/bash", targetScriptFilePath.getAbsolutePath(), workDir.getAbsolutePath(), fileName, newImageName}, envParameters);
 
 
 			//TODO 결과에 appId가 반들시 포함되어야 run, delete 등을 수행할수 있다.
 			//TODO appid는 userId-imageId 로 자동생성한다.
 
-			String output = "";
 
 			return Response.ok(output).build();
 
+		} catch (Exception e) {
+			logger.error("", e);
 		} finally {
-			if (tmpDir.exists()) {
-				tmpDir.delete();
-			}
+//			if (workDir.exists()) {
+//				workDir.delete();
+//			}
 
 			//TODO is 를 닫아야 하나?
 
 		}
-
+		return Response.serverError().build();
 	}
 
 	/*

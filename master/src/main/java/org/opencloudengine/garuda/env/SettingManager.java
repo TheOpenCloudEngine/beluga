@@ -20,15 +20,26 @@ public class SettingManager {
 	private final Logger logger = LoggerFactory.getLogger(SettingManager.class);
 	private Environment environment;
 	private static Map<String, Object> settingCache = new HashMap<String, Object>();
+	private static SettingManager instance;
 
 	public SettingManager(Environment environment) {
 		this.environment = environment;
+	}
+
+	public static SettingManager getInstance(){
+		return instance;
+	}
+	public void asSingleton(){
+		instance = this;
 	}
 
 	public String getConfigFilepath(String filename) {
 		return environment.filePaths().configPath().path(filename).toString();
 	}
 
+	public Environment getEnvironment() {
+		return environment;
+	}
 
 	private Properties getProperties(String configFilepath) {
 		

@@ -43,6 +43,7 @@ public class Environment {
 	
 	public Environment init() {
 		settingManager = new SettingManager(this);
+		settingManager.asSingleton();
 		return this;
 	}
 	

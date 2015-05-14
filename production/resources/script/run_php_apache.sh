@@ -1,5 +1,4 @@
 #!/bin/sh
-source ./config.sh
 
 new_image="$1"
 instance_size="$2"
