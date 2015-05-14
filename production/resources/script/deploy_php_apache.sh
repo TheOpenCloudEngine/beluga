@@ -1,3 +1,4 @@
+#!/bin/sh
 source ./config.sh
 
 filename=$(uuidgen -t)

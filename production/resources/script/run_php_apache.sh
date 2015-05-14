@@ -1,3 +1,4 @@
+#!/bin/sh
 source ./config.sh
 
 new_image="$1"
