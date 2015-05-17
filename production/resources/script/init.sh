@@ -36,3 +36,7 @@ cd /data/programs/mesos
 mkdir build && cd build
 
 ../configure
+
+make
+
+make install
