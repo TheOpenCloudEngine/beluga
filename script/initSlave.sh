@@ -1,3 +1,6 @@
+#exam
+#./initSlave.sh zk://52.69.35.63:2181,52.69.26.90:2181,52.69.35.86:2181/mesos 52.69.41.94 172.31.21.193 docker
+
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
 
 DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
