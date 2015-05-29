@@ -1,3 +1,6 @@
+#exam
+#./initMaster.sh zk://52.69.35.63:2181,52.69.26.90:2181,52.69.35.86:2181/mesos uengine 52.69.26.90 172.31.27.6 2 2 server.1=52.69.35.63:2888:3888 server.2=52.59.26.90:2888:3888 server.3=52.69.35.86:2888:3888
+
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
 
 DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
