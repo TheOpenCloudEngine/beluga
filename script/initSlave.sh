@@ -26,3 +26,5 @@ echo $3 > /etc/mesos-slave/ip
 
 #containerizers
 echo $4 > /etc/mesos-slave/containerizers
+
+sudo reboot
