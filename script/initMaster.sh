@@ -37,3 +37,5 @@ echo $6 > /etc/zookeeper/conf/myid
 echo $7 >> /etc/zookeeper/conf/zoo.cfg
 echo $8 >> /etc/zookeeper/conf/zoo.cfg
 echo $9 >> /etc/zookeeper/conf/zoo.cfg
+
+sudo reboot
