@@ -356,44 +356,4 @@ public class MarathonApiClient implements MesosApiClient {
                 });
     }
 
-
-    public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
-        MarathonApiClient marathonApiClient = new MarathonApiClient();
-        CreateApp createApp = marathonApiClient.getDefaultApp();
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://10.132.37.106:8080").path("/v2/apps");
-
-        target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
-
-        System.out.println(target.getUri().toString());
-
-    }
-
-    private CreateApp getDefaultApp() {
-        List<PortMapping> portMappings = new ArrayList<>();
-        PortMapping portMapping = new PortMapping();
-        portMapping.setContainerPort(80);
-        portMapping.setServicePort(83);
-        portMappings.add(portMapping);
-
-        Docker docker = new Docker();
-        docker.setImage("128.199.80.104:5000/php-sample-img");
-        docker.setNetwork("BRIDGE");
-        docker.setPrivileged(true);
-        docker.setPortMappings(portMappings);
-
-        Container container = new Container();
-        container.setDocker(docker);
-        container.setType("DOCKER");
-
-        CreateApp createApp = new CreateApp();
-        createApp.setId("oce-app-test-01");
-        createApp.setContainer(container);
-        createApp.setInstances(1);
-        createApp.setCpus(0.5f);
-        createApp.setMem(128f);
-
-        return createApp;
-    }
 }
