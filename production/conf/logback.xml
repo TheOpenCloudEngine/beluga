@@ -24,6 +24,7 @@
 	</logger>
 	
 	<logger name="org.apache.ibatis" level="INFO" additivity="false" />
+    <logger name="org.eclipse.jetty" level="INFO" additivity="false" />
 	<logger name="org.opencloudengine.garuda.db.mapper" level="INFO" additivity="false" />
 	
 	<root level="debug">

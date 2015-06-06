@@ -65,7 +65,7 @@ public class CommandUtils {
         return output.toString();
     }
 
-    public static String executeCommand(String command, Map<String, String> envParameters) throws IOException {
+    public static String executeCommand(String[] command, Map<String, String> envParameters) throws IOException {
         String line;
         ProcessBuilder pb = new ProcessBuilder(command);
         Map<String, String> env = pb.environment();

@@ -38,13 +38,12 @@ public class Environment {
 		
 		logger = LoggerFactory.getLogger(Environment.class);
 		 
-		logger.info("JAVA >> {} {}", System.getProperty("java.vendor"), System.getProperty("java.version"));
 		logger.info("Setting Home = {}", home);
-		logger.info("logback.configurationFile = {}", new File(new File(homeFile, "conf"), "logback.xml").getAbsolutePath());
 	}
 	
 	public Environment init() {
 		settingManager = new SettingManager(this);
+		settingManager.asSingleton();
 		return this;
 	}
 	

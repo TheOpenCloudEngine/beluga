@@ -1,8 +1,14 @@
+#!/bin/sh
+
+work_dir="$1"
+zip_file="$2"
+new_image="$3"
+
+cd "$work_dir"
+
+#registry_address=
+base_image=php5_apache2
 filename=$(uuidgen -t)
-zip_file="$1"
-new_image="$2"
-registry_address="$3"
-base_image="$4"
 
 echo FROM "$registry_address"/"$base_image" >> $filename
 echo COPY "$zip_file" /var/www/html/ >> $filename

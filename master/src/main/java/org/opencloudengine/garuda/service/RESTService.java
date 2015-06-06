@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.opencloudengine.garuda.env.Environment;
@@ -45,7 +46,7 @@ public class RESTService extends AbstractService {
 
 		ResourceConfig resourceConfig = new ResourceConfig();
 		resourceConfig.packages(true, garuda_rest_api_package);
-		resourceConfig.register(JacksonFeature.class);
+		resourceConfig.registerClasses(JacksonFeature.class, MultiPartFeature.class);
 		ServletContainer servletContainer = new ServletContainer(resourceConfig);
 		ServletHolder sh = new ServletHolder(servletContainer);
 
