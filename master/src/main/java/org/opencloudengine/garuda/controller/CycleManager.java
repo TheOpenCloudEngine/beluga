@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.controller;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 /**
@@ -20,17 +19,22 @@ public class CycleManager {
 
     List<String> slaveIpList;
 
-    public CycleManager(){
+    public CycleManager() {
         provisioner = new Provisioner();
         deployer = new Deployer();
         slaveIpList = new ArrayList<>();
         slaveIpList.add("52.69.67.167");
     }
+
     public void deployPHP(List<String> slaveIpList, String id, String passwd, String pemPath, String registryAddress) throws Exception {
         deployer.deployPHP(slaveIpList, id, passwd, pemPath, registryAddress);
     }
 
-    public void provisionSlave(){
+    public void initPHP(List<String> slaveIpList, String id, String passwd, String pemPath, String registryAddress) throws Exception {
+        deployer.initPHP(slaveIpList, id, passwd, pemPath, registryAddress);
+    }
+
+    public void provisionSlave() {
         provisioner.provisionSlave();
     }
 
@@ -39,7 +43,8 @@ public class CycleManager {
 
 //        cycleManager.provisionSlave();
 
-        cycleManager.deployPHP(cycleManager.slaveIpList, ID, PASSWD, PEM_PATH, REGISTRY_ADDRESS);
+        cycleManager.initPHP(cycleManager.slaveIpList, ID, PASSWD, PEM_PATH, REGISTRY_ADDRESS);
+//        cycleManager.deployPHP(cycleManager.slaveIpList, ID, PASSWD, PEM_PATH, REGISTRY_ADDRESS);
 
     }
 }

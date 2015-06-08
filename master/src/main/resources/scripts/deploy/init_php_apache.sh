@@ -1,3 +1,5 @@
-docker build -t $1/$2 .
+#!/usr/bin/env bash
 
-docker push $1/$2
+sudo docker build -t $1/$2 .
+
+#sudo docker push $1/$2
