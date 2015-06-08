@@ -11,7 +11,7 @@ current1=$(pwd)
 # resolve links - $0 may be a softlink
 PRGDIR=$(dirname $0)
 
-source ../bin/environment.sh
+source ../../bin/environment.sh
 
 cd "$current1"
 cd ..
