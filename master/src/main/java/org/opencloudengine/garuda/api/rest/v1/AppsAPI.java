@@ -1,9 +1,11 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.common.util.CommandUtils;
+import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Container;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.CreateApp;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Docker;
@@ -39,8 +41,7 @@ public class AppsAPI {
 	private static Logger logger = LoggerFactory.getLogger(AppsAPI.class);
 
 	private static final String UPLOAD_LOCATION_DIR = "/tmp/";
-    private static final String REGISTER_ADDR = "128.199.80.104:5000/";
-    private static final String MARATHON_ADDR = "http://10.132.37.106:8080";
+//    private static final String MARATHON_ADDR = "http://10.132.37.106:8080";
 
 	/**
 	 * Create apps.
@@ -56,19 +57,17 @@ public class AppsAPI {
 	 * "type": "create"
 	 * }
 	 *
-	 * @param stack app을 올릴 환경 stack 이름을 받는다. 이 이름을 바탕으로 deploy_<stack>.sh 스크립트를 실행한다.
+	 * @param stack app을 올릴 환경 stack 이름을 받는다. 이 이름을 바탕으로 build_<stack>.sh 스크립트를 실행한다.
 	 */
 	@POST
 	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response createApp(
 			@FormDataParam("stack") String stack,
-			@FormDataParam("port") int port,
 			@FormDataParam("userId") String userId,
 			@FormDataParam("file") InputStream is,
 			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader) {
 
-		logger.debug("port = {}", port);
 		logger.debug("userId = {}", userId);
 		logger.debug("fileInputStream = {}", is);
 		logger.debug("contentDispositionHeader = {}", contentDispositionHeader);
@@ -88,7 +87,7 @@ public class AppsAPI {
 			/*
 			* Script file
 			* */
-			String scriptFileName = "deploy_" + stack + ".sh";
+			String scriptFileName = "build_" + stack + ".sh";
 			File sourceScriptFilePath = new File(new File(env.home(), scriptPath), scriptFileName);
 			File targetScriptFilePath = new File(workDir, scriptFileName);
 
@@ -176,10 +175,11 @@ public class AppsAPI {
      * "type": "run"
      * }
      */
-    @GET
+    @POST
     @Path("{appId}/actions")
-    public Response doActions(@PathParam("appId") String appId) {
+    public Response doActions(@PathParam("appId") String appId, String jsonRequest) {
 
+        logger.debug("### jsonRequest : {}", jsonRequest);
         //TODO type에 따라서 run, stop 을 수행한다.
 
         //TODO run일 경우 instanceSize 를 받아서 해당 갯수만큼 실행시켜준다.
@@ -188,24 +188,43 @@ public class AppsAPI {
 		* TODO 짠 코드. 마라톤 디플로이.
 		* */
 
-        int instanceSize = 2;
-        int port = 0;
-        String newImage = null;
-
-        try {
-            this.deployApp(instanceSize, port, newImage);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (jsonRequest == null || jsonRequest.length() == 0) {
+            return Response.status(500).build();
         }
 
+        JsonNode request = JsonUtils.toJsonNode(jsonRequest);
+        JsonNode typeNode = request.path("type");
+        if (typeNode == null) {
+            //type 명시되지 않음.
+            return Response.status(500).entity("Action type is empty").build();
+        }
 
-        return Response.ok("").build();
+        Settings settings = SettingManager.getInstance().getSystemSettings();
+        String marathonAddress = String.format("http://%s", settings.getString("marathon-master.address"));
+
+        String type = typeNode.asText();
+
+        if (type.equalsIgnoreCase("run")) {
+            String newImage = typeNode.path("image").asText();
+            int port = typeNode.path("port").asInt(0);
+            float cpus = (float) typeNode.path("cpus").asDouble(0.1);
+            float memory = (float) typeNode.path("memory").asDouble(32);
+            int scale = typeNode.path("scale").asInt(1);
+
+            CreateApp createApp = createApp(newImage, port, cpus, memory, scale);
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target(marathonAddress).path("/v2/apps");
+            Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
+
+            return response;
+        } else if (type.equalsIgnoreCase("stop")) {
+
+            //TODO
+            return Response.ok().build();
+        }
+
+        return Response.status(500).entity("Not recognized action type : " + type).build();
     }
-
 	/*
 	* nanoTime을 사용하여 unique한 디렉토리를 만들어준다.
 	* */
@@ -249,24 +268,19 @@ public class AppsAPI {
 
 	}
 
-    public void deployApp(int instanceSize, int port, String newImage) throws InterruptedException, URISyntaxException, IOException {
-        CreateApp createApp = this.getDefaultApp(instanceSize, port, newImage);
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(MARATHON_ADDR).path("/v2/apps");
-
-        target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
-    }
-
-    private CreateApp getDefaultApp(int instanceSize, int port, String newImage) {
+    private CreateApp createApp(String newImage, int containerPort, float cpus, float memory, int scale) {
         List<PortMapping> portMappings = new ArrayList<>();
         PortMapping portMapping = new PortMapping();
-        portMapping.setContainerPort(port);
-        portMapping.setServicePort(83);
+        portMapping.setContainerPort(containerPort);
+        // 서비스 포트는 무시됨. https://mesosphere.github.io/marathon/docs/native-docker.html
+//        portMapping.setServicePort(83);
         portMappings.add(portMapping);
 
+        Settings settings = SettingManager.getInstance().getSystemSettings();
+        String registryAddress = settings.getString("registry.address");
+
         Docker docker = new Docker();
-        docker.setImage(String.format("%s ", REGISTER_ADDR + newImage));
+        docker.setImage(String.format("%s/%s", registryAddress, newImage));
         docker.setNetwork("BRIDGE");
         docker.setPrivileged(true);
         docker.setPortMappings(portMappings);
@@ -278,9 +292,9 @@ public class AppsAPI {
         CreateApp createApp = new CreateApp();
         createApp.setId(newImage);
         createApp.setContainer(container);
-        createApp.setInstances(instanceSize);
-        createApp.setCpus(0.5f);
-        createApp.setMem(128f);
+        createApp.setInstances(scale);
+        createApp.setCpus(cpus);
+        createApp.setMem(memory);
 
         return createApp;
     }

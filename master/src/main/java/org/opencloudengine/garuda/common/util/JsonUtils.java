@@ -20,6 +20,7 @@ package org.opencloudengine.garuda.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +31,7 @@ import java.util.Map;
  * Jackson JSON Utility.
  *
  * @author Byoung Gon, Kim
+ * @author Sang Wook, Song
  * @since 2.0
  */
 public class JsonUtils {
@@ -63,7 +65,7 @@ public class JsonUtils {
 	    }
     }
 
-    public static Map marshal(String json) {
+    public static Map unmarshal(String json) {
 	    try {
 		    return objectMapper.readValue(json, Map.class);
 	    } catch (IOException e) {
@@ -71,13 +73,21 @@ public class JsonUtils {
 	    }
     }
 
-    public static <T> T marshal(String jsonData, TypeReference valueTypeRef) {
+    public static <T> T unmarshal(String jsonData, TypeReference valueTypeRef) {
 
 	    try {
 		    return objectMapper.readValue(jsonData, valueTypeRef);
 	    } catch (IOException e) {
 		    throw new RuntimeException(e);
 	    }
+    }
+
+    public static JsonNode toJsonNode(String json) {
+        try {
+            return objectMapper.readTree(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
