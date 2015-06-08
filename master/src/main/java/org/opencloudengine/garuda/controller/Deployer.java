@@ -1,7 +1,7 @@
 package org.opencloudengine.garuda.controller;
 
-import org.opencloudengine.garuda.Utils.FileTransferUtil;
-import org.opencloudengine.garuda.Utils.SshUtil;
+import org.opencloudengine.garuda.utils.FileTransferUtil;
+import org.opencloudengine.garuda.utils.SshUtil;
 
 import java.util.Iterator;
 import java.util.List;

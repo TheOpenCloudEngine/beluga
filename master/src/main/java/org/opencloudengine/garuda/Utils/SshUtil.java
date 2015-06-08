@@ -1,4 +1,4 @@
-package org.opencloudengine.garuda.Utils;
+package org.opencloudengine.garuda.utils;
 
 import com.jcraft.jsch.*;
 
