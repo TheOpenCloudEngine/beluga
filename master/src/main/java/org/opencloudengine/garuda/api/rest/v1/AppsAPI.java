@@ -4,6 +4,10 @@ import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.common.util.CommandUtils;
+import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Container;
+import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.CreateApp;
+import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Docker;
+import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.PortMapping;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.env.Settings;
@@ -11,10 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +39,8 @@ public class AppsAPI {
 	private static Logger logger = LoggerFactory.getLogger(AppsAPI.class);
 
 	private static final String UPLOAD_LOCATION_DIR = "/tmp/";
+    private static final String REGISTER_ADDR = "128.199.80.104:5000/";
+    private static final String MARATHON_ADDR = "http://10.132.37.106:8080";
 
 	/**
 	 * Create apps.
@@ -50,13 +63,11 @@ public class AppsAPI {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response createApp(
 			@FormDataParam("stack") String stack,
-			@FormDataParam("instanceSize") int instanceSize,
 			@FormDataParam("port") int port,
 			@FormDataParam("userId") String userId,
 			@FormDataParam("file") InputStream is,
 			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader) {
 
-		logger.debug("instanceSize = {}", instanceSize);
 		logger.debug("port = {}", port);
 		logger.debug("userId = {}", userId);
 		logger.debug("fileInputStream = {}", is);
@@ -91,13 +102,13 @@ public class AppsAPI {
  			String normalizedFileName = fileName.replaceAll("[._]", "-");
  			String newImageName = String.format("%s_%s", userId, normalizedFileName);
 
-			Map<String, String> envParameters = new HashMap<>();
-			envParameters.put("registry_address", settings.getString("registry.address"));
-			envParameters.put("marathon_address", settings.getString("marathon-master.address"));
-
 			logger.debug("Target app filePath = {}", appFilePath);
 
 			saveFile(is, appFilePath);
+
+            Map<String, String> envParameters = new HashMap<>();
+            envParameters.put("registry_address", settings.getString("registry.address"));
+            envParameters.put("marathon_address", settings.getString("marathon-master.address"));
 
 			//실행 deploy_php_apache.sh <작업디렉토리> <App파일명> <Docker 이미지명>
 			String output = CommandUtils.executeCommand(new String[]{"/bin/bash", targetScriptFilePath.getAbsolutePath(), workDir.getAbsolutePath(), fileName, newImageName}, envParameters);
@@ -121,6 +132,79 @@ public class AppsAPI {
 		}
 		return Response.serverError().build();
 	}
+
+    @GET
+    @Path("/")
+    public Response getAppList() {
+
+        //TODO
+
+        return null;
+    }
+
+
+    @GET
+    @Path("/{appId}")
+    public Response getAppInfo(@PathParam("appId") String appId){
+
+        //TODO
+
+        return null;
+    }
+
+    @DELETE
+    @Path("/{appId}")
+    public Response deleteApp(@PathParam("appId") String appId){
+
+        //TODO
+
+        return null;
+    }
+
+
+    /**
+     * Run App
+     * <p/>
+     * POST /v1/apps/$APP_ID/actions -d '{
+     *     type: "run"
+     * }'
+     * <p/>
+     * 결과 :
+     * {
+     * "appId": "...",
+     * "status" : "in-progress",
+     * "type": "run"
+     * }
+     */
+    @GET
+    @Path("{appId}/actions")
+    public Response doActions(@PathParam("appId") String appId) {
+
+        //TODO type에 따라서 run, stop 을 수행한다.
+
+        //TODO run일 경우 instanceSize 를 받아서 해당 갯수만큼 실행시켜준다.
+
+		/*
+		* TODO 짠 코드. 마라톤 디플로이.
+		* */
+
+        int instanceSize = 2;
+        int port = 0;
+        String newImage = null;
+
+        try {
+            this.deployApp(instanceSize, port, newImage);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return Response.ok("").build();
+    }
 
 	/*
 	* nanoTime을 사용하여 unique한 디렉토리를 만들어준다.
@@ -165,28 +249,42 @@ public class AppsAPI {
 
 	}
 
-	/**
-	 * Run App
-	 * <p/>
-	 * POST /v1/apps/$APP_ID/run
-	 * <p/>
-	 * 결과 :
-	 * {
-	 * "appId": "...",
-	 * "status" : "in-progress",
-	 * "type": "run"
-	 * }
-	 */
-	@GET
-	@Path("{appID}/run")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response runApp(@PathParam("appId") String appId) {
+    public void deployApp(int instanceSize, int port, String newImage) throws InterruptedException, URISyntaxException, IOException {
+        CreateApp createApp = this.getDefaultApp(instanceSize, port, newImage);
 
-		/*
-		* TODO 짠 코드. 마라톤 디플로이.
-		* */
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(MARATHON_ADDR).path("/v2/apps");
 
-		return Response.ok("").build();
-	}
+        target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
+    }
+
+    private CreateApp getDefaultApp(int instanceSize, int port, String newImage) {
+        List<PortMapping> portMappings = new ArrayList<>();
+        PortMapping portMapping = new PortMapping();
+        portMapping.setContainerPort(port);
+        portMapping.setServicePort(83);
+        portMappings.add(portMapping);
+
+        Docker docker = new Docker();
+        docker.setImage(String.format("%s ", REGISTER_ADDR + newImage));
+        docker.setNetwork("BRIDGE");
+        docker.setPrivileged(true);
+        docker.setPortMappings(portMappings);
+
+        Container container = new Container();
+        container.setDocker(docker);
+        container.setType("DOCKER");
+
+        CreateApp createApp = new CreateApp();
+        createApp.setId(newImage);
+        createApp.setContainer(container);
+        createApp.setInstances(instanceSize);
+        createApp.setCpus(0.5f);
+        createApp.setMem(128f);
+
+        return createApp;
+    }
+
+
 
 }
