@@ -21,8 +21,8 @@ public class ClusterAPI {
 
     private static Logger logger = LoggerFactory.getLogger(ClusterAPI.class);
 
-    private static final String EC2_SECRETKEY = "Hpn7rlRJ0ud9m4L3AM5TUeG+wsof2C1jZnKMfgSn";
-    private static final String EC2_ACCESSKEY = "AKIAJDFB6F76TUZ5IFXA";
+    private static final String EC2_SECRETKEY = "보안상 삭제";
+    private static final String EC2_ACCESSKEY = "보안상 삭제";
     private static final String EC2_ENDPOINT = "ec2.ap-northeast-1.amazonaws.com";
     private static final String EC2_PEM_PATH = "/Users/soo/soo.pem";
     private static final String INSTALL_MASTER_FILE_PATH = "scripts/provisioning/installMaster.sh";
