@@ -3,8 +3,8 @@ package org.opencloudengine.garuda.api.rest.v1;
 import com.amazonaws.services.ec2.model.Instance;
 import org.opencloudengine.garuda.builder.EC2InstanceConfiguration;
 import org.opencloudengine.garuda.builder.EC2Interface;
-import org.opencloudengine.garuda.utils.FileTransferUtil;
-import org.opencloudengine.garuda.utils.SshUtil;
+import org.opencloudengine.garuda.util.FileTransferUtil;
+import org.opencloudengine.garuda.util.SshUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
