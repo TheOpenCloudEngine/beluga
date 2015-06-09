@@ -1,4 +1,4 @@
-package org.opencloudengine.garuda.util;
+package org.opencloudengine.garuda.utils;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
