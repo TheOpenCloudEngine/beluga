@@ -7,26 +7,21 @@
 echo '++++++++++ YAJSW SET ENV ++++++++++'
 
 #remember current dir
-current=$(pwd)
+current1=$(pwd)
 # resolve links - $0 may be a softlink
 PRGDIR=$(dirname $0)
 
-cd "$PRGDIR"
+source ../../bin/environment.sh
 
-# path to yajsw bin folder
-PRGDIR=$(pwd)
-
-cd ".."
-
-#swsong
-source ../bin/environment.sh
+cd "$current1"
+cd ..
 
 # path to wrapper home
 wrapper_home=$(pwd)
 export wrapper_home
 
 # return to original folder
-cd "$current"
+cd "$current1"
 
 wrapper_jar="$wrapper_home"/wrapper.jar
 export wrapper_jar
