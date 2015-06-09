@@ -1,10 +1,10 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
 import com.amazonaws.services.ec2.model.Instance;
-import org.opencloudengine.garuda.utils.FileTransferUtil;
-import org.opencloudengine.garuda.utils.SshUtil;
 import org.opencloudengine.garuda.builder.EC2InstanceConfiguration;
 import org.opencloudengine.garuda.builder.EC2Interface;
+import org.opencloudengine.garuda.utils.FileTransferUtil;
+import org.opencloudengine.garuda.utils.SshUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +32,11 @@ public class ClusterAPI {
     private static final int MESES_SLAVE_NUM = 2;
 
     String zk = "zk://";
+    String registryPath = "";
+
+    public ClusterAPI() {
+        super();
+    }
 
     /**
      * Create cluster.
@@ -54,7 +59,7 @@ public class ClusterAPI {
         options.put("ec2EndPoint", EC2_ENDPOINT);
 
         EC2InstanceConfiguration ec2InstanceConfiguration = new EC2InstanceConfiguration();
-        ec2InstanceConfiguration.setSecurityGroup("garudatest");
+        ec2InstanceConfiguration.setSecurityGroup("default");
         ec2InstanceConfiguration.setEc2InstanceType("t2.micro");
         ec2InstanceConfiguration.setEc2ImageId("ami-936d9d93");
         ec2InstanceConfiguration.setEc2KeyPair("soo");
@@ -67,61 +72,63 @@ public class ClusterAPI {
         }
 
         //도커 레지스트리 설치
-//        Vector<Instance> instances = ec2Interface.launchEC2Instances(1, ec2InstanceConfiguration);
-//        Iterator iterator = instances.iterator();
-//        while (iterator.hasNext()) {
-//            Instance instance = (Instance) iterator.next();
-//            String id = instance.getInstanceId();
-//            Instance instance1 = ec2Interface.getRunningInstance(id);
-//            while (true) {
-//                if (instance1.getPublicIpAddress() == null) {
-//                    instance1 = ec2Interface.getRunningInstance(id);
-//                } else {
-//                    registryIp = instance1.getPublicIpAddress();
-//                    break;
-//                }
-//            }
-//        }
-//        installRegistry(registryIp);
-
-        //master 설치
-        Vector<Instance> instances = ec2Interface.launchEC2Instances(MESES_MASTER_NUM, ec2InstanceConfiguration);
+        Vector<Instance> instances = ec2Interface.launchEC2Instances(1, ec2InstanceConfiguration);
         Iterator iterator = instances.iterator();
         while (iterator.hasNext()) {
             Instance instance = (Instance) iterator.next();
             String id = instance.getInstanceId();
             while (true) {
-                String state = ec2Interface.getInstanceStatus(id);
-                if (state == "okok") {
-                    masterIpList.add(instance);
+                String status = ec2Interface.getInstanceStatus(id);
+                if ("okok".equals(status)) {
+                    registryIp = ec2Interface.getRunningInstance(id).getPublicIpAddress();
+                    break;
+                }
+            }
+        }
+        installRegistry(registryIp);
+
+        //master 설치
+        instances = ec2Interface.launchEC2Instances(MESES_MASTER_NUM, ec2InstanceConfiguration);
+        iterator = instances.iterator();
+        while (iterator.hasNext()) {
+            Instance instance = (Instance) iterator.next();
+            String id = instance.getInstanceId();
+            while (true) {
+                if (ec2Interface.getInstanceStatus(id) == "okok") {
+                    masterIpList.add(ec2Interface.getRunningInstance(id));
                     break;
                 }
             }
         }
         installMasters(masterIpList);
 
-//        instances = ec2Interface.launchEC2Instances(MESES_SLAVE_NUM, ec2InstanceConfiguration);
-//        iterator = instances.iterator();
-//        while (iterator.hasNext()) {
-//            Instance instance = (Instance) iterator.next();
-//            String id = instance.getInstanceId();
-//            Instance instance1 = ec2Interface.getRunningInstance(id);
-//            while (true) {
-//                if (instance1.getPublicIpAddress() == null) {
-//                    instance1 = ec2Interface.getRunningInstance(id);
-//                } else {
-//                    slaveIpList.add(instance1);
-//                    break;
-//                }
-//            }
-//        }
-//        installSlaves(slaveIpList);
+        //slave 설치
+        instances = ec2Interface.launchEC2Instances(MESES_SLAVE_NUM, ec2InstanceConfiguration);
+        iterator = instances.iterator();
+        while (iterator.hasNext()) {
+            Instance instance = (Instance) iterator.next();
+            String id = instance.getInstanceId();
+            while (true) {
+                String status = ec2Interface.getInstanceStatus(id);
+                if ("okok".equals(status)) {
+                    slaveIpList.add(ec2Interface.getRunningInstance(id));
+                    break;
+                }
+            }
+        }
+        installSlaves(slaveIpList);
 
         return Response.serverError().build();
     }
 
-    public void installRegistry(String registryIp) {
-        FileTransferUtil.send("docker/php5_apache2", "ubuntu", "", "52.69.70.194", "/tmp", "Dockerfile", "/Users/soo/soo.pem");
+    public void installRegistry(String registryIp) throws Exception {
+        FileTransferUtil.send(INSTALL_REGISTRY_FILE_PATH, "ubuntu", "", registryIp, "/tmp", "installRegistry.sh", EC2_PEM_PATH);
+        SshUtil sshUtil = new SshUtil();
+        sshUtil.sessionLogin(registryIp, "ubuntu", "", EC2_PEM_PATH);
+        sshUtil.runCommand("chmod 755 /tmp/installRegistry.sh");
+        sshUtil.runCommand("sh /tmp/installRegistry.sh");
+
+        registryPath = String.format("%s:5000", registryIp);
     }
 
     public void installMasters(List<Instance> masterIpList) throws Exception {
@@ -129,7 +136,7 @@ public class ClusterAPI {
         String cluster = "garuda";
         String quorum = "2";
         SshUtil sshUtil = new SshUtil();
-        String publicIP, privateIP;
+        String publicIp, privateIp;
 
         //zk, zServer 등 쉘 스크립트 매개변수 만들기 위해서
         for (int i = 0; i < MESES_MASTER_NUM; i++) {
@@ -141,21 +148,34 @@ public class ClusterAPI {
             zServers += String.format("server.%s=%s:2188:3188 ", i + 1, masterIpList.get(i).getPublicIpAddress());
         }
 
-        Thread.sleep(10000);
-
         for (int i = 0; i < MESES_MASTER_NUM; i++) {
-            publicIP = masterIpList.get(i).getPublicIpAddress();
-            privateIP = masterIpList.get(i).getPrivateIpAddress();
-            FileTransferUtil.send(INSTALL_MASTER_FILE_PATH, "ubuntu", "", publicIP, "/tmp", "installMaster.sh", EC2_PEM_PATH);
+            publicIp = masterIpList.get(i).getPublicIpAddress();
+            privateIp = masterIpList.get(i).getPrivateIpAddress();
+            FileTransferUtil.send(INSTALL_MASTER_FILE_PATH, "ubuntu", "", publicIp, "/tmp", "installMaster.sh", EC2_PEM_PATH);
 
-            sshUtil.sessionLogin(publicIP, "ubuntu", "", EC2_PEM_PATH);
+            sshUtil.sessionLogin(publicIp, "ubuntu", "", EC2_PEM_PATH);
             sshUtil.runCommand("chmod 755 /tmp/installMaster.sh");
-            sshUtil.runCommand(String.format("sh /tmp/installMaster.sh %s %s %s %s %s %s %s", zk, cluster, publicIP, privateIP,
+            sshUtil.runCommand(String.format("sh /tmp/installMaster.sh %s %s %s %s %s %s %s", zk, cluster, publicIp, privateIp,
                     quorum, i + 1, zServers));
         }
     }
 
-    public void installSlaves(List<Instance> slaveIpList) {
+    public void installSlaves(List<Instance> slaveIpList) throws Exception {
+        String containerizers = "docker";
+        String publicIp, privateIp;
+        SshUtil sshUtil = new SshUtil();
+
+        Iterator iterator = slaveIpList.iterator();
+        while (iterator.hasNext()) {
+            Instance instance = (Instance) iterator.next();
+            publicIp = instance.getPublicIpAddress();
+            privateIp = instance.getPrivateIpAddress();
+
+            FileTransferUtil.send(INSTALL_SLAVE_FILE_PATH, "ubuntu", "", publicIp, "/tmp", "installSlave.sh", EC2_PEM_PATH);
+            sshUtil.sessionLogin(publicIp, "ubuntu", "", EC2_PEM_PATH);
+            sshUtil.runCommand("chmod 755 /tmp/installSlave.sh");
+            sshUtil.runCommand(String.format("sh /tmp/installSlave.sh %s %s %s %s %s", zk, publicIp, privateIp, containerizers, registryPath));
+        }
 
     }
 }
