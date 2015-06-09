@@ -40,13 +40,16 @@ public class AppsAPI {
 
 	private static Logger logger = LoggerFactory.getLogger(AppsAPI.class);
 
-	private static final String UPLOAD_LOCATION_DIR = "/tmp/";
 //    private static final String MARATHON_ADDR = "http://10.132.37.106:8080";
 
 	/**
 	 * Create apps.
 	 * Docker 이미지를 만들어서 Registry에 등록한다.
 	 *
+     * Curl 사용법 :
+     * curl -H "Content-Type:multipart/form-data" -X POST -F "file=sample.zip" \
+     * http://localhost:9000/v1/apps -F "stack=php" -F "userId=swsong" -v
+     *
 	 * <p/>
 	 * POST /v1/apps
 	 * <p/>
@@ -66,23 +69,24 @@ public class AppsAPI {
 			@FormDataParam("stack") String stack,
 			@FormDataParam("userId") String userId,
 			@FormDataParam("file") InputStream is,
-			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader) {
+			@FormDataParam("file") FormDataContentDisposition fileDisposition) {
 
+        logger.debug("stack = {}", stack);
 		logger.debug("userId = {}", userId);
 		logger.debug("fileInputStream = {}", is);
-		logger.debug("contentDispositionHeader = {}", contentDispositionHeader);
+		logger.debug("fileDisposition = {}", fileDisposition);
 
-		String fileName = contentDispositionHeader.getFileName();
-
-		File workDir = getTempDir(UPLOAD_LOCATION_DIR);
+		String fileName = fileDisposition.getFileName();
+        File workDir = getTempDir();
 		try {
 
-			Environment env = SettingManager.getInstance().getEnvironment();
-			Settings settings = SettingManager.getInstance().getSystemSettings();
-			String scriptPath = settings.getString("resources.script.path");
-			logger.debug("### scriptPath > {}", new File(env.home(), scriptPath));
+            Environment env = SettingManager.getInstance().getEnvironment();
+            Settings settings = SettingManager.getInstance().getSystemSettings();
+            String scriptPath = settings.getString("resources.script.path");
+            logger.debug("### scriptPath > {}", new File(env.home(), scriptPath));
 
-			File appFilePath = new File(workDir, fileName);
+
+            File appFilePath = new File(workDir, fileName);
 
 			/*
 			* Script file
@@ -122,11 +126,17 @@ public class AppsAPI {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-//			if (workDir.exists()) {
-//				workDir.delete();
-//			}
+			if (workDir.exists()) {
+				FileUtils.deleteQuietly(workDir);
+			}
 
-			//TODO is 를 닫아야 하나?
+            if(is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    logger.error("", e);
+                }
+            }
 
 		}
 		return Response.serverError().build();
@@ -228,15 +238,21 @@ public class AppsAPI {
 	/*
 	* nanoTime을 사용하여 unique한 디렉토리를 만들어준다.
 	* */
-	private File getTempDir(String filePath) {
+	private File getTempDir() {
+        Settings settings = SettingManager.getInstance().getSystemSettings();
+        String rootPath = settings.getString("upload.dir.path");
 
-		File tempRootDirFile = new File(filePath);
+		File tempRootDirFile = new File(rootPath);
 		if (!tempRootDirFile.exists()) {
 			tempRootDirFile.mkdirs();
 		}
 
 		String tempString = System.nanoTime() + "";
 		File f = new File(tempRootDirFile, tempString);
+
+        if (f.exists()) {
+            FileUtils.deleteQuietly(f);
+        }
 
 		if (!f.exists()) {
 			f.mkdir();
