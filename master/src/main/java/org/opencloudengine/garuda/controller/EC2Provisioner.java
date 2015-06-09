@@ -22,7 +22,7 @@ public class EC2Provisioner {
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(EC2Provisioner.class);
     private AmazonEC2Client amazonEC2Client;
-    private KeyPair keyPair;
+    private String keyName;
 
     public EC2Provisioner(File credentialsFile, String keyName, String region) throws IOException {
         AWSCredentials credentials = new PropertiesCredentials(credentialsFile);
@@ -31,7 +31,6 @@ public class EC2Provisioner {
         prepareKeyPair(keyName);
     }
 
-
     /*
     * keyPair가 존재하지 않으면 생성한다.
     */
@@ -39,6 +38,7 @@ public class EC2Provisioner {
         if(!isKeyPairExists(keyName)) {
             createKeyPair(keyName);
         }
+        this.keyName = keyName;
     }
 
     /*
@@ -68,7 +68,7 @@ public class EC2Provisioner {
         createKeyPairRequest.withKeyName(keyName);
         CreateKeyPairResult createKeyPairResult = amazonEC2Client.createKeyPair(createKeyPairRequest);
 
-        keyPair = createKeyPairResult.getKeyPair();
+        KeyPair keyPair = createKeyPairResult.getKeyPair();
 
         logger.debug("create keyPair > {}", keyPair.getKeyMaterial());
 
@@ -105,24 +105,26 @@ public class EC2Provisioner {
                 .withInstanceType(instanceType)
                 .withMinCount(count)
                 .withMaxCount(count)
-                .withKeyName(keyPair.getKeyName())
+                .withKeyName(keyName)
                 .withSecurityGroups(securityGroups);
 
         RunInstancesResult runInstancesResult = amazonEC2Client.runInstances(runInstancesRequest);
         Reservation reservation = runInstancesResult.getReservation();
         List<Instance> instanceList = reservation.getInstances();
-        for(int i =0 ;i < 10000 ; i++) {
-            for (Instance instance : instanceList) {
-                InstanceState state = instance.getState();
-                int stateCode = state.getCode();
-                logger.debug("stateCode : {}", stateCode);
-
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-        }
+        //TODO instanceState를 주기적으로 받아온다.
+//        for(int i =0 ;i < 10000 ; i++) {
+//            for (Instance instance : instanceList) {
+//
+//                InstanceState state = instance.getState();
+//                int stateCode = state.getCode();
+//                logger.debug("stateCode : {}", stateCode);
+//
+//            }
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//            }
+//        }
         logger.debug("runInstancesResult > {}", runInstancesResult);
 
     }
