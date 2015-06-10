@@ -1,12 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env bash
+#
+# Docker Registry 에서 이미지를 가져와서 Marathon 으로 실행한다.
+# @author : Sang Wook, Song
+#
 
-new_image="$1"
-instance_size="$2"
-user_name="$3"
+if [ $# -ne 6 ] ; then
+    echo "Usage: $0 <user_name> <image_id> <port> <cpus> <memory> <instance_size>"
+    echo "Sample: $0 oce java-calendar 8080 0.3 256 2"
+    exit 1
+fi
 
-app_name="$user_name"-"$new_image"
+user_name="$1"
+image_id="$2"
+port="$3"
+cpus="$4"
+memory="$5"
+instance_size="$6"
 
-base_image=php5_apache2
+
+. config.sh
+
+app_name="$user_name"-"$image_id"
 
 cat <<EndOfMessage > request.json
 {
@@ -18,11 +32,11 @@ cat <<EndOfMessage > request.json
     ],
     "container": {
         "docker": {
-                "image": "$registry_address/$new_image",
+                "image": "$registry_address/$image_id",
                 "network": "BRIDGE",
                 "portMappings": [
                     {
-                        "containerPort": 80,
+                        "containerPort": $port,
                         "hostPort": 0,
                         "protocol": "tcp"
                     }
@@ -32,10 +46,10 @@ cat <<EndOfMessage > request.json
             },
         "type": "DOCKER"
     },
-    "cpus": 0.5,
+    "cpus": $cpus,
     "id": "$app_name",
     "instances": $instance_size,
-    "mem": 50,
+    "mem": $memory,
     "ports": [
         0
     ],
