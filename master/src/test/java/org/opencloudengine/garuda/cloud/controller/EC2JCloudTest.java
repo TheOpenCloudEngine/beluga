@@ -18,6 +18,8 @@ package org.opencloudengine.garuda.cloud.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,9 @@ import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.*;
 import org.jclouds.compute.predicates.NodePredicates;
 import org.jclouds.domain.Location;
+import org.jclouds.ec2.domain.BlockDeviceMapping;
 import org.jclouds.ec2.domain.InstanceType;
+import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.logging.log4j.config.Log4JLoggingModule;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.predicates.InetSocketAddressConnect;
@@ -70,7 +74,7 @@ public class EC2JCloudTest {
         compute = context.getComputeService();
     }
 
-    public void initTemplate(String instanceType, String imageId, String group, String keyPair) {
+    public void initTemplate(String instanceType, String imageId, int volumeSize, String group, String keyPair) {
         TemplateBuilder templateBuilder = compute.templateBuilder();
         templateBuilder.hardwareId(instanceType); //InstanceType.T2_MICRO
         templateBuilder.imageId(imageId); //"ap-northeast-1/ami-936d9d93"
@@ -78,6 +82,7 @@ public class EC2JCloudTest {
         template = templateBuilder.build();
         // specify your own groups which already have the correct rules applied
         template.getOptions().as(AWSEC2TemplateOptions.class).securityGroups(group).keyPair(keyPair);
+        template.getOptions().as(AWSEC2TemplateOptions.class).mapNewVolumeToDeviceName("/dev/sda1", volumeSize, true);
     }
 
     public Set<? extends NodeMetadata> launchInstance(String prefixId, int scale) throws RunNodesException {
@@ -93,7 +98,7 @@ public class EC2JCloudTest {
         String secretKey = args[1];
 
         EC2JCloudTest test = new EC2JCloudTest(accessKey, secretKey);
-        test.initTemplate(InstanceType.T2_MICRO, "ap-northeast-1/ami-936d9d93", "default", "aws-garuda");
+        test.initTemplate(InstanceType.T2_MICRO, "ap-northeast-1/ami-936d9d93", 10, "default", "aws-garuda");
         test.launchInstance("test", 1);
         test.close();
     }
