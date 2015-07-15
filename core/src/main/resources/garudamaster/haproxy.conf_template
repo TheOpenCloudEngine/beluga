@@ -1,0 +1,41 @@
+global
+	maxconn 1024
+	daemon
+	nbproc 2
+	log localhost:1212 syslog
+defaults
+	mode	    http
+	clitimeout  60000
+	srvtimeout  30000
+	contimeout  4000
+	option      httpclose
+
+	balance	roundrobin
+	option forwardfor
+	
+	option httplog
+	log global
+	
+	# Setup backends
+	backend vaadin_static
+		reqirep ^GET\ /VAADIN/widgetsets/com.vaadin.DefaultWidgetSet/com.vaadin.DefaultWidgetSet.nocache.js? GET\ \2/VAADIN/widgetsets/com.vaadin.DefaultWidgetSet/com.vaadin.DefaultWidgetSet.nocache.js\ HTTP/1.1\3
+		server vaadin_static_1 localhost:8099
+$backends
+	
+	backend provisioner
+	    server provisioner localhost:$arvue_port
+	
+	frontend http_proxy *:$listen_port
+	
+	# Setup access control lists
+	acl acl_vaadin path_beg /VAADIN
+$acl
+
+	# Setup backend usage
+	use_backend vaadin_static if acl_vaadin
+$backenduse
+	default_backend provisioner
+	
+	
+		
+	

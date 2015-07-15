@@ -28,8 +28,8 @@ import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.enterprise.config.EnterpriseConfigurationModule;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
+import org.opencloudengine.garuda.cloud.controller.domain.IaasProvider;
 import org.opencloudengine.garuda.cloud.controller.exception.CloudControllerException;
-import org.opencloudengine.garuda.cloud.controller.iaases.IaasProvider;
 
 import java.io.File;
 import java.io.FileInputStream;

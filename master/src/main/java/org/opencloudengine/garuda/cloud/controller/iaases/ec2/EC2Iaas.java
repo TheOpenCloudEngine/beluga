@@ -39,11 +39,11 @@ import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
 import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DetachVolumeOptions;
+import org.opencloudengine.garuda.cloud.controller.domain.IaasProvider;
+import org.opencloudengine.garuda.cloud.controller.domain.NetworkInterface;
 import org.opencloudengine.garuda.cloud.controller.exception.CloudControllerException;
 import org.opencloudengine.garuda.cloud.controller.util.CloudControllerUtil;
-import org.opencloudengine.garuda.cloud.controller.iaases.IaasProvider;
 import org.opencloudengine.garuda.cloud.controller.iaases.JcloudsIaas;
-import org.opencloudengine.garuda.cloud.controller.iaases.NetworkInterface;
 import org.opencloudengine.garuda.cloud.controller.util.CloudControllerConstants;
 import org.opencloudengine.garuda.cloud.controller.util.ComputeServiceBuilderUtil;
 
@@ -134,14 +134,14 @@ public class EC2Iaas extends JcloudsIaas {
         // set EC2 specific options
 
 
-        if (iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS) != null) {
-            boolean associatePublicIp = Boolean.parseBoolean(iaasInfo.getProperty(
-                    CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
-            if (associatePublicIp) {
-                template.getOptions().as(AWSEC2TemplateOptions.class)
-                        .associatePublicIpAddress();
-            }
-        }
+//        if (iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS) != null) {
+//            boolean associatePublicIp = Boolean.parseBoolean(iaasInfo.getProperty(
+//                    CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
+//            if (associatePublicIp) {
+//                template.getOptions().as(AWSEC2TemplateOptions.class)
+//                        .associatePublicIpAddress();
+//            }
+//        }
 
         if (iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
             template.getOptions().as(AWSEC2TemplateOptions.class)

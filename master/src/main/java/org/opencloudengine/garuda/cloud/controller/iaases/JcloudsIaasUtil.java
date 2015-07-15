@@ -22,6 +22,7 @@ package org.opencloudengine.garuda.cloud.controller.iaases;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jclouds.compute.ComputeService;
+import org.opencloudengine.garuda.cloud.controller.domain.IaasProvider;
 import org.opencloudengine.garuda.cloud.controller.exception.InvalidIaasProviderException;
 import org.opencloudengine.garuda.cloud.controller.util.ComputeServiceBuilderUtil;
 

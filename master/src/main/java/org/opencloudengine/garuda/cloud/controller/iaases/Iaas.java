@@ -20,6 +20,7 @@ package org.opencloudengine.garuda.cloud.controller.iaases;
 
 
 import org.opencloudengine.garuda.cloud.controller.domain.IaasProvider;
+import org.opencloudengine.garuda.cloud.controller.domain.MemberContext;
 
 /**
  * All IaaSes that are going to support by Cloud Controller, should extend this abstract class.
@@ -59,7 +60,7 @@ public abstract class Iaas {
      * @param payload
      * @return updated memberContext
      */
-    public abstract MemberContext startInstance(MemberContext memberContext, byte[] payload) throws CartridgeNotFoundException;
+    public abstract MemberContext startInstance(MemberContext memberContext, byte[] payload);
 
     /**
      * This will deallocate/release the given IP address back to pool.
@@ -113,9 +114,8 @@ public abstract class Iaas {
      *
      * @param clusterId
      * @param memberContext
-     * @param partition
      */
-    public abstract void allocateIpAddresses(String clusterId, MemberContext memberContext, Partition partition);
+    public abstract void allocateIpAddresses(String clusterId, MemberContext memberContext);
 
     /**
      * This method provides a way to set payload.
@@ -126,8 +126,6 @@ public abstract class Iaas {
      * Terminate an instance.
      *
      * @param memberContext
-     * @throws InvalidCartridgeTypeException
-     * @throws InvalidMemberException
      */
-    public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException, MemberTerminationFailedException;
+    public abstract void terminateInstance(MemberContext memberContext);
 }
