@@ -5,7 +5,6 @@ package org.opencloudengine.garuda.builder;
  */
 public class EC2InstanceConfiguration {
 
-
     private String ec2InstanceType;
     private String ec2ImageId;
     private String ec2KeyPair;
@@ -16,10 +15,11 @@ public class EC2InstanceConfiguration {
     }
 
     public EC2InstanceConfiguration(String ec2InstanceType, String ec2ImageId,
-                                    String ec2KeyPair) {
+                                    String ec2KeyPair, String securityGroup) {
         this.ec2InstanceType = ec2InstanceType;
         this.ec2ImageId = ec2ImageId;
         this.ec2KeyPair = ec2KeyPair;
+        this.securityGroup = securityGroup;
     }
 
     public String getEc2InstanceType() {

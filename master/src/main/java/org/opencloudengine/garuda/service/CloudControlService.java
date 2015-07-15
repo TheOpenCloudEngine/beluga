@@ -27,4 +27,8 @@ public class CloudControlService extends AbstractService {
     protected boolean doClose() throws GarudaException {
         return false;
     }
+
+    public void createCluster(){
+
+    }
 }
