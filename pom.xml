@@ -8,8 +8,9 @@
     <artifactId>garuda</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>dist</module>
+        <module>master</module>
         <module>core</module>
+        <module>dist</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -12,6 +12,12 @@
     <groupId>org.opencloudengine.garuda</groupId>
     <artifactId>garuda-master</artifactId>
 
+    <properties>
+        <jclouds.version>1.9.0</jclouds.version>
+    </properties>
+
+
+
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -127,38 +133,38 @@
             <artifactId>jsch</artifactId>
             <version>0.1.52</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.9.39</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.amazonaws</groupId>-->
+            <!--<artifactId>aws-java-sdk</artifactId>-->
+            <!--<version>1.9.39</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-all</artifactId>
-            <version>1.9.0</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-log4j</artifactId>
-            <version>1.8.1</version>
+            <version>${jclouds.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-sshj</artifactId>
-            <version>1.8.1</version>
+            <version>${jclouds.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-slf4j</artifactId>
-            <version>1.8.1</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-enterprise</artifactId>
-            <version>1.8.1</version>
+            <version>${jclouds.version}</version>
         </dependency>
     </dependencies>
 

@@ -17,8 +17,8 @@ public class CloudControllerUtilTest {
     @Test
     public void createEC2() throws InvalidIaasProviderException {
 
-        String identity = "AKIAJ34HUGNI2HQI53UQ";
-        String credential = "l2GxfMJAF4/9eJJTMWoYkuzl6ge64oI4dftWtOX5";
+        String identity = "";
+        String credential = "";
 
         Map<String, String> properties = new HashMap<>();
         properties.put("instanceType", "t2.micro");
