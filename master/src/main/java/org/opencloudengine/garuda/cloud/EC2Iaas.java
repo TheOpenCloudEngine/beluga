@@ -8,7 +8,7 @@ import org.jclouds.ec2.domain.InstanceType;
 /**
  * Created by swsong on 2015. 7. 15..
  */
-public class EC2Iaas extends JcloudIaas {
+public class EC2Iaas extends Iaas {
     public EC2Iaas(String providerType, String accessKey, String secretKey) {
         super(providerType, accessKey, secretKey);
     }

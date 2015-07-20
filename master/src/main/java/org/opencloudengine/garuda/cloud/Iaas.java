@@ -19,11 +19,12 @@ import java.util.Set;
 /**
  * Created by swsong on 2015. 7. 15..
  */
-public abstract class JcloudIaas {
+public abstract class Iaas {
+
     private ComputeServiceContext context;
     private ComputeService computeService;
 
-    public JcloudIaas(String providerType, String accessKey, String secretKey) {
+    public Iaas(String providerType, String accessKey, String secretKey) {
 
         Properties overrides = new Properties();
         context = ContextBuilder.newBuilder(providerType)
@@ -51,6 +52,10 @@ public abstract class JcloudIaas {
     public Set<? extends NodeMetadata> launchInstance(InstanceRequest request, String prefixId, int scale) throws RunNodesException {
         Template template = initTemplate(request);
         return computeService.createNodesInGroup(prefixId, scale, template);
+    }
+
+    public ComputeService computeService() {
+        return computeService;
     }
 
     public void close() {

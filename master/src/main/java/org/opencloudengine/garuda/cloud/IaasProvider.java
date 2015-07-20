@@ -2,6 +2,8 @@ package org.opencloudengine.garuda.cloud;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
+import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
+import org.opencloudengine.garuda.utils.classloader.DynamicClassLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,17 +14,12 @@ import java.util.Map;
 public class IaasProvider {
     private String type;
     private String name;
-    private String image;
     private String identity;
     private String credential;
 
-    private transient ComputeService computeService;
-    private transient Template template;
-
-    public IaasProvider(String type, String name, String image, String identity, String credential) {
+    public IaasProvider(String type, String name, String identity, String credential) {
         this.type = type;
         this.name = name;
-        this.image = image;
         this.identity = identity;
         this.credential = credential;
     }
@@ -43,14 +40,6 @@ public class IaasProvider {
         this.name = name;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public String getIdentity() {
         return identity;
     }
@@ -67,13 +56,12 @@ public class IaasProvider {
         this.credential = credential;
     }
 
-    public ComputeService getComputeService() {
-        return computeService;
-    }
-
-
-    public Template getTemplate() {
-        return template;
+    public Iaas getIaas() throws UnknownIaasProviderException {
+        if(type.equalsIgnoreCase("AWS-EC2")) {
+            return new EC2Iaas(type, identity, credential);
+        } else {
+            throw new UnknownIaasProviderException("iaas provider type : " + type);
+        }
     }
 
 }

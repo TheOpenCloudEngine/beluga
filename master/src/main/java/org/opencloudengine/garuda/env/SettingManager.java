@@ -1,5 +1,8 @@
 package org.opencloudengine.garuda.env;
 
+import org.opencloudengine.garuda.settings.ClusterConfig;
+import org.opencloudengine.garuda.settings.IaasProviderConfig;
+import org.opencloudengine.garuda.settings.TopologyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +96,20 @@ public class SettingManager {
 	public Settings getSystemSettings() {
 		return getSettings(SettingFileNames.systemProperties);
 	}
-	
+
+    public ClusterConfig getClusterConfig() {
+        return new ClusterConfig(getSettings(SettingFileNames.clusterConfig).properties());
+    }
+
+    public IaasProviderConfig getIaasProviderConfig() {
+        return new IaasProviderConfig(getSettings(SettingFileNames.iaasProviderConfig).properties());
+    }
+
+    public TopologyConfig getTopologyConfig() {
+        return new TopologyConfig(getSettings(SettingFileNames.topologyConfig).properties());
+    }
+
+
 	public boolean storeSystemSettings(Settings settings) {
 		return storeProperties(settings.properties(), SettingFileNames.systemProperties);
 	}
