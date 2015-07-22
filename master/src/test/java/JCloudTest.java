@@ -20,8 +20,8 @@
 //import java.util.Set;
 //
 ///**
-// * Created by swsong on 2015. 7. 10..
-// */
+//* Created by swsong on 2015. 7. 10..
+//*/
 //public class JCloudTest {
 //
 ////    @Test

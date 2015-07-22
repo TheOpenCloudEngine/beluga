@@ -1,8 +1,7 @@
 package org.opencloudengine.garuda.env;
 
-import org.opencloudengine.garuda.settings.ClusterConfig;
+import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
-import org.opencloudengine.garuda.settings.TopologyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,23 +96,44 @@ public class SettingManager {
 		return getSettings(SettingFileNames.systemProperties);
 	}
 
-    public ClusterConfig getClusterConfig() {
-        return new ClusterConfig(getSettings(SettingFileNames.clusterConfig).properties());
+    //
+    // clusters.conf
+    //
+    public Settings getClustersConfig() {
+        return getSettings(SettingFileNames.clustersConfig);
+    }
+
+    public boolean storeClustersConfig(Settings setting) {
+        return storeProperties(setting.properties(), SettingFileNames.clustersConfig);
+    }
+
+    public ClusterDefinition getClusterDefinition(String definitionId) {
+        return new ClusterDefinition(getSettings(SettingFileNames.clusterDefinition, definitionId).properties());
     }
 
     public IaasProviderConfig getIaasProviderConfig() {
         return new IaasProviderConfig(getSettings(SettingFileNames.iaasProviderConfig).properties());
     }
 
-    public TopologyConfig getTopologyConfig() {
-        return new TopologyConfig(getSettings(SettingFileNames.topologyConfig).properties());
+    public Settings getClusterTopologyConfig(String clusterId) {
+        return getSettings(SettingFileNames.topologyConfig, clusterId);
     }
 
+    public void storeClusterTopology(String clusterId, Properties props) {
+        storeProperties(props, getSettingFilename(SettingFileNames.topologyConfig, clusterId));
+    }
 
 	public boolean storeSystemSettings(Settings settings) {
 		return storeProperties(settings.properties(), SettingFileNames.systemProperties);
 	}
-	
+
+    private String getSettingFilename(String configFilename, String... params) {
+        return String.format(configFilename, params);
+    }
+    private Settings getSettings(String configFilename, String... params) {
+        return getSettings(getSettingFilename(configFilename, params));
+    }
+
 	private Settings getSettings(String configFilename) {
 		String configFilepath = getConfigFilepath(configFilename);
 		Object obj = settingCache.get(configFilepath);
@@ -122,6 +142,13 @@ public class SettingManager {
 		}
 		
 		Properties properties = getProperties(configFilepath);
+
+        String includeFilepath = properties.getProperty("@include");
+        if(includeFilepath != null) {
+            Properties includeProperties = getProperties(includeFilepath);
+            properties.putAll(includeProperties);
+        }
+
 		Settings settings = new Settings(properties);
 		settingCache.put(configFilepath, settings);
 		return settings;

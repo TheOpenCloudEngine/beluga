@@ -44,7 +44,7 @@ cat <<EndOfMessage > request.json
                 "privileged": true,
                 "parameters": []
             },
-        "type": "DOCKER"
+        "id": "DOCKER"
     },
     "cpus": $cpus,
     "id": "$app_name",

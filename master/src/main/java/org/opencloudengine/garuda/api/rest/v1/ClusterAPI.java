@@ -1,6 +1,8 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
-import org.opencloudengine.garuda.builder.EC2InstanceConfiguration;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.utils.FileTransferUtil;
 import org.opencloudengine.garuda.utils.SshUtil;
 import org.slf4j.Logger;
@@ -9,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.util.*;
 
 /**
  * Created by soo on 2015. 6. 8..
@@ -38,18 +39,16 @@ public class ClusterAPI {
 
     /**
      * Create cluster.
-     * <p>
-     * <p>
-     * <p>
-     * POST /v1/apps
-     * <p>
      */
     @POST
     @Path("/")
-    public Response createCluster() throws Exception {
+    public Response createCluster(@FormDataParam("clusterId") String clusterId
+            , @FormDataParam("provider") String iaasProviderId
+            , @FormDataParam("definition") String definitionId) throws Exception {
 
-
-        return Response.serverError().build();
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClusterService.class);
+        clusterService.createCluster(clusterId, iaasProviderId, definitionId);
+        return Response.ok().build();
     }
 
     public void installRegistry(String registryIp) throws Exception {

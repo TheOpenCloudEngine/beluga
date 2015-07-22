@@ -2,7 +2,6 @@ package org.opencloudengine.garuda.settings;
 
 import org.opencloudengine.garuda.cloud.IaasProvider;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -12,8 +11,9 @@ import java.util.Properties;
  */
 public class IaasProviderConfig extends PropertyConfig {
 
-
     private Map<String, IaasProvider> providerMap;
+
+    private static final String[] OVERRIDES_PARAMS = {"jclouds.regions"};
 
     public IaasProviderConfig(Properties p) {
         super(p);
@@ -22,18 +22,26 @@ public class IaasProviderConfig extends PropertyConfig {
     @Override
     protected void init(Properties p) {
 
-        providerMap = new HashMap<String, IaasProvider>();
-        String providers = p.getProperty("providers");
+        providerMap = new HashMap<>();
+        String types = p.getProperty("iaasTypes");
 
-        if(providers != null) {
-            String[] els = providers.split(",");
+        if(types != null) {
+            String[] els = types.split(",");
 
-            for(String provider : els) {
-                String type = getAttribute(p, provider, "type");
-                String name = getAttribute(p, provider, "name");
-                String accessKey = getAttribute(p, provider, "accessKey");
-                String credentialKey = getAttribute(p, provider, "credentialKey");
-                IaasProvider iaasProvider = new IaasProvider(type, name, accessKey, credentialKey);
+            for(String type : els) {
+                Properties overrides = new Properties();
+                String provider = getAttribute(p, type, "provider");
+                String name = getAttribute(p, type, "name");
+                String accessKey = getAttribute(p, type, "accessKey");
+                String credentialKey = getAttribute(p, type, "credentialKey");
+                for(String key : OVERRIDES_PARAMS) {
+                    String value = getAttribute(p, type, key);
+                    if(value != null && value.trim().length() > 0) {
+                        overrides.put(key, value);
+                    }
+                }
+                IaasProvider iaasProvider = new IaasProvider(provider, name, accessKey, credentialKey, overrides);
+                logger.debug("{}", iaasProvider);
                 providerMap.put(type, iaasProvider);
             }
         }

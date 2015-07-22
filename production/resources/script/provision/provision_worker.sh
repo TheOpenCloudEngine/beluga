@@ -4,6 +4,12 @@
 # @author : Soo Hwan, Min
 # @author : Sang Wook, Song
 #
+# @param 1 : zookeeper address
+# @param 2 : mesos master public ip
+# @param 3 : mesos master private ip
+# @param 4 : mesos container. "docker" for docker, "mesos" for mesos
+# @param 5 : docker registry address
+#
 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
 

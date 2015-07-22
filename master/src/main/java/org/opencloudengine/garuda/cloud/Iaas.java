@@ -10,6 +10,7 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.ec2.domain.InstanceType;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
 
@@ -24,9 +25,8 @@ public abstract class Iaas {
     private ComputeServiceContext context;
     private ComputeService computeService;
 
-    public Iaas(String providerType, String accessKey, String secretKey) {
+    public Iaas(String providerType, String accessKey, String secretKey, Properties overrides) {
 
-        Properties overrides = new Properties();
         context = ContextBuilder.newBuilder(providerType)
                 .credentials(accessKey, secretKey)
                 .overrides(overrides)
@@ -38,8 +38,11 @@ public abstract class Iaas {
 
     private Template initTemplate(InstanceRequest request) {
         TemplateBuilder templateBuilder = computeService.templateBuilder();
-        templateBuilder.hardwareId(request.getInstanceType());
+//        templateBuilder.hardwareId(request.getInstanceType());
+        templateBuilder.hardwareId(InstanceType.M3_MEDIUM);
         templateBuilder.imageId(request.getImageId()); //"ap-northeast-1/ami-936d9d93"
+//        templateBuilder.osFamily(OsFamily.UBUNTU)
+//                .osVersionMatches("14.04").os64Bit(true).locationId("ap-northeast-1").hardwareId(request.getInstanceType());
         Template template = templateBuilder.build();
         // specify your own groups which already have the correct rules applied
         initTemplateOptions(request, template.getOptions());

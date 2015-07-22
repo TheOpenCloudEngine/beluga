@@ -6,17 +6,17 @@ import java.util.*;
 /**
  * Created by swsong on 2015. 7. 20..
  */
-public class ClusterConfig extends PropertyConfig {
+public class ClusterDefinition extends PropertyConfig {
 
     private String keyPair;
     private List<Group> groupList;
     private List<RoleDefinition> roleList;
 
-    public ClusterConfig(File f) {
+    public ClusterDefinition(File f) {
         super(f);
     }
 
-    public ClusterConfig(Properties p) {
+    public ClusterDefinition(Properties p) {
         super(p);
     }
 

@@ -17,7 +17,8 @@ public class Settings {
 	private static final int K = 1024;
 	private static final int M = K * K;
 	private static final int G = K * K * K;
-	
+    private static final String defaultDelimiter = ",";
+
 	private String prefix;
 	private Properties properties;
 
@@ -36,7 +37,8 @@ public class Settings {
 	public Properties properties(){
 		return properties;
 	}
-	public Settings getSubSettings(String prefix) {
+
+    public Settings getSubSettings(String prefix) {
 
 		if(this.prefix != null){
 			if(prefix != null){
@@ -147,11 +149,13 @@ public class Settings {
 			return defaultValue;
 		}
 	}
-	
+
+    public String[] getStringArray(String key) {
+        return getStringArray(key, defaultDelimiter);
+    }
 	public String[] getStringArray(String key, String delimiter) {
 		String value = getValue(key);
-		if (value != null) {
-			
+		if (value != null && value.trim().length() > 0) {
 			return value.split(delimiter);
 		} else {
 			return null;
@@ -205,5 +209,47 @@ public class Settings {
 		}
 	}
 
+    public void addStringToArray(String key, String value) {
+        addStringToArray(key, value, defaultDelimiter);
+    }
+    public void addStringToArray(String key, String value, String delimiter) {
+        String[] values = getStringArray(key, delimiter);
+        if(values != null) {
+            //중복확인.
+            for(String v : values) {
+                v = v.trim();
+                if(v.equalsIgnoreCase(value)){
+                    return;
+                }
+            }
+        }
+        String v = getString(key);
+        if(v != null) {
+            v = v + delimiter + value;
+        } else {
+            v = value;
+        }
 
+        properties.setProperty(key, v);
+    }
+
+    public void removeStringFromArray(String key, String value) {
+        removeStringFromArray(key, value, defaultDelimiter);
+    }
+    public void removeStringFromArray(String key, String value, String delimiter) {
+        String[] values = getStringArray(key, delimiter);
+        StringBuffer list = new StringBuffer();
+        //중복확인.
+        for(String v : values) {
+            v = v.trim();
+            if(v.equalsIgnoreCase(value)){
+                continue;
+            }
+            if(list.length() > 0) {
+                list.append(delimiter);
+            }
+            list.append(v);
+        }
+        properties.setProperty(key, list.toString());
+    }
 }
