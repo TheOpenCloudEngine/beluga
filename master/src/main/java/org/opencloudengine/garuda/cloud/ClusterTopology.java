@@ -1,15 +1,13 @@
 package org.opencloudengine.garuda.cloud;
 
-import org.jclouds.compute.domain.NodeMetadata;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 /**
- * 현재 생성되어 운영중인 클러스터의 형상을 담고있다.
- * Created by swsong on 2015. 7. 20..
- */
+* 현재 생성되어 운영중인 클러스터의 형상을 담고있다.
+* Created by swsong on 2015. 7. 20..
+*/
 public class ClusterTopology {
 
 
@@ -27,13 +25,13 @@ public class ClusterTopology {
     private String clusterId;
     private String iaasType;
 
-    private List<NodeMetadata> garudaMasterList;
-    private List<NodeMetadata> proxyList;
-    private List<NodeMetadata> mesosMasterList;
-    private List<NodeMetadata> mesosSlaveList;
-    private List<NodeMetadata> dockerRegistryList;
-    private List<NodeMetadata> managementDbList;
-    private List<NodeMetadata> serviceNodeList;
+    private List<CommonInstance> garudaMasterList;
+    private List<CommonInstance> proxyList;
+    private List<CommonInstance> mesosMasterList;
+    private List<CommonInstance> mesosSlaveList;
+    private List<CommonInstance> dockerRegistryList;
+    private List<CommonInstance> managementDbList;
+    private List<CommonInstance> serviceNodeList;
 
 
     public ClusterTopology(String clusterId, String iaasType) {
@@ -57,8 +55,8 @@ public class ClusterTopology {
         return iaasType;
     }
 
-    public List<NodeMetadata> getAllNodeList() {
-        List<NodeMetadata> list = new ArrayList<>();
+    public List<CommonInstance> getAllNodeList() {
+        List<CommonInstance> list = new ArrayList<>();
         list.addAll(garudaMasterList);
         list.addAll(proxyList);
         list.addAll(mesosMasterList);
@@ -69,56 +67,56 @@ public class ClusterTopology {
         return list;
     }
 
-    public List<NodeMetadata> getGarudaMasterList() {
+    public List<CommonInstance> getGarudaMasterList() {
         return garudaMasterList;
     }
 
-    public List<NodeMetadata> getProxyList() {
+    public List<CommonInstance> getProxyList() {
         return proxyList;
     }
 
-    public List<NodeMetadata> getMesosMasterList() {
+    public List<CommonInstance> getMesosMasterList() {
         return mesosMasterList;
     }
 
-    public List<NodeMetadata> getMesosSlaveList() {
+    public List<CommonInstance> getMesosSlaveList() {
         return mesosSlaveList;
     }
 
-    public List<NodeMetadata> getDockerRegistryList() {
+    public List<CommonInstance> getDockerRegistryList() {
         return dockerRegistryList;
     }
 
-    public List<NodeMetadata> getManagementDbList() {
+    public List<CommonInstance> getManagementDbList() {
         return managementDbList;
     }
 
-    public List<NodeMetadata> getServiceNodeList() {
+    public List<CommonInstance> getServiceNodeList() {
         return serviceNodeList;
     }
 
-    public void addNode(String role, NodeMetadata nodeMetadata) {
+    public void addNode(String role, CommonInstance CommonInstance) {
         switch (role) {
             case GARUDA_MASTER_ROLE:
-                garudaMasterList.add(nodeMetadata);
+                garudaMasterList.add(CommonInstance);
                 break;
             case PROXY_ROLE:
-                proxyList.add(nodeMetadata);
+                proxyList.add(CommonInstance);
                 break;
             case MESOS_MASTER_ROLE:
-                mesosMasterList.add(nodeMetadata);
+                mesosMasterList.add(CommonInstance);
                 break;
             case MESOS_SLAVE_ROLE:
-                mesosSlaveList.add(nodeMetadata);
+                mesosSlaveList.add(CommonInstance);
                 break;
             case DOCKER_REGISTRY_ROLE:
-                dockerRegistryList.add(nodeMetadata);
+                dockerRegistryList.add(CommonInstance);
                 break;
             case MANAGEMENT_DB_ROLE:
-                managementDbList.add(nodeMetadata);
+                managementDbList.add(CommonInstance);
                 break;
             case SERVICE_NODES_ROLE:
-                serviceNodeList.add(nodeMetadata);
+                serviceNodeList.add(CommonInstance);
                 break;
             default:
                 throw new RuntimeException("no such role : " + role);
@@ -144,10 +142,10 @@ public class ClusterTopology {
         return props;
     }
 
-    private void putProps(Properties props, String roleName, List<NodeMetadata> nodeList) {
+    private void putProps(Properties props, String roleName, List<CommonInstance> nodeList) {
         StringBuffer addressList = new StringBuffer();
-        for(NodeMetadata d : nodeList) {
-            String id = d.getId();
+        for(CommonInstance d : nodeList) {
+            String id = d.getInstanceId();
             if(addressList.length() > 0) {
                 addressList.append(",");
             }

@@ -18,16 +18,8 @@
  */
 package org.opencloudengine.bak.cloud.controller.util;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jclouds.ContextBuilder;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.ComputeServiceContext;
-import org.jclouds.enterprise.config.EnterpriseConfigurationModule;
-import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
-import org.jclouds.sshj.config.SshjSshClientModule;
 import org.opencloudengine.bak.cloud.controller.domain.IaasProvider;
 import org.opencloudengine.bak.cloud.controller.exception.CloudControllerException;
 
@@ -35,8 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * This class is responsible for creating a JClouds specific ComputeService object.
@@ -64,28 +54,28 @@ public class ComputeServiceBuilderUtil {
     }
 
 
-    public static ComputeService buildDefaultComputeService(IaasProvider iaasProvider) {
-
-        Properties properties = new Properties();
-
-        // load properties
-        for (Map.Entry<String, String> entry : iaasProvider.getProperties().entrySet()) {
-            properties.put(entry.getKey(), entry.getValue());
-        }
-
-        // set modules
-        Iterable<Module> modules =
-                ImmutableSet.<Module>of(new SshjSshClientModule(), new SLF4JLoggingModule(),
-                        new EnterpriseConfigurationModule());
-
-        // build context
-        ContextBuilder builder =
-                ContextBuilder.newBuilder(iaasProvider.getProvider())
-                        .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
-                        .overrides(properties);
-
-        return builder.buildView(ComputeServiceContext.class).getComputeService();
-    }
+//    public static ComputeService buildDefaultComputeService(IaasProvider iaasProvider) {
+//
+//        Properties properties = new Properties();
+//
+//        // load properties
+//        for (Map.Entry<String, String> entry : iaasProvider.getProperties().entrySet()) {
+//            properties.put(entry.getKey(), entry.getValue());
+//        }
+//
+//        // set modules
+//        Iterable<Module> modules =
+//                ImmutableSet.<Module>of(new SshjSshClientModule(), new SLF4JLoggingModule(),
+//                        new EnterpriseConfigurationModule());
+//
+//        // build context
+//        ContextBuilder builder =
+//                ContextBuilder.newBuilder(iaasProvider.getProvider())
+//                        .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
+//                        .overrides(properties);
+//
+//        return builder.buildView(ComputeServiceContext.class).getComputeService();
+//    }
 
     public static String extractRegion(IaasProvider iaas) {
         String region;

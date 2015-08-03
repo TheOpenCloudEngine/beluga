@@ -65,9 +65,9 @@ public class IaasProvider {
         this.overrides = overrides;
     }
 
-    public Iaas getIaas() throws UnknownIaasProviderException {
+    public IaaS getIaas() throws UnknownIaasProviderException {
         if(id.equalsIgnoreCase("ec2")) {
-            return new EC2Iaas(id, identity, credential, overrides);
+            return new EC2IaaS(id, identity, credential, overrides);
         } else {
             throw new UnknownIaasProviderException("iaas provider id : " + id);
         }

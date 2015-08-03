@@ -20,8 +20,6 @@ package org.opencloudengine.bak.cloud.controller.domain;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.Template;
 import org.opencloudengine.bak.cloud.controller.exception.InvalidIaasProviderException;
 import org.opencloudengine.bak.cloud.controller.iaases.Iaas;
 import org.opencloudengine.bak.cloud.controller.util.CloudControllerUtil;
@@ -68,9 +66,9 @@ public class IaasProvider implements Serializable {
 
     private String provider, identity, credential;
 
-    private transient ComputeService computeService;
-
-    private transient Template template;
+//    private transient ComputeService computeService;
+//
+//    private transient Template template;
 
     private byte[] payload;
 
@@ -83,7 +81,7 @@ public class IaasProvider implements Serializable {
         this.type = anIaasProvider.getType();
         this.name = anIaasProvider.getName();
         this.className = anIaasProvider.getClassName();
-        this.computeService = anIaasProvider.getComputeService();
+//        this.computeService = anIaasProvider.getComputeService();
         this.properties = new HashMap<String, String>(anIaasProvider.getProperties());
         this.networkInterfaces = anIaasProvider.getNetworkInterfaces();
         this.image = anIaasProvider.getImage();
@@ -166,21 +164,21 @@ public class IaasProvider implements Serializable {
         this.credential = credential;
     }
 
-    public ComputeService getComputeService() {
-        return computeService;
-    }
-
-    public void setComputeService(ComputeService computeService) {
-        this.computeService = computeService;
-    }
-
-    public Template getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(Template template) {
-        this.template = template;
-    }
+//    public ComputeService getComputeService() {
+//        return computeService;
+//    }
+//
+//    public void setComputeService(ComputeService computeService) {
+//        this.computeService = computeService;
+//    }
+//
+//    public Template getTemplate() {
+//        return template;
+//    }
+//
+//    public void setTemplate(Template template) {
+//        this.template = template;
+//    }
 
 
     public boolean equals(Object o) {

@@ -13,7 +13,8 @@
     <artifactId>garuda-master</artifactId>
 
     <properties>
-        <jclouds.version>1.9.0</jclouds.version>
+        <!--<jclouds.version>1.9.0</jclouds.version>-->
+        <aws.version>1.9.39</aws.version>
     </properties>
 
 
@@ -133,37 +134,42 @@
             <artifactId>jsch</artifactId>
             <version>0.1.52</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.amazonaws</groupId>-->
-            <!--<artifactId>aws-java-sdk</artifactId>-->
-            <!--<version>1.9.39</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
 
-        <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-all</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-log4j</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-sshj</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-slf4j</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-enterprise</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds</groupId>-->
+            <!--<artifactId>jclouds-all</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds.driver</groupId>-->
+            <!--<artifactId>jclouds-log4j</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds.driver</groupId>-->
+            <!--<artifactId>jclouds-sshj</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds.driver</groupId>-->
+            <!--<artifactId>jclouds-slf4j</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds.driver</groupId>-->
+            <!--<artifactId>jclouds-enterprise</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jclouds</groupId>-->
+            <!--<artifactId>jclouds-allcompute</artifactId>-->
+            <!--<version>${jclouds.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>

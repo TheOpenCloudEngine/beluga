@@ -136,7 +136,7 @@
         <easymock.version>3.1</easymock.version>
         <junit.version>4.11</junit.version>
 
-        <jclouds.version>1.9.0</jclouds.version>
+        <jclouds.version>1.7.3</jclouds.version>
         <jclouds.digitalocean.version>1.7.1</jclouds.digitalocean.version>
         <jetty.version>9.2.10.v20150310</jetty.version>
         <jersey.version>2.7</jersey.version>
@@ -765,16 +765,16 @@
             <!--   Jcloud  -->
             <!-- ================= -->
 
-            <dependency>
-                <groupId>org.apache.jclouds</groupId>
-                <artifactId>jclouds-all</artifactId>
-                <version>${jclouds.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.labs</groupId>
-                <artifactId>digitalocean</artifactId>
-                <version>${jcloud.digitalocean.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.apache.jclouds</groupId>-->
+                <!--<artifactId>jclouds-all</artifactId>-->
+                <!--<version>${jclouds.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.apache.jclouds.labs</groupId>-->
+                <!--<artifactId>digitalocean</artifactId>-->
+                <!--<version>${jcloud.digitalocean.version}</version>-->
+            <!--</dependency>-->
 
             <!-- ================= -->
             <!--   Jetty  -->

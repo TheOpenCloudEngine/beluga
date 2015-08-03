@@ -1,12 +1,14 @@
 package org.opencloudengine.garuda.cloud;
 
-import org.jclouds.compute.domain.NodeMetadata;
+import com.amazonaws.services.ec2.model.Instance;
 import org.junit.Before;
 import org.junit.Test;
-import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.utils.PropertiesUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -14,6 +16,7 @@ import java.util.Properties;
  */
 public class IaasTest {
 
+    private static Logger logger = LoggerFactory.getLogger(IaasTest.class);
     String accessKey;
     String secretKey;
 
@@ -23,35 +26,59 @@ public class IaasTest {
         accessKey = props.getProperty("accessKey");
         secretKey = props.getProperty("secretKey");
     }
-    @Test
-    public void testDestroy() throws UnknownIaasProviderException, IOException {
-        String nodeId = "ap-northeast-1/i-cf2a883d";
-
-        IaasProvider iaasProvider = new IaasProvider("ec2", "test", accessKey, secretKey);
-        System.out.println("iaasProvider > " + iaasProvider);
-        Iaas iaas = iaasProvider.getIaas();
-        try {
-            iaas.computeService().destroyNode(nodeId);
-        }finally {
-            iaas.close();
-        }
-    }
 
     @Test
-    public void testInstanceInfo() throws UnknownIaasProviderException, IOException {
-        String nodeId = "ap-northeast-1/i-cf2a883d";
-        Properties overrides = new Properties();
-        overrides.setProperty("jclouds.regions", "ap-northeast-1");
-        IaasProvider iaasProvider = new IaasProvider("ec2", "test", accessKey, secretKey);
-        System.out.println("iaasProvider > " + iaasProvider);
-        Iaas iaas = iaasProvider.getIaas();
-        try {
-            NodeMetadata d = iaas.computeService().getNodeMetadata(nodeId);
-            System.out.println(">> " + d);
+    public void testLaunch() {
+        EC2IaaS iaas = new EC2IaaS(null, accessKey, secretKey, null);
+        String instanceType = "t2.medium";
+        String imageId = "ami-936d9d93";
+        int volumeSize = 13;
+        String group = "default";
+        String keyPair = "aws-garuda";
 
-            System.out.println(String.format("NodeMetadata id[%s] group[%s]", d.getId(), d.getGroup()));
-        }finally {
-            iaas.close();
+        InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
+        List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
+        for(CommonInstance i : list) {
+            logger.debug("- {}", i.getInstanceId());
+            logger.debug("-- {}", i.as(Instance.class));
         }
+
+        logger.debug("Wait..");
+        iaas.waitUntilInstancesReady(list);
+        logger.debug("Done!!");
     }
+
+//    @Test
+//    public void testDestroy() throws UnknownIaasProviderException, IOException {
+//        String nodeId = "ap-northeast-1/i-cf2a883d";
+//
+//        IaasProvider iaasProvider = new IaasProvider("ec2", "test", accessKey, secretKey);
+//        System.out.println("iaasProvider > " + iaasProvider);
+//        Iaas iaas = iaasProvider.getIaas();
+//        try {
+//            iaas.computeService().destroyNode(nodeId);
+//        }finally {
+//            iaas.close();
+//        }
+//    }
+//
+//    @Test
+//    public void testInstanceInfo() throws UnknownIaasProviderException, IOException {
+//        String nodeId = "ap-northeast-1/i-cf2a883d";
+//        Properties overrides = new Properties();
+//        overrides.setProperty("jclouds.regions", "ap-northeast-1");
+//        IaasProvider iaasProvider = new IaasProvider("ec2", "test", accessKey, secretKey);
+//        System.out.println("iaasProvider > " + iaasProvider);
+//        Iaas iaas = iaasProvider.getIaas();
+//        try {
+//            NodeMetadata d = iaas.computeService().getNodeMetadata(nodeId);
+//            System.out.println(">> " + d);
+//
+//            System.out.println(String.format("NodeMetadata id[%s] group[%s]", d.getId(), d.getGroup()));
+//        }finally {
+//            iaas.close();
+//        }
+//    }
+
+
 }

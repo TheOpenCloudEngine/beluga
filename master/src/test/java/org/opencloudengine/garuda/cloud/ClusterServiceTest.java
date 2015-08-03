@@ -1,6 +1,5 @@
 package org.opencloudengine.garuda.cloud;
 
-import org.jclouds.compute.RunNodesException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opencloudengine.garuda.env.Environment;
@@ -33,7 +32,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testLaunch() throws GarudaException, UnknownIaasProviderException, RunNodesException {
+    public void testLaunch() throws GarudaException, UnknownIaasProviderException{
         String iaasType = "ec2-ap";
         String definitionId = "ec2-real";
         clusterService.createCluster(clusterId, iaasType, definitionId);
