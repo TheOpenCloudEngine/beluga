@@ -1,5 +1,7 @@
 package org.opencloudengine.garuda.cloud;
 
+import org.opencloudengine.garuda.exception.InvalidRoleException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -18,9 +20,8 @@ public class ClusterTopology {
     public static final String PROXY_ROLE = "proxy";
     public static final String MESOS_MASTER_ROLE = "mesos-master";
     public static final String MESOS_SLAVE_ROLE = "mesos-slave";
-    public static final String DOCKER_REGISTRY_ROLE = "docker-registry";
-    public static final String MANAGEMENT_DB_ROLE = "management-db";
-    public static final String SERVICE_NODES_ROLE = "service-nodes";
+    public static final String MANAGEMENT_DB_REGISTRY_ROLE = "management";
+    public static final String SERVICE_NODES_ROLE = "service-db";
 
     private String clusterId;
     private String iaasProfile;
@@ -29,9 +30,9 @@ public class ClusterTopology {
     private List<CommonInstance> proxyList;
     private List<CommonInstance> mesosMasterList;
     private List<CommonInstance> mesosSlaveList;
-    private List<CommonInstance> dockerRegistryList;
-    private List<CommonInstance> managementDbList;
+    private List<CommonInstance> managementList;
     private List<CommonInstance> serviceNodeList;
+    private List<CommonInstance> noRoleNodeList;
 
 
     public ClusterTopology(String clusterId, String iaasProfile) {
@@ -42,9 +43,9 @@ public class ClusterTopology {
         proxyList = new ArrayList<>();
         mesosMasterList = new ArrayList<>();
         mesosSlaveList = new ArrayList<>();
-        dockerRegistryList = new ArrayList<>();
-        managementDbList = new ArrayList<>();
+        managementList = new ArrayList<>();
         serviceNodeList = new ArrayList<>();
+        noRoleNodeList = new ArrayList<>();
     }
 
     public String getClusterId() {
@@ -61,9 +62,9 @@ public class ClusterTopology {
         list.addAll(proxyList);
         list.addAll(mesosMasterList);
         list.addAll(mesosSlaveList);
-        list.addAll(dockerRegistryList);
-        list.addAll(managementDbList);
+        list.addAll(managementList);
         list.addAll(serviceNodeList);
+        list.addAll(noRoleNodeList);
         return list;
     }
 
@@ -83,43 +84,37 @@ public class ClusterTopology {
         return mesosSlaveList;
     }
 
-    public List<CommonInstance> getDockerRegistryList() {
-        return dockerRegistryList;
-    }
-
-    public List<CommonInstance> getManagementDbList() {
-        return managementDbList;
+    public List<CommonInstance> getManagementList() {
+        return managementList;
     }
 
     public List<CommonInstance> getServiceNodeList() {
         return serviceNodeList;
     }
 
-    public void addNode(String role, CommonInstance CommonInstance) {
+    public void addNode(String role, CommonInstance commonInstance) throws InvalidRoleException {
         switch (role) {
             case GARUDA_MASTER_ROLE:
-                garudaMasterList.add(CommonInstance);
+                garudaMasterList.add(commonInstance);
                 break;
             case PROXY_ROLE:
-                proxyList.add(CommonInstance);
+                proxyList.add(commonInstance);
                 break;
             case MESOS_MASTER_ROLE:
-                mesosMasterList.add(CommonInstance);
+                mesosMasterList.add(commonInstance);
                 break;
             case MESOS_SLAVE_ROLE:
-                mesosSlaveList.add(CommonInstance);
+                mesosSlaveList.add(commonInstance);
                 break;
-            case DOCKER_REGISTRY_ROLE:
-                dockerRegistryList.add(CommonInstance);
-                break;
-            case MANAGEMENT_DB_ROLE:
-                managementDbList.add(CommonInstance);
+            case MANAGEMENT_DB_REGISTRY_ROLE:
+                managementList.add(commonInstance);
                 break;
             case SERVICE_NODES_ROLE:
-                serviceNodeList.add(CommonInstance);
+                serviceNodeList.add(commonInstance);
                 break;
             default:
-                throw new RuntimeException("no such role : " + role);
+                noRoleNodeList.add(commonInstance);
+                throw new InvalidRoleException("no such role : " + role);
         }
     }
 
@@ -136,8 +131,7 @@ public class ClusterTopology {
         putProps(props, PROXY_ROLE, proxyList);
         putProps(props, MESOS_MASTER_ROLE, mesosMasterList);
         putProps(props, MESOS_SLAVE_ROLE, mesosSlaveList);
-        putProps(props, DOCKER_REGISTRY_ROLE, dockerRegistryList);
-        putProps(props, MANAGEMENT_DB_ROLE, managementDbList);
+        putProps(props, MANAGEMENT_DB_REGISTRY_ROLE, managementList);
         putProps(props, SERVICE_NODES_ROLE, serviceNodeList);
         return props;
     }

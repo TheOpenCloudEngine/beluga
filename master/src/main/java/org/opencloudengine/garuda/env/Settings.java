@@ -223,8 +223,8 @@ public class Settings {
                 }
             }
         }
-        String v = getString(key);
-        if(v != null) {
+        String v = getString(key).trim();
+        if(v != null && v.length() > 0) {
             v = v + delimiter + value;
         } else {
             v = value;
@@ -238,6 +238,9 @@ public class Settings {
     }
     public void removeStringFromArray(String key, String value, String delimiter) {
         String[] values = getStringArray(key, delimiter);
+        if(values == null) {
+            return;
+        }
         StringBuffer list = new StringBuffer();
         //중복확인.
         for(String v : values) {

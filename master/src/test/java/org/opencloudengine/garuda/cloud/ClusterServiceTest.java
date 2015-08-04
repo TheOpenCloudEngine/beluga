@@ -49,7 +49,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testDestroy() throws UnknownIaasProviderException {
+    public void testDestroy() throws GarudaException {
         clusterService.destroyCluster(clusterId);
     }
 }

@@ -51,4 +51,8 @@ public class ActionStatus {
     public int getStep() {
         return step;
     }
+
+    public int getTotalStep() {
+        return stepMessageList.size();
+    }
 }

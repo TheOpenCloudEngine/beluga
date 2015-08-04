@@ -4,6 +4,7 @@ import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -59,11 +60,11 @@ public class ClusterService extends AbstractService {
         return true;
     }
 
-    public ClusterTopology createCluster(String clusterId, String definitionId) throws UnknownIaasProviderException {
+    public ClusterTopology createCluster(String clusterId, String definitionId) throws GarudaException {
         return createCluster(clusterId, definitionId, false);
     }
 
-    public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
+    public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException {
 
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
@@ -74,8 +75,9 @@ public class ClusterService extends AbstractService {
 
         String keyPair = clusterDefinition.getKeyPair();
 
-        IaaS iaas = iaasProvider.getIaas();
+        IaaS iaas = null;
         try {
+            iaas = iaasProvider.getIaas();
             List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
 
             for (ClusterDefinition.RoleDefinition roleDefinition : roleDefinitions) {
@@ -84,15 +86,23 @@ public class ClusterService extends AbstractService {
                 InstanceRequest request = new InstanceRequest(roleDefinition.getInstanceType(), roleDefinition.getImageId()
                         , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
                 List<CommonInstance> instanceList = iaas.launchInstance(request, role, size);
-                for(CommonInstance instance : instanceList) {
+                for (CommonInstance instance : instanceList) {
                     //토폴로지에 넣어준다.
                     clusterTopology.addNode(role, instance);
                     logger.debug("launched {}", instance);
                 }
             }
+        } catch (Exception e) {
+            try {
+                destroyCluster(clusterTopology);
+            } catch (UnknownIaasProviderException e1) {
+                throw new GarudaException(e);
+            }
+            throw new GarudaException(e);
         } finally {
             iaas.close();
         }
+
         //runtime 토폴로지에 넣어준다.
         clusterTopologyMap.put(clusterId, clusterTopology);
         //토폴로지 설정파일을 저장한다.
@@ -111,9 +121,16 @@ public class ClusterService extends AbstractService {
         return clusterTopology;
     }
 
-    public void destroyCluster(String clusterId) throws UnknownIaasProviderException {
-
+    public void destroyCluster(String clusterId) throws GarudaException {
         ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
+        try {
+            destroyCluster(clusterTopology);
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
+    }
+
+    private void destroyCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
 
         String iaasType = clusterTopology.getIaasProfile();
 
@@ -129,7 +146,8 @@ public class ClusterService extends AbstractService {
                 iaas.close();
             }
         }
-        clusterTopologyMap.remove(clusterId);
+        String clusterId = clusterTopology.getClusterId();
+        clusterTopologyMap.remove(clusterTopology);
         SettingManager settingManager = environment.settingManager();
         //clusters 설정에서 cluster를 제거한다.
         Settings settings = settingManager.getClustersConfig();
@@ -138,7 +156,7 @@ public class ClusterService extends AbstractService {
         settingManager.storeClustersConfig(settings);
     }
 
-    public void loadCluster(String clusterId) throws UnknownIaasProviderException {
+    public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
 
         String iaasType = null;//settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
@@ -154,8 +172,7 @@ public class ClusterService extends AbstractService {
             loadRole(ClusterTopology.PROXY_ROLE, settings, iaas, clusterTopology);
             loadRole(ClusterTopology.MESOS_MASTER_ROLE, settings, iaas, clusterTopology);
             loadRole(ClusterTopology.MESOS_SLAVE_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.DOCKER_REGISTRY_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.MANAGEMENT_DB_ROLE, settings, iaas, clusterTopology);
+            loadRole(ClusterTopology.MANAGEMENT_DB_REGISTRY_ROLE, settings, iaas, clusterTopology);
             loadRole(ClusterTopology.SERVICE_NODES_ROLE, settings, iaas, clusterTopology);
         } finally {
             iaas.close();
@@ -169,7 +186,7 @@ public class ClusterService extends AbstractService {
         environment.settingManager().storeClusterTopology(clusterId, props);
     }
 
-    private void loadRole(String role, Settings settings, IaaS iaas, ClusterTopology clusterTopology) {
+    private void loadRole(String role, Settings settings, IaaS iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
         String value = settings.getValue(role);
         if(value != null && value.trim().length() > 0) {
             String[] idArray = settings.getStringArray(role);

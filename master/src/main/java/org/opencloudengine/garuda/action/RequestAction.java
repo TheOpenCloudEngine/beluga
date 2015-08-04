@@ -27,14 +27,15 @@ public abstract class RequestAction {
         return result;
     }
 
-    public void request(Object... params) {
+    public ActionStatus request(Object... params) {
 
         try {
             result = doAction(params);
         } catch (Throwable t) {
             status.setDone();
-            result= new ActionResult().withError(t);
+            result = new ActionResult().withError(t);
         }
+        return status;
     }
 
     protected abstract ActionResult doAction(Object... params) throws Exception;
