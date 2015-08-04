@@ -71,7 +71,7 @@ public class ComputeServiceBuilderUtil {
 //        // build context
 //        ContextBuilder builder =
 //                ContextBuilder.newBuilder(iaasProvider.getProvider())
-//                        .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
+//                        .credentials(iaasProvider.getPrivateKeyFilepath(), iaasProvider.getCredential()).modules(modules)
 //                        .overrides(properties);
 //
 //        return builder.buildView(ComputeServiceContext.class).getComputeService();

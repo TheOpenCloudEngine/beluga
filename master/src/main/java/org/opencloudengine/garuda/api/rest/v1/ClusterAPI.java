@@ -4,7 +4,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.utils.FileTransferUtil;
-import org.opencloudengine.garuda.utils.SshUtil;
+import org.opencloudengine.garuda.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +43,17 @@ public class ClusterAPI {
     @POST
     @Path("/")
     public Response createCluster(@FormDataParam("clusterId") String clusterId
-            , @FormDataParam("provider") String iaasProviderId
             , @FormDataParam("definition") String definitionId) throws Exception {
 
         ClusterService clusterService = ServiceManager.getInstance().getService(ClusterService.class);
-        clusterService.createCluster(clusterId, iaasProviderId, definitionId);
+        clusterService.createCluster(clusterId, definitionId);
         return Response.ok().build();
     }
 
     public void installRegistry(String registryIp) throws Exception {
         FileTransferUtil.send(INSTALL_REGISTRY_FILE_PATH, "ubuntu", "", registryIp, "/tmp", "installRegistry.sh", EC2_PEM_PATH);
-        SshUtil sshUtil = new SshUtil();
-        sshUtil.sessionLogin(registryIp, "ubuntu", "", EC2_PEM_PATH);
+        SshClient sshUtil = new SshClient();
+//        sshUtil.sessionLogin(registryIp, "ubuntu", "", EC2_PEM_PATH);
         sshUtil.runCommand("chmod 755 /tmp/installRegistry.sh");
         sshUtil.runCommand("sh /tmp/installRegistry.sh");
 

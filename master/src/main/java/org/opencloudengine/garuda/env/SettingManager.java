@@ -112,7 +112,7 @@ public class SettingManager {
     }
 
     public IaasProviderConfig getIaasProviderConfig() {
-        return new IaasProviderConfig(getSettings(SettingFileNames.iaasProviderConfig).properties());
+        return new IaasProviderConfig(getSettings(SettingFileNames.iaasProfileConfig).properties());
     }
 
     public Settings getClusterTopologyConfig(String clusterId) {

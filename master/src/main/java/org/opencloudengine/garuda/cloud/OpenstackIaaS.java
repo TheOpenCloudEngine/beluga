@@ -20,7 +20,7 @@ public class OpenstackIaaS extends JcloudIaaS {
     }
 
     @Override
-    public List<CommonInstance> getRunningInstances(Collection<CommonInstance> instanceList) {
+    public List<CommonInstance> getRunningInstances(Collection<String> instanceList) {
         return null;
     }
 

@@ -12,7 +12,7 @@ public interface IaaS {
 
     public void terminateInstance(String id);
 
-    public List<CommonInstance> getRunningInstances(Collection<CommonInstance> instanceList);
+    public List<CommonInstance> getRunningInstances(Collection<String> instanceList);
 
     public void waitUntilInstancesReady(Collection<CommonInstance> instanceList);
 

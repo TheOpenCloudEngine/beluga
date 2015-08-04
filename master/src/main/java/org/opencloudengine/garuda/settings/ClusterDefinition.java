@@ -1,6 +1,9 @@
 package org.opencloudengine.garuda.settings;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -8,7 +11,9 @@ import java.util.*;
  */
 public class ClusterDefinition extends PropertyConfig {
 
+    private String iaasProfile;
     private String keyPair;
+    private String privateKey;
     private List<Group> groupList;
     private List<RoleDefinition> roleList;
 
@@ -20,8 +25,20 @@ public class ClusterDefinition extends PropertyConfig {
         super(p);
     }
 
+    public String getIaasProfile() {
+        return iaasProfile;
+    }
+
+    public void setIaasProfile(String iaasProfile) {
+        this.iaasProfile = iaasProfile;
+    }
+
     public String getKeyPair() {
         return keyPair;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
     }
 
     public List<Group> getGroupList() {
@@ -34,11 +51,25 @@ public class ClusterDefinition extends PropertyConfig {
 
     @Override
     protected void init(Properties p) {
+
+        iaasProfile= p.getProperty("iaasProfile");
         /*
         * KeyPair
         * */
         keyPair = p.getProperty("keyPair");
-
+        String keyPairFilePath = p.getProperty("keyPairFile");
+        if(keyPairFilePath != null) {
+            File f = new File(keyPairFilePath);
+            if(f.exists()) {
+                try {
+                    privateKey = FileUtils.readFileToString(f, "utf-8");
+                } catch (IOException e) {
+                    logger.error("error read private key file", e);
+                }
+            }else {
+                logger.error("private key file not exists");
+            }
+        }
         /*
         * Security Group
         * */
