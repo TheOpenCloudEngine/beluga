@@ -33,9 +33,9 @@ public class ClusterServiceTest {
 
     @Test
     public void testLaunch() throws GarudaException, UnknownIaasProviderException{
-        String iaasType = "ec2-ap";
+        String iaasProfile = "ec2-ap";
         String definitionId = "ec2-real";
-        clusterService.createCluster(clusterId, iaasType, definitionId);
+        clusterService.createCluster(clusterId, iaasProfile, definitionId);
     }
 
     @Test

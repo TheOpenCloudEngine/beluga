@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.cloud;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -7,14 +8,19 @@ import java.util.List;
  */
 public interface IaaS {
 
-    public static final String EC2_PROVIDER = "ec2";
-    public static final String OPENSTACK_PROVIDER = "openstack";
-
-    public List<CommonInstance> launchInstance(InstanceRequest request, String prefixId, int scale);
+    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale);
 
     public void terminateInstance(String id);
 
+    public List<CommonInstance> getRunningInstances(Collection<CommonInstance> instanceList);
+
+    public void waitUntilInstancesReady(Collection<CommonInstance> instanceList);
+
+    public void terminateInstances(Collection<CommonInstance> instanceList);
+
+    public void terminateInstanceList(Collection<String> instanceIdList) ;
+
     public String provider();
 
-
+    public void close();
 }

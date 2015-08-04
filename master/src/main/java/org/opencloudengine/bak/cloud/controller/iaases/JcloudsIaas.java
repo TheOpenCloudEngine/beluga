@@ -134,7 +134,7 @@
 //                log.error(msg);
 //                throw new IllegalStateException(msg);
 //            }
-//            memberContext.setInstanceId(nodeMetadata.getId());
+//            memberContext.setInstanceId(nodeMetadata.getType());
 //            memberContext.setInstanceMetadata(createInstanceMetadata(nodeMetadata));
 //        } catch (Exception e) {
 //            String msg = "Failed to start an instance. " + memberContext.toString() + " Cause: " + e.getMessage();

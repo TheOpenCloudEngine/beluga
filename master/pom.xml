@@ -13,7 +13,7 @@
     <artifactId>garuda-master</artifactId>
 
     <properties>
-        <!--<jclouds.version>1.9.0</jclouds.version>-->
+        <jclouds.version>1.9.0</jclouds.version>
         <aws.version>1.9.39</aws.version>
     </properties>
 
@@ -140,36 +140,26 @@
             <version>${aws.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds</groupId>-->
-            <!--<artifactId>jclouds-all</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds.driver</groupId>-->
-            <!--<artifactId>jclouds-log4j</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds.driver</groupId>-->
-            <!--<artifactId>jclouds-sshj</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds.driver</groupId>-->
-            <!--<artifactId>jclouds-slf4j</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds.driver</groupId>-->
-            <!--<artifactId>jclouds-enterprise</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.jclouds</groupId>-->
-            <!--<artifactId>jclouds-allcompute</artifactId>-->
-            <!--<version>${jclouds.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.jclouds</groupId>
+            <artifactId>jclouds-all</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.driver</groupId>
+            <artifactId>jclouds-sshj</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.driver</groupId>
+            <artifactId>jclouds-slf4j</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.driver</groupId>
+            <artifactId>jclouds-enterprise</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -192,7 +182,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>bootstrap</id>
+                        <type>bootstrap</type>
                         <goals>
                             <goal>jar</goal>
                         </goals>

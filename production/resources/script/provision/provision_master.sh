@@ -4,6 +4,15 @@
 # @author : Soo Hwan, Min
 # @author : Sang Wook, Song
 #
+# @param 1 : zookeeper address
+# @param 2 : mesos cluster name
+# @param 3 : mesos master public ip
+# @param 4 : mesos master private ip
+# @param 5 : quorum
+# @param 6 : zookeeper address 1
+# @param 7 : zookeeper address 2
+# @param 8 : zookeeper address 3
+#
 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
 
@@ -37,7 +46,7 @@ echo $4 | sudo tee /etc/mesos-master/ip
 #quorum
 echo $5 | sudo tee /etc/mesos-master/quorum
 
-#zookeeper id
+#zookeeper type
 echo $6 | sudo tee /etc/zookeeper/conf/myid
 
 #zookeeper servers

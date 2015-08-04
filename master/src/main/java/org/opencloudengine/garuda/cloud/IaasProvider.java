@@ -8,29 +8,34 @@ import java.util.Properties;
  * Created by swsong on 2015. 7. 15..
  */
 public class IaasProvider {
-    private String id;
+    public static final String EC2_TYPE = "EC2";
+    public static final String OPENSTACK_TYPE = "OPENSTACK";
+
+    private String type;
     private String name;
     private String identity;
     private String credential;
+    private String endPoint;
     private Properties overrides;
 
-    public IaasProvider(String type, String name, String identity, String credential) {
-        this(type, name, identity, credential, new Properties());
+    public IaasProvider(String type, String name, String identity, String credential, String endPoint) {
+        this(type, name, identity, credential, endPoint, new Properties());
     }
-    public IaasProvider(String type, String name, String identity, String credential, Properties overrides) {
-        this.id = type;
+    public IaasProvider(String type, String name, String identity, String credential, String endPoint, Properties overrides) {
+        this.type = type;
         this.name = name;
         this.identity = identity;
         this.credential = credential;
+        this.endPoint = endPoint;
         this.overrides = overrides;
     }
 
-    public String getId() {
-        return id;
+    public String getType() {
+        return type;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -57,6 +62,14 @@ public class IaasProvider {
         this.credential = credential;
     }
 
+    public String getEndPoint() {
+        return endPoint;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
     public Properties getOverrides() {
         return overrides;
     }
@@ -66,16 +79,18 @@ public class IaasProvider {
     }
 
     public IaaS getIaas() throws UnknownIaasProviderException {
-        if(id.equalsIgnoreCase("ec2")) {
-            return new EC2IaaS(id, identity, credential, overrides);
+        if(type.equalsIgnoreCase(EC2_TYPE)) {
+            return new EC2IaaS(endPoint, identity, credential, overrides);
+        } else if(type.equalsIgnoreCase(OPENSTACK_TYPE)) {
+                return new OpenstackIaaS(endPoint, identity, credential, overrides);
         } else {
-            throw new UnknownIaasProviderException("iaas provider id : " + id);
+            throw new UnknownIaasProviderException("iaas provider type : " + type);
         }
     }
 
     @Override
     public String toString() {
-        return String.format("IaasProvider id[%s] name[%s] identity[%s] credential[%s]", id, name, identity, credential);
+        return String.format("IaasProvider type[%s] name[%s] identity[%s] credential[%s] endPoint[%s]", type, name, identity, credential, endPoint);
     }
 
 }

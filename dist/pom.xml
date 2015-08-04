@@ -27,7 +27,7 @@
 				<version>2.4.2</version>
 				<executions>
 					<execution>
-						<id>copy-resources</id>
+						<type>copy-resources</type>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -43,7 +43,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>copy-lib</id>
+						<type>copy-lib</type>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>

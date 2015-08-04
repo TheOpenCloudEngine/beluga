@@ -33,7 +33,7 @@ echo $4 > /etc/mesos-master/ip
 #quorum
 echo $5 > /etc/mesos-master/quorum
 
-#zookeeper id
+#zookeeper type
 echo $6 > /etc/zookeeper/conf/myid
 
 #zookeeper servers

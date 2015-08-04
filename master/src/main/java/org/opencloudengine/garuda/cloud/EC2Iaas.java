@@ -17,40 +17,17 @@ public class EC2IaaS implements IaaS {
     private static final Logger logger = LoggerFactory.getLogger(EC2IaaS.class);
 
     private final AmazonEC2Client client;
-    private final static String DEFAULT_ENDPOINT = "ec2.ap-northeast-1.amazonaws.com";
     private final static String DEVICE_NAME = "/dev/sda1";
+    private final static int RUNNING_STATE = 16;
 
     public EC2IaaS(String endPoint, String accessKey, String secretKey, Properties overrides) {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         client = new AmazonEC2Client(credentials);
-        if(endPoint == null) {
-            endPoint = DEFAULT_ENDPOINT;
-        }
         client.setEndpoint(endPoint);
     }
 
-    public void waitUntilInstancesReady(List<CommonInstance> instanceList) {
-        int size = instanceList.size();
-        BitSet status = new BitSet(size);
-
-        while(status.cardinality() < size) {
-            for (int i = 0; i < instanceList.size(); i++) {
-                CommonInstance instance = instanceList.get(i);
-
-                //완료되지 않았고, 실행중으로 변했다면.
-                if (!status.get(i) && instance.as(Instance.class).getState().getCode() == 32) {
-                    status.set(i);
-                }
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-
-    }
     @Override
-    public List<CommonInstance> launchInstance(InstanceRequest request, String tag, int scale) {
+    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale) {
         List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
 
         RunInstancesResult runInstancesResult = null;
@@ -71,24 +48,22 @@ public class EC2IaaS implements IaaS {
         }
 
         if (runInstancesResult != null) {
-
-
-            if(tag != null) {
+            if(name != null) {
                 //tag request전에 1초정도 대기.
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignore) {
                 }
 
-                int idx = 0;
+                int idx = 1;
                 for (Instance instance : runInstancesResult.getReservation().getInstances()) {
                     CreateTagsRequest createTagsRequest = new CreateTagsRequest();
-                    String name = tag;
-                    if (idx > 0) {
-                        name = String.format("%s-%d", tag, idx);
+                    String tagName = name;
+                    if (scale > 1) {
+                        tagName = String.format("%s-%d", name, idx);
                     }
 
-                    createTagsRequest.withResources(instance.getInstanceId()).withTags(new Tag("Name", name));
+                    createTagsRequest.withResources(instance.getInstanceId()).withTags(new Tag("Name", tagName));
                     client.createTags(createTagsRequest);
                     newInstances.add(new CommonInstance(instance));
                     idx++;
@@ -99,13 +74,54 @@ public class EC2IaaS implements IaaS {
         return newInstances;
     }
 
-    public void terminateInstances(Collection<CommonInstance> list) {
-        List<String> instanceIdList = new ArrayList<String>();
-        for(CommonInstance instance : list) {
-            instanceIdList.add(instance.getInstanceId());
+    @Override
+    public List<CommonInstance> getRunningInstances(Collection<CommonInstance> instanceList) {
+        List<CommonInstance> list = new ArrayList<>();
+        List<String> idList = new ArrayList<>();
+        for(CommonInstance i : instanceList) {
+            idList.add(i.getInstanceId());
         }
-        terminateInstanceList(instanceIdList);
+
+        DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(idList);
+        DescribeInstancesResult result = client.describeInstances(request);
+        List<Reservation> reservationList = result.getReservations();
+       for(Reservation r : reservationList) {
+           list.add(new CommonInstance(r.getInstances()));
+       }
+
+        return list;
     }
+
+
+    @Override
+    public void waitUntilInstancesReady(Collection<CommonInstance> instanceList) {
+        int size = instanceList.size();
+        BitSet statusSet = new BitSet(size);
+
+        List<String> idList = new ArrayList<>();
+        for(CommonInstance i : instanceList) {
+            idList.add(i.getInstanceId());
+        }
+
+        while(statusSet.cardinality() < size) {
+            DescribeInstanceStatusRequest request = new DescribeInstanceStatusRequest().withInstanceIds(idList);
+            DescribeInstanceStatusResult result = client.describeInstanceStatus(request);
+            List<InstanceStatus> list = result.getInstanceStatuses();
+
+            for (int i = 0; i < list.size(); i++) {
+                InstanceState state = list.get(i).getInstanceState();
+                //완료되지 않았고, 실행중으로 변했다면.
+                if (!statusSet.get(i) && state.getCode() == RUNNING_STATE) {
+                    statusSet.set(i);
+                }
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+        }
+    }
+
     @Override
     public void terminateInstance(String id) {
         List<String> instanceIdList = new ArrayList<String>();
@@ -114,16 +130,32 @@ public class EC2IaaS implements IaaS {
     }
 
     @Override
-    public String provider() {
-        return EC2_PROVIDER;
-    }
-
     public void terminateInstanceList(Collection<String> instanceIdList) {
         TerminateInstancesRequest terminateInstancesRequest = new TerminateInstancesRequest();
         terminateInstancesRequest.setInstanceIds(instanceIdList);
         client.terminateInstances(terminateInstancesRequest);
     }
 
+    @Override
+    public void terminateInstances(Collection<CommonInstance> list) {
+        List<String> instanceIdList = new ArrayList<String>();
+        for(CommonInstance instance : list) {
+            instanceIdList.add(instance.getInstanceId());
+        }
+        terminateInstanceList(instanceIdList);
+    }
+
+    @Override
+    public String provider() {
+        return IaasProvider.EC2_TYPE;
+    }
+
+    @Override
+    public void close() {
+        if(client != null) {
+
+        }
+    }
 
     public void createSecurityGroup(String groupName, String description)
             throws Exception {
@@ -144,4 +176,5 @@ public class EC2IaaS implements IaaS {
         } catch (Exception e) {
         }
     }
+
 }

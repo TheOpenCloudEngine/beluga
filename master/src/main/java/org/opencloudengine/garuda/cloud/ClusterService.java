@@ -10,9 +10,7 @@ import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
 * Created by swsong on 2015. 7. 20..
@@ -61,61 +59,43 @@ public class ClusterService extends AbstractService {
         return true;
     }
 
-    public void createCluster(String clusterId, String iaasType, String definitionId) throws UnknownIaasProviderException {
+    public void createCluster(String clusterId, String iaasProfile, String definitionId) throws UnknownIaasProviderException {
 
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
 
-//        IaasProvider iaasProvider = iaasProviderConfig.getProviderMap().get(iaasType);
-//
-//        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasType);
-//
-//        String keyPair = clusterDefinition.getKeyPair();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
-//        Iaas iaas = iaasProvider.getIaas();
-//        try {
-//            List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
-//
-//            for (ClusterDefinition.RoleDefinition roleDefinition : roleDefinitions) {
-//                String role = roleDefinition.getRole();
-//                int size = roleDefinition.getDefaultSize();
-//                InstanceRequest request = new InstanceRequest(roleDefinition.getInstanceType(), roleDefinition.getImageId()
-//                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
-//                Set<NodeMetadata> nodeSet = (Set<NodeMetadata>) iaas.launchInstance(request, role, size);
-//
-//                Iterator<NodeMetadata> iter = nodeSet.iterator();
-//                while(iter.hasNext()) {
-//                    NodeMetadata nodeMetadata = iter.next();
-//                    //토폴로지에 넣어준다.
-//                    clusterTopology.addNode(role, nodeMetadata);
-//
-//                    NodeMetadata d = nodeMetadata;
-//                    //ap-northeast-1/i-de57f52c
-//                    // :garuda-master-de57f52c
-//                    // :{scope=ZONE, id=ap-northeast-1a, description=ap-northeast-1a, parent=ap-northeast-1, iso3166Codes=[JP-13]}
-//                    // :i-de57f52c
-//                    // :garuda-master
-//                    // :ip-172-31-3-115
-//                    // :[52.69.231.16]
-//                    // :[172.31.3.115]
-//                    // :ap-northeast-1/ami-936d9d93
-//                    // :[]
-//                    // :NODE
-//                    // :null
-//                    logger.debug("launched {}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}", d.getId(), d.getName(), d.getLocation(), d.getProviderId()
-//                            , d.getGroup(), d.getHostname(), d.getPublicAddresses(), d.getPrivateAddresses()
-//                            , d.getImageId(), d.getTags(), d.getType(), d.getUri());
-//
-//
-//                }
-//            }
-//        } finally {
-//            iaas.close();
-//        }
+        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasProfile);
+
+        String keyPair = clusterDefinition.getKeyPair();
+
+        IaaS iaas = iaasProvider.getIaas();
+        try {
+            List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
+
+            for (ClusterDefinition.RoleDefinition roleDefinition : roleDefinitions) {
+                String role = roleDefinition.getRole();
+                int size = roleDefinition.getDefaultSize();
+                InstanceRequest request = new InstanceRequest(roleDefinition.getInstanceType(), roleDefinition.getImageId()
+                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
+                List<CommonInstance> instanceList = iaas.launchInstance(request, role, size);
+
+                Iterator<CommonInstance> iter = instanceList.iterator();
+                while(iter.hasNext()) {
+                    CommonInstance instance = iter.next();
+                    //토폴로지에 넣어준다.
+                    clusterTopology.addNode(role, instance);
+                    logger.debug("launched {}", instance);
+                }
+            }
+        } finally {
+            iaas.close();
+        }
         //runtime 토폴로지에 넣어준다.
-//        clusterTopologyMap.put(clusterId, clusterTopology);
-//        //토폴로지 설정파일을 저장한다.
-//        storeClusterTopology(clusterTopology);
+        clusterTopologyMap.put(clusterId, clusterTopology);
+        //토폴로지 설정파일을 저장한다.
+        storeClusterTopology(clusterTopology);
         //clusters 설정에서 cluster에 넣어준다.
         Settings settings = settingManager.getClustersConfig();
         settings.addStringToArray(CLUSTERS_KEY, clusterId);
@@ -127,9 +107,9 @@ public class ClusterService extends AbstractService {
 
         ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
 
-        String iaasType = clusterTopology.getIaasType();
+        String iaasType = clusterTopology.getIaasProfile();
 
-        IaasProvider iaasProvider = iaasProviderConfig.getProviderMap().get(iaasType);
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasType);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
 //        Iaas iaas = iaasProvider.getIaas();
@@ -137,8 +117,8 @@ public class ClusterService extends AbstractService {
 //        ComputeService computeService = iaas.computeService();
 //        try {
 //            for (NodeMetadata nodeMetadata : clusterTopology.getAllNodeList()) {
-//                logger.debug("Destroy {}({}) <{}/{}>", nodeMetadata.getId(), nodeMetadata.getName(), nodeMetadata.getLocation());
-//                computeService.destroyNode(nodeMetadata.getId());
+//                logger.debug("Destroy {}({}) <{}/{}>", nodeMetadata.getType(), nodeMetadata.getName(), nodeMetadata.getLocation());
+//                computeService.destroyNode(nodeMetadata.getType());
 //            }
 //        } finally {
 //            iaas.close();
@@ -155,11 +135,11 @@ public class ClusterService extends AbstractService {
     public void loadCluster(String clusterId) throws UnknownIaasProviderException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
 
-        String iaasType = null;//settings.getString(ClusterTopology.IAAS_TYPE_KEY);
+        String iaasType = null;//settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
         if(iaasType == null) {
             throw new UnknownIaasProviderException("provider is null.");
         }
-        IaasProvider iaasProvider = iaasProviderConfig.getProviderMap().get(iaasType);
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasType);
 //        Iaas iaas = iaasProvider.getIaas();
 //
 //        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasType);

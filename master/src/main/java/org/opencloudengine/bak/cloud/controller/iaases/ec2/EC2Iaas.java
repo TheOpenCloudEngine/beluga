@@ -90,10 +90,10 @@
 //            Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
 //            for (Location location : locations) {
 //                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
-//                        location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
-//                    templateBuilder.locationId(location.getId());
+//                        location.getType().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+//                    templateBuilder.locationId(location.getType());
 //                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
-//                            + " with id: " + location.getId());
+//                            + " with id: " + location.getType());
 //                    break;
 //                }
 //            }
@@ -108,11 +108,11 @@
 //        Template template = templateBuilder.build();
 //
 //        if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
-//            if (!template.getLocation().getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+//            if (!template.getLocation().getType().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
 //                log.warn("couldn't find assignable ZONE of id :" +
 //                        iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) + " in the IaaS. " +
 //                        "Hence using the default location as " + template.getLocation().getScope().toString() +
-//                        " with the id " + template.getLocation().getId());
+//                        " with the id " + template.getLocation().getType());
 //            }
 //        }
 //
@@ -314,7 +314,7 @@
 //        }
 //
 //        log.debug("Successfully associated an IP address " + ip
-//                + " for node with id: " + node.getId());
+//                + " for node with id: " + node.getType());
 //
 //        List<String> associatedIPs = new ArrayList<String>();
 //        associatedIPs.add(ip);
@@ -400,9 +400,9 @@
 //            return null;
 //        }
 //
-//        log.info("Successfully created a new volume [id]: " + volume.getId()
+//        log.info("Successfully created a new volume [id]: " + volume.getType()
 //                + " in [region] : " + region + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
-//        return volume.getId();
+//        return volume.getType();
 //    }
 //
 //    @Override

@@ -11,7 +11,7 @@ import java.util.Properties;
 public class ClusterTopology {
 
 
-    public static final String IAAS_TYPE_KEY = "iaasType";
+    public static final String IAAS_PROFILE_KEY = "iaasProfile";
     public static final String CLUSTER_ID_KEY = "clusterId";
 
     public static final String GARUDA_MASTER_ROLE = "garuda-master";
@@ -23,7 +23,7 @@ public class ClusterTopology {
     public static final String SERVICE_NODES_ROLE = "service-nodes";
 
     private String clusterId;
-    private String iaasType;
+    private String iaasProfile;
 
     private List<CommonInstance> garudaMasterList;
     private List<CommonInstance> proxyList;
@@ -34,9 +34,9 @@ public class ClusterTopology {
     private List<CommonInstance> serviceNodeList;
 
 
-    public ClusterTopology(String clusterId, String iaasType) {
+    public ClusterTopology(String clusterId, String iaasProfile) {
         this.clusterId = clusterId;
-        this.iaasType = iaasType;
+        this.iaasProfile = iaasProfile;
 
         garudaMasterList = new ArrayList<>();
         proxyList = new ArrayList<>();
@@ -51,8 +51,8 @@ public class ClusterTopology {
         return clusterId;
     }
 
-    public String getIaasType() {
-        return iaasType;
+    public String getIaasProfile() {
+        return iaasProfile;
     }
 
     public List<CommonInstance> getAllNodeList() {
@@ -131,7 +131,7 @@ public class ClusterTopology {
     public Properties storeProperties() {
         Properties props = new Properties();
         props.setProperty(CLUSTER_ID_KEY, clusterId);
-        props.setProperty(IAAS_TYPE_KEY, iaasType);
+        props.setProperty(IAAS_PROFILE_KEY, iaasProfile);
         putProps(props, GARUDA_MASTER_ROLE, garudaMasterList);
         putProps(props, PROXY_ROLE, proxyList);
         putProps(props, MESOS_MASTER_ROLE, mesosMasterList);

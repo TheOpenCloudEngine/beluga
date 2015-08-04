@@ -44,10 +44,10 @@ cat <<EndOfMessage > request.json
                 "privileged": true,
                 "parameters": []
             },
-        "id": "DOCKER"
+        "type": "DOCKER"
     },
     "cpus": $cpus,
-    "id": "$app_name",
+    "type": "$app_name",
     "instances": $instance_size,
     "mem": $memory,
     "ports": [

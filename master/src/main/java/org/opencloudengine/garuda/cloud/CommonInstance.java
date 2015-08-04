@@ -25,4 +25,9 @@ public class CommonInstance {
     public String getInstanceId() {
         return instanceId;
     }
+
+    @Override
+    public String toString() {
+        return String.format("CommonInstance id[%s] %s", instanceId, instance.toString());
+    }
 }

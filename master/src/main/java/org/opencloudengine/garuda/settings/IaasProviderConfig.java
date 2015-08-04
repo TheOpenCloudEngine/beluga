@@ -11,7 +11,7 @@ import java.util.Properties;
  */
 public class IaasProviderConfig extends PropertyConfig {
 
-    private Map<String, IaasProvider> providerMap;
+    private Map<String, IaasProvider> profileMap;
 
     private static final String[] OVERRIDES_PARAMS = {"jclouds.regions"};
 
@@ -22,34 +22,39 @@ public class IaasProviderConfig extends PropertyConfig {
     @Override
     protected void init(Properties p) {
 
-        providerMap = new HashMap<>();
-        String types = p.getProperty("iaasTypes");
+        profileMap = new HashMap<>();
+        String profiles = p.getProperty("iaasProfiles");
 
-        if(types != null) {
-            String[] els = types.split(",");
+        if(profiles != null) {
+            String[] els = profiles.split(",");
 
-            for(String type : els) {
+            for(String profile : els) {
+                String provider = getAttribute(p, profile, "provider");
+                String name = getAttribute(p, profile, "name");
+                String accessKey = getAttribute(p, profile, "accessKey");
+                String credentialKey = getAttribute(p, profile, "credentialKey");
+                String endPoint = getAttribute(p, profile, "endPoint");
                 Properties overrides = new Properties();
-                String provider = getAttribute(p, type, "provider");
-                String name = getAttribute(p, type, "name");
-                String accessKey = getAttribute(p, type, "accessKey");
-                String credentialKey = getAttribute(p, type, "credentialKey");
                 for(String key : OVERRIDES_PARAMS) {
-                    String value = getAttribute(p, type, key);
+                    String value = getAttribute(p, profile, key);
                     if(value != null && value.trim().length() > 0) {
                         overrides.put(key, value);
                     }
                 }
-                IaasProvider iaasProvider = new IaasProvider(provider, name, accessKey, credentialKey, overrides);
+                IaasProvider iaasProvider = new IaasProvider(provider, name, accessKey, credentialKey, endPoint, overrides);
                 logger.debug("{}", iaasProvider);
-                providerMap.put(type, iaasProvider);
+                profileMap.put(profile, iaasProvider);
             }
         }
 
     }
 
-    public Map<String, IaasProvider> getProviderMap() {
-        return providerMap;
+    public Map<String, IaasProvider> getProfileMap() {
+        return profileMap;
+    }
+
+    public IaasProvider getIaasProvider(String profile) {
+        return profileMap.get(profile);
     }
 
     private String getAttribute(Properties p, String provider, String type) {
