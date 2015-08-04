@@ -10,5 +10,3 @@ DOCKER_REGISTRY=$1
 echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $DOCKER_REGISTRY\" | sudo tee -a /etc/default/docker
 
 sudo service docker restart
-
-
