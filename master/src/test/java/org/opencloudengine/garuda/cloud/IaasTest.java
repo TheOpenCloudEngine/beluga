@@ -50,6 +50,23 @@ public class IaaSTest {
     }
 
     @Test
+    public void testEC2LaunchByCustomAMI() {
+        String imageId = "ami-ba1fa3ba";
+        int volumeSize = 10;
+        InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
+        EC2IaaS iaas = new EC2IaaS(endPoint, accessKey, secretKey, null);
+        List<CommonInstance> list = iaas.launchInstance(request, "slave", 1);
+        for(CommonInstance i : list) {
+            logger.debug("- {}", i.getInstanceId());
+            logger.debug("-- {}", i.as(Instance.class));
+        }
+
+        logger.debug("Wait..");
+        iaas.waitUntilInstancesReady(list);
+        logger.debug("Done!!");
+    }
+
+    @Test
     public void testEC2LaunchDescribeTerminate() {
         InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
         EC2IaaS iaas = new EC2IaaS(endPoint, accessKey, secretKey, null);

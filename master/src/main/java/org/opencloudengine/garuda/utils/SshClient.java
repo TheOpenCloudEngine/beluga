@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -34,18 +33,18 @@ public class SshClient {
         return this;
     }
 
-
     public void close() {
         if(session != null) {
             session.disconnect();
         }
     }
 
-    public String runCommand(String command) {
+    public int runCommand(String command) {
+        return runCommand(null, command);
+    }
+    public int runCommand(String label, String command) {
 
         try {
-            String output = null;
-
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
             try {
                 channel.setCommand(command);
@@ -53,24 +52,47 @@ public class SshClient {
                 channel.connect();
 
                 InputStream in = channel.getInputStream();
-                output = setInAndOutStream(channel, in);
+                return consumeOutputStream(label, channel, in);
 
             } finally {
                 if (channel != null) {
                     channel.disconnect();
                 }
             }
-            return output;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    private static String setInAndOutStream(Channel channel, InputStream in) throws IOException, JSchException {
+//    public String runCommand(String command) {
+//
+//        try {
+//            String output = null;
+//
+//            ChannelExec channel = (ChannelExec) session.openChannel("exec");
+//            try {
+//                channel.setCommand(command);
+//                channel.setInputStream(null);
+//                channel.connect();
+//
+//                InputStream in = channel.getInputStream();
+//                output = consumeOutputStream(channel, in);
+//
+//            } finally {
+//                if (channel != null) {
+//                    channel.disconnect();
+//                }
+//            }
+//            return output;
+//        } catch (Throwable t) {
+//            throw new RuntimeException(t);
+//        }
+//    }
+
+
+
+    private static int consumeOutputStream(String label, Channel channel, InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        StringBuilder outPutResult = new StringBuilder();
-        int exitStatus = -100;
-        String output = null;
         while (true) {
             while (true) {
                 try {
@@ -79,23 +101,34 @@ public class SshClient {
                         //EOF
                         break;
                     }
-                    outPutResult.append(result);
-                    outPutResult.append("\n");
+                    if(label != null) {
+                        logger.info("[{}] {}", label, result);
+                    } else {
+                        logger.info(result);
+                    }
                 } catch (Exception ex) {
-                    logger.error("", ex);
+                    if(label != null) {
+                        logger.error("[{}] {}", label, ex);
+                    } else {
+                        logger.error("{}", ex.toString());
+                    }
                     break;
                 }
             }
             if (channel.isClosed()) {
-                exitStatus = channel.getExitStatus();
-                break;
+                int exitStatus = channel.getExitStatus();
+                if(label != null) {
+                    logger.info("[{}] Exit code {}", label, exitStatus);
+                } else {
+                    logger.info("Exit code {}", exitStatus);
+                }
+                return exitStatus;
             }
             try {
                 Thread.sleep(1000);
-            } catch (Exception ee) {
+            } catch (Exception ignore) {
             }
         }
-        return outPutResult.toString();
     }
 
     public static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {

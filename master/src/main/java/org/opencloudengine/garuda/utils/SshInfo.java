@@ -10,7 +10,7 @@ public class SshInfo {
     private static Logger logger = LoggerFactory.getLogger(SshInfo.class);
 
     private String host;
-    private int port;
+    private int port = 22;
     private String userId;
     private String password;
     private String privateKeyFile;

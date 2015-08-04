@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.action;
 
+import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 /**
@@ -10,9 +11,11 @@ public abstract class RequestAction {
     protected ActionStatus status = new ActionStatus();
     private ActionResult result;
 
+    protected SettingManager settingManager;
     protected ServiceManager serviceManager;
 
     public RequestAction() {
+        settingManager = SettingManager.getInstance();
         serviceManager = ServiceManager.getInstance();
     }
 
@@ -34,5 +37,5 @@ public abstract class RequestAction {
         }
     }
 
-    protected abstract ActionResult doAction(Object... params);
+    protected abstract ActionResult doAction(Object... params) throws Exception;
 }

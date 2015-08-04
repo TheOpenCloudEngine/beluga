@@ -47,10 +47,10 @@ public class Deployer {
 //            sshUtil.sessionLogin(ip, id, passwd, pemPath);
 
             command = "chmod 755 /tmp/init_php_apache.sh";
-            sshUtil.runCommand(command);
+            sshUtil.runCommand("", command);
 
             command = String.format("sh /tmp/init_php_apache.sh %s %s", registryAddress, "soo-php-apache");
-            sshUtil.runCommand(command);
+            sshUtil.runCommand("", command);
         }
     }
 

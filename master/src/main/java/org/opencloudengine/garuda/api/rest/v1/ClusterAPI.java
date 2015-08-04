@@ -54,8 +54,8 @@ public class ClusterAPI {
         FileTransferUtil.send(INSTALL_REGISTRY_FILE_PATH, "ubuntu", "", registryIp, "/tmp", "installRegistry.sh", EC2_PEM_PATH);
         SshClient sshUtil = new SshClient();
 //        sshUtil.sessionLogin(registryIp, "ubuntu", "", EC2_PEM_PATH);
-        sshUtil.runCommand("chmod 755 /tmp/installRegistry.sh");
-        sshUtil.runCommand("sh /tmp/installRegistry.sh");
+        sshUtil.runCommand("", "chmod 755 /tmp/installRegistry.sh");
+        sshUtil.runCommand("", "sh /tmp/installRegistry.sh");
 
         registryPath = String.format("%s:5000", registryIp);
     }

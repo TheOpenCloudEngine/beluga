@@ -5,7 +5,9 @@ import org.opencloudengine.garuda.action.RequestAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.CommonInstance;
-import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
+import org.opencloudengine.garuda.settings.ClusterDefinition;
+import org.opencloudengine.garuda.utils.SshClient;
+import org.opencloudengine.garuda.utils.SshInfo;
 
 /**
  * Created by swsong on 2015. 8. 4..
@@ -18,37 +20,40 @@ public class CreateClusterAction extends RequestAction {
         status.registerStep("Reboot instances.");
     }
     @Override
-    protected ActionResult doAction(Object... params) {
+    protected ActionResult doAction(Object... params) throws Exception {
         String clusterId = (String) params[0];
         String definitionId = (String) params[1];
 
-        status.startStep();
-
-        /*
-        * Prepare instances
-        * */
         ClusterService clusterService = serviceManager.createService("cluster", ClusterService.class);
         //클러스터가 이미 존재하는지 확인.
         if(clusterService.getClusterTopology(clusterId) != null) {
             return new ActionResult().withError("Cluster %s is already exist.", clusterId);
         }
+
+        status.startStep();
+        /*
+        * Prepare instances
+        * */
+        //create instances and wait until available
+        ClusterTopology topology = clusterService.createCluster(clusterId, definitionId, true);
         status.walkStep();
 
         /*
         * Install packages
         * */
-        try {
-            //create instances and wait until available
-            ClusterTopology topology = clusterService.createCluster(clusterId, definitionId, true);
-
-            for( CommonInstance i : topology.getMesosMasterList()) {
-
-            }
-
-
-        } catch (UnknownIaasProviderException e) {
-            e.printStackTrace();
+        ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
+        String userId = clusterDefinition.getUserId();
+        String keyPairFile = clusterDefinition.getKeyPairFile();
+        for( CommonInstance i : topology.getMesosMasterList()) {
+            String instanceId = i.getInstanceId();
+            String ipAddress = i.getPublicIpAddress();
+            SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUserId(userId).withPemFile(keyPairFile);
+            SshClient sshClient = new SshClient();
+            sshClient.connect(sshInfo);
+//            sshClient.runCommand(instanceId, command);
         }
+
+
 
         status.walkStep();
 

@@ -8,12 +8,17 @@ import com.amazonaws.services.ec2.model.Instance;
 public class CommonInstance {
 
     private String instanceId;
+    private String publicIpAddress;
+    private String privateIpAddress;
+
     private Object instance;
 
     public CommonInstance(Object instance) {
         if(instance instanceof Instance) {
             Instance i = (Instance) instance;
             instanceId = i.getInstanceId();
+            publicIpAddress = i.getPublicIpAddress();
+            privateIpAddress = i.getPrivateIpAddress();
         }
         this.instance = instance;
     }
@@ -24,6 +29,14 @@ public class CommonInstance {
 
     public String getInstanceId() {
         return instanceId;
+    }
+
+    public String getPublicIpAddress() {
+        return publicIpAddress;
+    }
+
+    public String getPrivateIpAddress() {
+        return privateIpAddress;
     }
 
     @Override

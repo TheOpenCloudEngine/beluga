@@ -12,8 +12,9 @@ import java.util.*;
 public class ClusterDefinition extends PropertyConfig {
 
     private String iaasProfile;
+    private String userId;
     private String keyPair;
-    private String privateKey;
+    private String keyPairFile;
     private List<Group> groupList;
     private List<RoleDefinition> roleList;
 
@@ -33,12 +34,16 @@ public class ClusterDefinition extends PropertyConfig {
         this.iaasProfile = iaasProfile;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public String getKeyPair() {
         return keyPair;
     }
 
-    public String getPrivateKey() {
-        return privateKey;
+    public String getKeyPairFile() {
+        return keyPairFile;
     }
 
     public List<Group> getGroupList() {
@@ -56,13 +61,14 @@ public class ClusterDefinition extends PropertyConfig {
         /*
         * KeyPair
         * */
+        userId = p.getProperty("userId");
         keyPair = p.getProperty("keyPair");
         String keyPairFilePath = p.getProperty("keyPairFile");
         if(keyPairFilePath != null) {
             File f = new File(keyPairFilePath);
             if(f.exists()) {
                 try {
-                    privateKey = FileUtils.readFileToString(f, "utf-8");
+                    keyPairFile = FileUtils.readFileToString(f, "utf-8");
                 } catch (IOException e) {
                     logger.error("error read private key file", e);
                 }
