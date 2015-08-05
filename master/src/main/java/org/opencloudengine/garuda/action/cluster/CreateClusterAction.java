@@ -47,7 +47,7 @@ public class CreateClusterAction extends RequestAction {
         for( CommonInstance i : topology.getMesosMasterList()) {
             String instanceId = i.getInstanceId();
             String ipAddress = i.getPublicIpAddress();
-            SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUserId(userId).withPemFile(keyPairFile);
+            SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile);
             SshClient sshClient = new SshClient();
             sshClient.connect(sshInfo);
 //            sshClient.runCommand(instanceId, command);

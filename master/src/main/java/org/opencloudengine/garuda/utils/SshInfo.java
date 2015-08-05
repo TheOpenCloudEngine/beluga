@@ -11,7 +11,7 @@ public class SshInfo {
 
     private String host;
     private int port = 22;
-    private String userId;
+    private String user;
     private String password;
     private String privateKeyFile;
 
@@ -25,8 +25,8 @@ public class SshInfo {
         return this;
     }
 
-    public SshInfo withUserId(String userId) {
-        this.userId = userId;
+    public SshInfo withUser(String user) {
+        this.user = user;
         return this;
     }
 
@@ -48,8 +48,8 @@ public class SshInfo {
         return port;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser() {
+        return user;
     }
 
     public String getPassword() {

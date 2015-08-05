@@ -1,12 +1,11 @@
 package org.opencloudengine.garuda.utils;
 
 import com.jcraft.jsch.*;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Created by swsong on 2015. 8. 4..
@@ -14,6 +13,7 @@ import java.io.InputStreamReader;
 public class SshClient {
     private static Logger logger = LoggerFactory.getLogger(SshClient.class);
     private Session session;
+    private final static String DEFAULT_FILE_ENCODING = "utf-8";
 
     public SshClient connect(SshInfo sshInfo) {
         JSch jsch = new JSch();
@@ -21,7 +21,7 @@ public class SshClient {
             if (sshInfo.getPrivateKeyFile() != null) {
                 jsch.addIdentity(sshInfo.getPrivateKeyFile());
             }
-            session = jsch.getSession(sshInfo.getUserId(), sshInfo.getHost(), sshInfo.getPort());
+            session = jsch.getSession(sshInfo.getUser(), sshInfo.getHost(), sshInfo.getPort());
             if (sshInfo.getPassword() != null) {
                 session.setPassword(sshInfo.getPassword());
             }
@@ -39,6 +39,15 @@ public class SshClient {
         }
     }
 
+    public int runCommand(String label, File scriptFile) throws IOException {
+        return runCommand(label, scriptFile, DEFAULT_FILE_ENCODING);
+    }
+    public int runCommand(String label, File scriptFile, String encoding) throws IOException {
+        String script = FileUtils.readFileToString(scriptFile, encoding);
+        return runCommand(label, script);
+    }
+
+
     public int runCommand(String command) {
         return runCommand(null, command);
     }
@@ -51,8 +60,9 @@ public class SshClient {
                 channel.setInputStream(null);
                 channel.connect();
 
-                InputStream in = channel.getInputStream();
-                return consumeOutputStream(label, channel, in);
+                InputStream stdIn = channel.getInputStream();
+                InputStream errIn = channel.getErrStream();
+                return consumeOutputStream(label, channel, stdIn, errIn);
 
             } finally {
                 if (channel != null) {
@@ -64,47 +74,32 @@ public class SshClient {
         }
     }
 
-//    public String runCommand(String command) {
-//
-//        try {
-//            String output = null;
-//
-//            ChannelExec channel = (ChannelExec) session.openChannel("exec");
-//            try {
-//                channel.setCommand(command);
-//                channel.setInputStream(null);
-//                channel.connect();
-//
-//                InputStream in = channel.getInputStream();
-//                output = consumeOutputStream(channel, in);
-//
-//            } finally {
-//                if (channel != null) {
-//                    channel.disconnect();
-//                }
-//            }
-//            return output;
-//        } catch (Throwable t) {
-//            throw new RuntimeException(t);
-//        }
-//    }
 
-
-
-    private static int consumeOutputStream(String label, Channel channel, InputStream in) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    private static int consumeOutputStream(String label, Channel channel, InputStream stdIn, InputStream errIn) {
+        BufferedReader stdReader = new BufferedReader(new InputStreamReader(stdIn));
+        BufferedReader errReader = new BufferedReader(new InputStreamReader(errIn));
         while (true) {
             while (true) {
                 try {
-                    String result = br.readLine();
-                    if (result == null) {
+                    String strLog = stdReader.readLine();
+                    String errLog = errReader.readLine();
+                    if (strLog == null && errLog == null) {
                         //EOF
                         break;
                     }
-                    if(label != null) {
-                        logger.info("[{}] {}", label, result);
-                    } else {
-                        logger.info(result);
+                    if(strLog != null) {
+                        if (label != null) {
+                            logger.info("[{}] {}", label, strLog);
+                        } else {
+                            logger.info(strLog);
+                        }
+                    }
+                    if(errLog != null) {
+                        if (label != null) {
+                            logger.error("[{}] {}", label, errLog);
+                        } else {
+                            logger.error(errLog);
+                        }
                     }
                 } catch (Exception ex) {
                     if(label != null) {
