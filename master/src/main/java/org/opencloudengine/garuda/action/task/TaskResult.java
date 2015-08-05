@@ -33,6 +33,6 @@ public class TaskResult {
 
     @Override
     public String toString() {
-        return String.format("[%s] todo[%d] success[%s]", getClass().getSimpleName(), todoResultList.size(), isSuccess);
+        return String.format("[%s] size[%d] success[%s]", getClass().getSimpleName(), todoResultList.size(), isSuccess);
     }
 }

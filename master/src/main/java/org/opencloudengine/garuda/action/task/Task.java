@@ -49,7 +49,7 @@ public class Task {
             }
         }
 
-        return taskResult;
+        return taskResult.setSuccess();
     }
 
     @Override
