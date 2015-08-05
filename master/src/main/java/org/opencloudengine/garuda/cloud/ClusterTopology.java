@@ -120,10 +120,10 @@ public class ClusterTopology {
 
     @Override
     public String toString() {
-        return storeProperties().toString();
+        return getProperties().toString();
     }
 
-    public Properties storeProperties() {
+    public Properties getProperties() {
         Properties props = new Properties();
         props.setProperty(CLUSTER_ID_KEY, clusterId);
         props.setProperty(IAAS_PROFILE_KEY, iaasProfile);

@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.env;
 
+import org.apache.commons.io.FileUtils;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.slf4j.Logger;
@@ -67,6 +68,12 @@ public class SettingManager {
 		return null;
 	}
 
+    private boolean deleteConfigFile(String filename) {
+        String configFilepath = getConfigFilepath(filename);
+        logger.trace("Delete config file = {}", configFilepath);
+        return FileUtils.deleteQuietly(new File(configFilepath));
+    }
+
 	private boolean storeProperties(Properties properties, String filename) {
 		String configFilepath = getConfigFilepath(filename);
 		logger.trace("Store properties = {}", configFilepath);
@@ -121,6 +128,10 @@ public class SettingManager {
 
     public void storeClusterTopology(String clusterId, Properties props) {
         storeProperties(props, getSettingFilename(SettingFileNames.topologyConfig, clusterId));
+    }
+
+    public void deleteClusterTopology(String clusterId, Properties props) {
+        deleteConfigFile(getSettingFilename(SettingFileNames.topologyConfig, clusterId));
     }
 
 	public boolean storeSystemSettings(Settings settings) {

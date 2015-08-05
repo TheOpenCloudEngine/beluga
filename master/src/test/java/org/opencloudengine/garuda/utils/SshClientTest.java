@@ -22,7 +22,9 @@ public class SshClientTest {
         String user = "ubuntu";
         String password = "ubuntu123";
         int port = 22;
+
         sshInfo = new SshInfo().withHost(host).withUser(user).withPort(port).withPassword(password);
+        sshInfo = sshInfo.withHost("52.69.134.3").withPemFile("/Users/swsong/Dropbox/System/auth/aws-garuda.pem");
     }
     @Test
     public void testSingleCommand() {
@@ -61,17 +63,7 @@ public class SshClientTest {
             client.close();
         }
     }
-/**
- * # @param 1 : zookeeper address		zk://localhost:2181/mesos
- # @param 2 : mesos cluster name
- # @param 3 : mesos master public ip
- # @param 4 : mesos master private ip
- # @param 5 : quorum		3
- # @param 6 : zookeeper id
- # @param 7 : zookeeper address 1  server.1=192.168.2.44:2888:3888
- # @param 8 : zookeeper address 2  server.2=192.168.2.45:2888:3888
- # @param 9 : zookeeper address 3  server.3=192.168.2.46:2888:3888
- * */
+
     @Test
     public void testScriptFileWithParams() {
         File scriptFile = new File("production/resources/script/provision/configure_master.sh");

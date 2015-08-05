@@ -124,7 +124,10 @@ public class EC2IaaS implements IaaS {
             List<InstanceStatus> list = result.getInstanceStatuses();
 
             for (int i = 0; i < list.size(); i++) {
-                InstanceState state = list.get(i).getInstanceState();
+                InstanceStatus status = list.get(i);
+                InstanceState state = status.getInstanceState();
+                logger.debug("Instance status [{}] {} / {}", idList.get(i), state.getName(), status.getInstanceStatus().getStatus());
+                logger.debug("{}", status.getInstanceStatus().getDetails());
                 //완료되지 않았고, 실행중으로 변했다면.
                 if (!statusSet.get(i) && state.getCode() == RUNNING_STATE) {
                     statusSet.set(i);

@@ -8,6 +8,7 @@ import org.opencloudengine.garuda.action.task.Todo;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.CommonInstance;
+import org.opencloudengine.garuda.common.ScriptFileNames;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.utils.SshClient;
 import org.opencloudengine.garuda.utils.SshInfo;
@@ -19,6 +20,7 @@ import java.io.File;
  */
 public class CreateClusterAction extends RequestAction {
 
+    private static final int DELAY_BEFORE_CONFIGURATION = 60;//secs
     public CreateClusterAction() {
         status.registerStep("Prepare instances.");
         status.registerStep("Install packages.");
@@ -31,10 +33,6 @@ public class CreateClusterAction extends RequestAction {
         String definitionId = (String) params[1];
 
         ClusterService clusterService = serviceManager.getService(ClusterService.class);
-        //클러스터가 이미 존재하는지 확인.
-        if (clusterService.getClusterTopology(clusterId) != null) {
-            return new ActionResult().withError("Cluster %s is already exist.", clusterId);
-        }
 
         status.startStep();
         /*
@@ -51,6 +49,7 @@ public class CreateClusterAction extends RequestAction {
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();
+        int timeout = clusterDefinition.getTimeout();
         //
         // 1. mesos-master
         //
@@ -60,15 +59,18 @@ public class CreateClusterAction extends RequestAction {
             conf.withZookeeperAddress(i.getPublicIpAddress());
         }
         final String mesosClusterName = "mesos-" + clusterId;
-        final int quorum = topology.getMesosMasterList().size();
+        final int quorum = topology.getMesosMasterList().size() / 2 + 1; //과반수.
+
+        logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);
+        Thread.sleep(DELAY_BEFORE_CONFIGURATION);
 
         Task task = new Task("configure mesos-masters");
 
         for (final CommonInstance i : topology.getMesosMasterList()) {
             final String instanceName = i.getName();
             final String ipAddress = i.getPublicIpAddress();
-            final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile);
-            final File scriptFile = new File("production/resources/script/provision/configure_master.sh");
+            final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
+            final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.ConfigureMesosMaster);
 
             task.addTodo(new Todo() {
                 @Override
@@ -97,7 +99,9 @@ public class CreateClusterAction extends RequestAction {
 
         TaskResult taskResult = task.waitAndGetResult();
         if(taskResult.isSuccess()) {
-           logger.info(task.getName() + " is success.");
+           logger.info("{} is success.", task.getName());
+        } else {
+            clusterService.removeClusterIdFromSetting(clusterId);
         }
         status.walkStep();
 

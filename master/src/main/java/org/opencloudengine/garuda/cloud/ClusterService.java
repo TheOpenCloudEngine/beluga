@@ -60,12 +60,15 @@ public class ClusterService extends AbstractService {
         return true;
     }
 
-    public ClusterTopology createCluster(String clusterId, String definitionId) throws GarudaException {
+    public ClusterTopology createCluster(String clusterId, String definitionId) throws GarudaException, ClusterExistException {
         return createCluster(clusterId, definitionId, false);
     }
 
-    public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException {
+    public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
 
+        if(clusterTopologyMap.containsKey(clusterId) || isClusterIdExistInSetting(clusterId)) {
+            throw new ClusterExistException(String.format("Cluster %s is already exists.", clusterId));
+        }
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String iaasProfile = clusterDefinition.getIaasProfile();
@@ -115,12 +118,7 @@ public class ClusterService extends AbstractService {
         clusterTopologyMap.put(clusterId, clusterTopology);
         //토폴로지 설정파일을 저장한다.
         storeClusterTopology(clusterTopology);
-        //clusters 설정에서 cluster에 넣어준다.
-        Settings settings = settingManager.getClustersConfig();
-        settings.addStringToArray(CLUSTERS_KEY, clusterId);
-        //clusters 설정파일을 저장한다.
-        settingManager.storeClustersConfig(settings);
-
+        addClusterIdToSetting(clusterId);
         return clusterTopology;
     }
 
@@ -149,16 +147,40 @@ public class ClusterService extends AbstractService {
                 iaas.close();
             }
         }
-        String clusterId = clusterTopology.getClusterId();
         clusterTopologyMap.remove(clusterTopology);
+
+        String clusterId = clusterTopology.getClusterId();
+        removeClusterIdFromSetting(clusterId);
+    }
+
+    private boolean isClusterIdExistInSetting(String clusterId) {
         SettingManager settingManager = environment.settingManager();
-        //clusters 설정에서 cluster를 제거한다.
+        Settings settings = settingManager.getClustersConfig();
+        String[] list = settings.getStringArray(CLUSTERS_KEY);
+        if(list != null) {
+            for(String id : list) {
+                if(clusterId.equalsIgnoreCase(id)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void addClusterIdToSetting(String clusterId) {
+        SettingManager settingManager = environment.settingManager();
+        Settings settings = settingManager.getClustersConfig();
+        settings.addStringToArray(CLUSTERS_KEY, clusterId);
+        //clusters 설정파일을 저장한다.
+        settingManager.storeClustersConfig(settings);
+    }
+    public void removeClusterIdFromSetting(String clusterId) {
+        SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
         settings.removeStringFromArray(CLUSTERS_KEY, clusterId);
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
     }
-
     public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
 
@@ -185,7 +207,13 @@ public class ClusterService extends AbstractService {
 
     private void storeClusterTopology(ClusterTopology clusterTopology){
         String clusterId = clusterTopology.getClusterId();
-        Properties props = clusterTopology.storeProperties();
+        Properties props = clusterTopology.getProperties();
+        environment.settingManager().storeClusterTopology(clusterId, props);
+    }
+
+    private void removeClusterTopology(ClusterTopology clusterTopology){
+        String clusterId = clusterTopology.getClusterId();
+        Properties props = clusterTopology.getProperties();
         environment.settingManager().storeClusterTopology(clusterId, props);
     }
 

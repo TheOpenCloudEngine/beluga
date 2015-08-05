@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.action;
 
+import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
@@ -13,11 +14,13 @@ public abstract class RequestAction {
     protected ActionStatus status = new ActionStatus();
     private ActionResult result;
 
+    protected Environment environment;
     protected SettingManager settingManager;
     protected ServiceManager serviceManager;
 
     public RequestAction() {
         settingManager = SettingManager.getInstance();
+        environment = settingManager.getEnvironment();
         serviceManager = ServiceManager.getInstance();
     }
 

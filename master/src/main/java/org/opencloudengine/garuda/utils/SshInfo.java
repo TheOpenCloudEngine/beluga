@@ -14,6 +14,7 @@ public class SshInfo {
     private String user;
     private String password;
     private String privateKeyFile;
+    private int timeout = 60;
 
     public SshInfo withHost(String host) {
         this.host = host;
@@ -40,6 +41,12 @@ public class SshInfo {
         return this;
     }
 
+    //초단위.
+    public SshInfo withTimeout(int timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
     public String getHost() {
         return host;
     }
@@ -58,5 +65,18 @@ public class SshInfo {
 
     public String getPrivateKeyFile() {
         return privateKeyFile;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public int getTimeoutInMillis() {
+        return timeout * 1000;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] user[%s] host[%s] port[%s] privateKeyFile[%s] timeout[%s]", getClass().getSimpleName(), user, host, port, privateKeyFile, timeout);
     }
 }

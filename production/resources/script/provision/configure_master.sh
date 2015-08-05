@@ -7,7 +7,7 @@
 # @param 2 : mesos cluster name
 # @param 3 : mesos master public ip
 # @param 4 : mesos master private ip
-# @param 5 : quorum		            3
+# @param 5 : quorum		            2
 # @param 6 : zookeeper id           1
 # @param 7 : zookeeper address 1   server.1=192.168.2.44:2888:3888
 #
@@ -31,9 +31,9 @@ echo $5 | sudo tee /etc/mesos-master/quorum
 echo $6 | sudo tee /etc/zookeeper/conf/myid
 
 #zookeeper servers
-for ((i = 7; i <= $#; i++)); do
-    echo $i | sudo tee -a /etc/zookeeper/conf/zoo.cfg
+until [ -z "$7" ]; do
+  echo $7 | sudo tee -a /etc/zookeeper/conf/zoo.cfg
+  shift
 done
-
 
 

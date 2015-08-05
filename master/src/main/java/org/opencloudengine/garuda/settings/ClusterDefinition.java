@@ -11,6 +11,7 @@ import java.util.Properties;
 public class ClusterDefinition extends PropertyConfig {
 
     private String iaasProfile;
+    private int timeout;
     private String userId;
     private String keyPair;
     private String keyPairFile;
@@ -53,10 +54,20 @@ public class ClusterDefinition extends PropertyConfig {
         return roleList;
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
     @Override
     protected void init(Properties p) {
 
         iaasProfile= p.getProperty("iaasProfile");
+
+        try {
+            timeout = Integer.parseInt(p.getProperty("timeout"));
+        } catch (Exception e) {
+            timeout = 60;
+        }
         /*
         * KeyPair
         * */

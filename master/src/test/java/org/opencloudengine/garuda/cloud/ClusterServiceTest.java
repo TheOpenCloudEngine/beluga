@@ -32,7 +32,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testLaunch() throws GarudaException, UnknownIaasProviderException{
+    public void testLaunch() throws GarudaException, UnknownIaasProviderException, ClusterExistException {
         String definitionId = "ec2-real";
         clusterService.createCluster(clusterId, definitionId);
     }

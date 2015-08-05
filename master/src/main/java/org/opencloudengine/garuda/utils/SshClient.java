@@ -12,11 +12,16 @@ import java.io.*;
 public class SshClient {
 
     private static Logger logger = LoggerFactory.getLogger(SshClient.class);
-    private Session session;
     private static final String DEFAULT_WORKING_PATH = "/tmp/";
     private static final String DEFAULT_ARG_BRACE = "\"";
+    private static final int MAX_TRIES = 10;
+
+    private Session session;
+    private int timeout;
+    private SshInfo sshInfo;
 
     public SshClient connect(SshInfo sshInfo) {
+        this.sshInfo = sshInfo;
         JSch jsch = new JSch();
         try {
             if (sshInfo.getPrivateKeyFile() != null) {
@@ -27,13 +32,40 @@ public class SshClient {
                 session.setPassword(sshInfo.getPassword());
             }
             session.setUserInfo(new DefaultUserInfo());
-            session.connect();
+            logger.debug("Connect {}", sshInfo);
+            timeout = sshInfo.getTimeoutInMillis();
+            session.setTimeout(timeout);
+            tryConnect(session);
         }catch(Throwable t) {
             throw new RuntimeException(t);
         }
         return this;
     }
 
+    private void tryConnect(Object obj) throws JSchException {
+        for (int i = 0; i < MAX_TRIES; i++) {
+            try {
+                logger.debug("Try connect {} times : {}", i + 1, obj);
+                if(obj instanceof Channel) {
+                    ((Channel) obj).connect(timeout);
+                } else if(obj instanceof Session) {
+                    ((Session) obj).connect(timeout);
+                }
+                logger.debug("Connect Success : {}", obj);
+                break;
+            } catch (Exception e) {
+                if(i == MAX_TRIES - 1) {
+                    throw e;
+                }
+                logger.error("connection fail : {}", e.getMessage());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+                continue;
+            }
+        }
+    }
     public void close() {
         if(session != null) {
             session.disconnect();
@@ -63,8 +95,9 @@ public class SshClient {
                 if(args != null) {
                     command = makeCommandLine(command, DEFAULT_ARG_BRACE, args);
                 }
+                logger.debug("[{}] Send command {}", sshInfo.getHost(), command);
                 channel.setCommand(command);
-                channel.connect();
+                tryConnect(channel);
 
                 InputStream stdIn = channel.getInputStream();
                 InputStream errIn = channel.getErrStream();
@@ -148,7 +181,8 @@ public class SshClient {
         try {
             ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
             try {
-                channel.connect();
+                tryConnect(channel);
+                logger.debug("[{}] Send file {} to {}", sshInfo.getHost(), source, dest);
                 channel.put(source, dest);
                 if(executable) {
                     channel.chmod(Integer.parseInt("755", 8), dest);
