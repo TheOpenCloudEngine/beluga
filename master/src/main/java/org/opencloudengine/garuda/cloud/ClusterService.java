@@ -236,7 +236,7 @@ public class ClusterService extends AbstractService {
         return clusterTopologyMap.get(clusterId);
     }
 
-    public void rebootInstances(ClusterTopology clusterTopology, List<CommonInstance> instanceList) throws UnknownIaasProviderException {
+    public void rebootInstances(ClusterTopology clusterTopology, List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
 
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
@@ -244,6 +244,13 @@ public class ClusterService extends AbstractService {
         IaaS iaas = iaasProvider.getIaas();
         try {
             iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+
+            if(waitUntilInstanceAvailable) {
+                //Wait until available
+                iaas.waitUntilInstancesReady(instanceList);
+                //Fetch latest instance information
+                iaas.updateInstances(instanceList);
+            }
         } finally {
             if(iaas != null) {
                 iaas.close();
