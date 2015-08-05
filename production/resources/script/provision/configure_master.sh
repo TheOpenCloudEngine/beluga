@@ -7,10 +7,11 @@
 # @param 2 : mesos cluster name
 # @param 3 : mesos master public ip
 # @param 4 : mesos master private ip
-# @param 5 : quorum		3
-# @param 6 : zookeeper address 1  server.1=zookeeper1:2888:3888
-# @param 7 : zookeeper address 2  server.2=zookeeper1:2888:3888
-# @param 8 : zookeeper address 3  server.3=zookeeper1:2888:3888
+# @param 5 : quorum		            3
+# @param 6 : zookeeper id           1
+ # @param 7 : zookeeper address 1   server.1=192.168.2.44:2888:3888
+ # @param 8 : zookeeper address 2   server.2=192.168.2.45:2888:3888
+ # @param 9 : zookeeper address 3   server.3=192.168.2.46:2888:3888
 #
 
 #zk
@@ -28,7 +29,7 @@ echo $4 | sudo tee /etc/mesos-master/ip
 #quorum
 echo $5 | sudo tee /etc/mesos-master/quorum
 
-#zookeeper type
+#zookeeper id
 echo $6 | sudo tee /etc/zookeeper/conf/myid
 
 #zookeeper servers

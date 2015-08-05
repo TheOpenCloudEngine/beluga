@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.utils;
 
 import com.jcraft.jsch.*;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +10,12 @@ import java.io.*;
  * Created by swsong on 2015. 8. 4..
  */
 public class SshClient {
+
     private static Logger logger = LoggerFactory.getLogger(SshClient.class);
     private Session session;
-    private final static String DEFAULT_FILE_ENCODING = "utf-8";
+    private static final String DEFAULT_FILE_ENCODING = "utf-8";
+    private static final String DEFAULT_WORKING_PATH = "/tmp/";
+    private static final String DEFAULT_ARG_BRACE = "\"";
 
     public SshClient connect(SshInfo sshInfo) {
         JSch jsch = new JSch();
@@ -40,24 +42,29 @@ public class SshClient {
     }
 
     public int runCommand(String label, File scriptFile) throws IOException {
-        return runCommand(label, scriptFile, DEFAULT_FILE_ENCODING);
+        return runCommand(label, scriptFile, null);
     }
-    public int runCommand(String label, File scriptFile, String encoding) throws IOException {
-        String script = FileUtils.readFileToString(scriptFile, encoding);
-        return runCommand(label, script);
+    public int runCommand(String label, File scriptFile, String... args) throws IOException {
+        String destFile = DEFAULT_WORKING_PATH + scriptFile.getName();
+        sendFile(scriptFile.getAbsolutePath(), destFile, true);
+
+        return runCommand(label, destFile, args);
     }
 
-
-    public int runCommand(String command) {
-        return runCommand(null, command);
-    }
     public int runCommand(String label, String command) {
+        return runCommand(label, command, null);
+    }
+
+    public int runCommand(String label, String command, String... args) {
 
         try {
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
             try {
+
+                if(args != null) {
+                    command = makeCommandLine(command, DEFAULT_ARG_BRACE, args);
+                }
                 channel.setCommand(command);
-                channel.setInputStream(null);
                 channel.connect();
 
                 InputStream stdIn = channel.getInputStream();
@@ -74,6 +81,18 @@ public class SshClient {
         }
     }
 
+    private String makeCommandLine(String command, String brace,String... args) {
+        StringBuilder commandBuilder = new StringBuilder();
+        commandBuilder.append(command);
+        if(args != null) {
+            commandBuilder.append(" ");
+            for (String arg : args) {
+                commandBuilder.append(brace).append(arg).append(brace);
+                commandBuilder.append(" ");
+            }
+        }
+        return commandBuilder.toString();
+    }
 
     private static int consumeOutputStream(String label, Channel channel, InputStream stdIn, InputStream errIn) {
         BufferedReader stdReader = new BufferedReader(new InputStreamReader(stdIn));
@@ -123,6 +142,26 @@ public class SshClient {
                 Thread.sleep(1000);
             } catch (Exception ignore) {
             }
+        }
+    }
+
+    public void sendFile(String source, String dest, boolean executable) {
+        try {
+            ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
+            try {
+                channel.connect();
+                channel.put(source, dest);
+                if(executable) {
+                    channel.chmod(Integer.parseInt("755", 8), dest);
+                }
+            } finally {
+                if (channel != null) {
+                    channel.disconnect();
+                }
+            }
+
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
     }
 

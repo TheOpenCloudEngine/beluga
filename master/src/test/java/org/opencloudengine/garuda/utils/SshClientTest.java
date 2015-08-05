@@ -37,7 +37,7 @@ public class SshClientTest {
     }
 
     @Test
-    public void testShellScriptFile() {
+    public void testInstallScriptFile() {
         File scriptFile = new File("production/resources/script/provision/install_master.sh");
         SshClient client = new SshClient();
         try {
@@ -50,5 +50,50 @@ public class SshClientTest {
         }
     }
 
-
+    @Test
+    public void testSendFile() {
+        SshClient client = new SshClient();
+        String source = "production/resources/script/provision/install_master.sh";
+        String dest = "/tmp/install_master.sh";
+        try {
+            client.connect(sshInfo).sendFile(source, dest, true);
+        } finally {
+            client.close();
+        }
+    }
+/**
+ * # @param 1 : zookeeper address		zk://localhost:2181/mesos
+ # @param 2 : mesos cluster name
+ # @param 3 : mesos master public ip
+ # @param 4 : mesos master private ip
+ # @param 5 : quorum		3
+ # @param 6 : zookeeper id
+ # @param 7 : zookeeper address 1  server.1=192.168.2.44:2888:3888
+ # @param 8 : zookeeper address 2  server.2=192.168.2.45:2888:3888
+ # @param 9 : zookeeper address 3  server.3=192.168.2.46:2888:3888
+ * */
+    @Test
+    public void testScriptFileWithParams() {
+        File scriptFile = new File("production/resources/script/provision/configure_master.sh");
+        String[] args = new String[] {
+            "zk://localhost:2181/mesos"
+                ,"test-cluster"
+                ,sshInfo.getHost()
+                ,sshInfo.getHost()
+                ,"3"
+                ,"1"
+                ,"server.1=localhost:2888:3888"
+                ,"server.2=localhost:2888:3888"
+                ,"server.3=localhost:2888:3888"
+        };
+        SshClient client = new SshClient();
+        try {
+            int ret = client.connect(sshInfo).runCommand("ubuntu1", scriptFile, args);
+            System.out.println(ret);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            client.close();
+        }
+    }
 }
