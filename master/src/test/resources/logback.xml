@@ -7,13 +7,13 @@
 	</appender>
 	
 	<appender name="systemlog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.path}/system.log</file>
+		<file>production/logs/system.log</file>
 
 		<encoder>
 			<pattern>[%date %level] \(%file:%line\) %msg%n</pattern>
 		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${log.path}/system.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>production/logs/system.%d{yyyy-MM-dd}.log</FileNamePattern>
 			<MaxHistory>7</MaxHistory>
 		</rollingPolicy>
 	</appender>
