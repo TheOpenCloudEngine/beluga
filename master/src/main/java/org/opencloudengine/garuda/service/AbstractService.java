@@ -23,7 +23,7 @@ public abstract class AbstractService {
 	protected ServiceManager serviceManager;
 	
 	public AbstractService(Environment environment, Settings settings, ServiceManager serviceManager){
-		logger.debug("Service [{}] >>", getClass().getName());//, settings.properties());
+		logger.debug("Service [{}]", getClass().getName());//, settings.properties());
 		this.environment = environment;
 		this.settings = settings;
 		this.serviceManager = serviceManager;

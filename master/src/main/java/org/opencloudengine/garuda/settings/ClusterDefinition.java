@@ -1,10 +1,9 @@
 package org.opencloudengine.garuda.settings;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by swsong on 2015. 7. 20..
@@ -63,19 +62,19 @@ public class ClusterDefinition extends PropertyConfig {
         * */
         userId = p.getProperty("userId");
         keyPair = p.getProperty("keyPair");
-        String keyPairFilePath = p.getProperty("keyPairFile");
-        if(keyPairFilePath != null) {
-            File f = new File(keyPairFilePath);
-            if(f.exists()) {
-                try {
-                    keyPairFile = FileUtils.readFileToString(f, "utf-8");
-                } catch (IOException e) {
-                    logger.error("error read private key file", e);
-                }
-            }else {
-                logger.error("private key file not exists");
-            }
-        }
+        keyPairFile = p.getProperty("keyPairFile");
+//        if(keyPairFilePath != null) {
+//            File f = new File(keyPairFilePath);
+//            if(f.exists()) {
+//                try {
+//                    keyPairFile = FileUtils.readFileToString(f, "utf-8");
+//                } catch (IOException e) {
+//                    logger.error("error read private key file", e);
+//                }
+//            }else {
+//                logger.error("private key file not exists");
+//            }
+//        }
         /*
         * Security Group
         * */

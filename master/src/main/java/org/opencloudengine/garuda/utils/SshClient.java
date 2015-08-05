@@ -13,7 +13,6 @@ public class SshClient {
 
     private static Logger logger = LoggerFactory.getLogger(SshClient.class);
     private Session session;
-    private static final String DEFAULT_FILE_ENCODING = "utf-8";
     private static final String DEFAULT_WORKING_PATH = "/tmp/";
     private static final String DEFAULT_ARG_BRACE = "\"";
 

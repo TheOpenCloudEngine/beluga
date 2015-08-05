@@ -1,6 +1,7 @@
 package org.opencloudengine.garuda.cloud;
 
 import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.Tag;
 
 /**
  * Created by swsong on 2015. 8. 3..
@@ -8,17 +9,28 @@ import com.amazonaws.services.ec2.model.Instance;
 public class CommonInstance {
 
     private String instanceId;
+    private String name;
     private String publicIpAddress;
     private String privateIpAddress;
 
     private Object instance;
 
     public CommonInstance(Object instance) {
-        if(instance instanceof Instance) {
+        update(instance);
+    }
+
+    public void update(Object instance) {
+        if (instance instanceof Instance) {
             Instance i = (Instance) instance;
             instanceId = i.getInstanceId();
             publicIpAddress = i.getPublicIpAddress();
             privateIpAddress = i.getPrivateIpAddress();
+            for (Tag tag : i.getTags()) {
+                if (tag.getKey().equalsIgnoreCase("name")) {
+                    this.name = tag.getValue();
+                    break;
+                }
+            }
         }
         this.instance = instance;
     }
@@ -29,6 +41,10 @@ public class CommonInstance {
 
     public String getInstanceId() {
         return instanceId;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getPublicIpAddress() {

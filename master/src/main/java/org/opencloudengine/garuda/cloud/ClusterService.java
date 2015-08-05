@@ -86,10 +86,10 @@ public class ClusterService extends AbstractService {
                 InstanceRequest request = new InstanceRequest(roleDefinition.getInstanceType(), roleDefinition.getImageId()
                         , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
                 List<CommonInstance> instanceList = iaas.launchInstance(request, role, size);
+
                 for (CommonInstance instance : instanceList) {
                     //토폴로지에 넣어준다.
                     clusterTopology.addNode(role, instance);
-                    logger.debug("launched {}", instance);
                 }
             }
         } catch (Exception e) {
@@ -103,6 +103,14 @@ public class ClusterService extends AbstractService {
             iaas.close();
         }
 
+        if(waitUntilInstanceAvailable) {
+            List<CommonInstance> list = clusterTopology.getAllNodeList();
+            //Wait until available
+            iaas.waitUntilInstancesReady(list);
+            //Fetch latest instance information
+            iaas.updateInstances(list);
+        }
+
         //runtime 토폴로지에 넣어준다.
         clusterTopologyMap.put(clusterId, clusterTopology);
         //토폴로지 설정파일을 저장한다.
@@ -112,11 +120,6 @@ public class ClusterService extends AbstractService {
         settings.addStringToArray(CLUSTERS_KEY, clusterId);
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
-
-        if(waitUntilInstanceAvailable) {
-            List<CommonInstance> list = clusterTopology.getAllNodeList();
-            iaas.waitUntilInstancesReady(list);
-        }
 
         return clusterTopology;
     }
@@ -159,7 +162,7 @@ public class ClusterService extends AbstractService {
     public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
 
-        String iaasType = null;//settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
+        String iaasType = settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
         if(iaasType == null) {
             throw new UnknownIaasProviderException("provider is null.");
         }
@@ -194,7 +197,7 @@ public class ClusterService extends AbstractService {
             for(String id : idArray) {
                 idList.add(id);
             }
-            List<CommonInstance> list = iaas.getRunningInstances(idList);
+            List<CommonInstance> list = iaas.getInstances(idList);
             for(CommonInstance instance : list) {
                 clusterTopology.addNode(role, instance);
             }

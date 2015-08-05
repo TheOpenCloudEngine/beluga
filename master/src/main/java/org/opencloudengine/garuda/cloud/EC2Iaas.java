@@ -75,7 +75,27 @@ public class EC2IaaS implements IaaS {
     }
 
     @Override
-    public List<CommonInstance> getRunningInstances(Collection<String> instanceList) {
+    public void updateInstances(List<CommonInstance> instanceList) {
+        List<String> idList = IaasUtils.getIdList(instanceList);
+        DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(idList);
+        DescribeInstancesResult result = client.describeInstances(request);
+        List<Reservation> reservationList = result.getReservations();
+        for(Reservation r : reservationList) {
+            for(Instance i : r.getInstances()) {
+                for(CommonInstance ci : instanceList){
+                    if(i.getInstanceId().equals(ci.getInstanceId())) {
+                        //update
+                        ci.update(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public List<CommonInstance> getInstances(Collection<String> instanceList) {
         List<CommonInstance> list = new ArrayList<>();
         DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(instanceList);
         DescribeInstancesResult result = client.describeInstances(request);
@@ -89,8 +109,6 @@ public class EC2IaaS implements IaaS {
         return list;
     }
 
-
-    @Override
     public void waitUntilInstancesReady(Collection<CommonInstance> instanceList) {
         int size = instanceList.size();
         BitSet statusSet = new BitSet(size);
