@@ -122,7 +122,7 @@ public class CreateClusterAction extends RequestAction {
             //
             // 1.2 Reboot mesos master
             //
-            logger.debug("Reboot mesos-master");
+            logger.debug("Reboot mesos-master : {}", topology.getMesosMasterList());
             clusterService.rebootInstances(topology, topology.getMesosMasterList(), true);
             logger.debug("Reboot mesos-master Done.");
         }
@@ -177,7 +177,7 @@ public class CreateClusterAction extends RequestAction {
             /*
              * REBOOT
              */
-            logger.debug("Reboot mesos-slave");
+            logger.debug("Reboot mesos-slave : {}", topology.getMesosSlaveList());
             clusterService.rebootInstances(topology, topology.getMesosSlaveList(), true);
             logger.debug("Reboot mesos-slave Done.");
             status.walkStep();

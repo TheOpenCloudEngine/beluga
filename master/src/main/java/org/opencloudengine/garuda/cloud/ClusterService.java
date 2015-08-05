@@ -244,7 +244,7 @@ public class ClusterService extends AbstractService {
         IaaS iaas = iaasProvider.getIaas();
         try {
             iaas.rebootInstances(IaasUtils.getIdList(instanceList));
-
+            sleep(5);
             if(waitUntilInstanceAvailable) {
                 //Wait until available
                 iaas.waitUntilInstancesReady(instanceList);
@@ -255,6 +255,13 @@ public class ClusterService extends AbstractService {
             if(iaas != null) {
                 iaas.close();
             }
+        }
+    }
+
+    private void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException ignore) {
         }
     }
 }

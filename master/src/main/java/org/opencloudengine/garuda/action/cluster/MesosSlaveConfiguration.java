@@ -82,15 +82,16 @@ public class MesosSlaveConfiguration implements Cloneable {
 
         return paramList.toArray(new String[0]);
     }
+
     @Override
     public MesosSlaveConfiguration clone() {
         MesosSlaveConfiguration c = new MesosSlaveConfiguration();
-        this.mesosZookeeperAddress = mesosZookeeperAddress;
-        this.hostName = hostName;
-        this.privateIpAddress = privateIpAddress;
-        this.dockerRegistryAddress = dockerRegistryAddress;
-        this.zookeeperList = zookeeperList;
-        this.containerizerSet = containerizerSet;
+        c.mesosZookeeperAddress = this.mesosZookeeperAddress;
+        c.hostName = this.hostName;
+        c.privateIpAddress = this.privateIpAddress;
+        c.dockerRegistryAddress = this.dockerRegistryAddress;
+        c.zookeeperList = this.zookeeperList;
+        c.containerizerSet = this.containerizerSet;
         return c;
     }
 }
