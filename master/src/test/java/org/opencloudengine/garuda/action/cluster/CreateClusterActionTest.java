@@ -13,7 +13,7 @@ public class CreateClusterActionTest extends BaseActionTest {
 
     @Test
     public void createCluster() throws GarudaException, InterruptedException {
-        String clusterId = "test-cluster";
+        String clusterId = "test-cluster2";
         String definitionId = "ec2-real";
 
         logger.debug("clusterService Hash {}", clusterService);
