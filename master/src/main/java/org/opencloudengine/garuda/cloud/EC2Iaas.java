@@ -142,25 +142,23 @@ public class EC2IaaS implements IaaS {
 
     @Override
     public void terminateInstance(String id) {
-        List<String> instanceIdList = new ArrayList<String>();
+        List<String> instanceIdList = new ArrayList<String>(1);
         instanceIdList.add(id);
-        terminateInstanceList(instanceIdList);
+        terminateInstances(instanceIdList);
     }
 
     @Override
-    public void terminateInstanceList(Collection<String> instanceIdList) {
+    public void terminateInstances(Collection<String> instanceIdList) {
         TerminateInstancesRequest terminateInstancesRequest = new TerminateInstancesRequest();
         terminateInstancesRequest.setInstanceIds(instanceIdList);
         client.terminateInstances(terminateInstancesRequest);
     }
 
     @Override
-    public void terminateInstances(Collection<CommonInstance> list) {
-        List<String> instanceIdList = new ArrayList<String>();
-        for(CommonInstance instance : list) {
-            instanceIdList.add(instance.getInstanceId());
-        }
-        terminateInstanceList(instanceIdList);
+    public void rebootInstances(Collection<String> instanceIdList) {
+        RebootInstancesRequest rebootInstancesRequest = new RebootInstancesRequest();
+        rebootInstancesRequest.setInstanceIds(instanceIdList);
+        client.rebootInstances(rebootInstancesRequest);
     }
 
     @Override
@@ -170,9 +168,7 @@ public class EC2IaaS implements IaaS {
 
     @Override
     public void close() {
-        if(client != null) {
-
-        }
+        //client 에서 close를 제공하지 않음.
     }
 
     public void createSecurityGroup(String groupName, String description)

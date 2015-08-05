@@ -83,7 +83,7 @@ public class IaaSTest {
 
 
         logger.debug("Terminate!");
-        iaas.terminateInstances(list);
+        iaas.terminateInstances(IaasUtils.getIdList(list));
 
 
     }

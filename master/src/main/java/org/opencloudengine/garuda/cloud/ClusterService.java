@@ -133,15 +133,15 @@ public class ClusterService extends AbstractService {
 
     private void destroyCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
 
-        String iaasType = clusterTopology.getIaasProfile();
+        String iaasProfile = clusterTopology.getIaasProfile();
 
-        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasType);
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         IaaS iaas = iaasProvider.getIaas();
 
         try {
-            iaas.terminateInstances(clusterTopology.getAllNodeList());
+            iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
         } finally {
             if(iaas != null) {
                 iaas.close();
@@ -236,4 +236,18 @@ public class ClusterService extends AbstractService {
         return clusterTopologyMap.get(clusterId);
     }
 
+    public void rebootInstances(ClusterTopology clusterTopology, List<CommonInstance> instanceList) throws UnknownIaasProviderException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        IaaS iaas = iaasProvider.getIaas();
+        try {
+            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
 }

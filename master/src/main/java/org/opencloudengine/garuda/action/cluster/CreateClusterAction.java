@@ -21,6 +21,8 @@ import java.io.File;
 public class CreateClusterAction extends RequestAction {
 
     private static final int DELAY_BEFORE_CONFIGURATION = 60;//secs
+    private static final String MARATHON_CONTAINER = "docker,mesos";
+
     public CreateClusterAction() {
         status.registerStep("Prepare instances.");
         status.registerStep("Install packages.");
@@ -43,6 +45,16 @@ public class CreateClusterAction extends RequestAction {
 //        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
         status.walkStep();
 
+        logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);
+        Thread.sleep(DELAY_BEFORE_CONFIGURATION);
+
+
+        //
+        //관리인스턴스는 하나만 존재한다고 가정한다.
+        //
+        CommonInstance managementInstance= topology.getManagementList().get(0);
+        final String managementAddress = managementInstance.getPublicIpAddress();//나중에 private IP로 바꾼다.
+
         /*
         * Configure packages
         * */
@@ -51,7 +63,7 @@ public class CreateClusterAction extends RequestAction {
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
         //
-        // 1. mesos-master
+        // 1.1 mesos-master
         //
         final MesosMasterConfiguration conf = new MesosMasterConfiguration();
 
@@ -61,18 +73,16 @@ public class CreateClusterAction extends RequestAction {
         final String mesosClusterName = "mesos-" + clusterId;
         final int quorum = topology.getMesosMasterList().size() / 2 + 1; //과반수.
 
-        logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);
-        Thread.sleep(DELAY_BEFORE_CONFIGURATION);
 
-        Task task = new Task("configure mesos-masters");
+        Task masterTask = new Task("configure mesos-masters");
 
-        for (final CommonInstance i : topology.getMesosMasterList()) {
-            final String instanceName = i.getName();
-            final String ipAddress = i.getPublicIpAddress();
+        for (final CommonInstance master : topology.getMesosMasterList()) {
+            final String instanceName = master.getName();
+            final String ipAddress = master.getPublicIpAddress();
             final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
             final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.ConfigureMesosMaster);
 
-            task.addTodo(new Todo() {
+            masterTask.addTodo(new Todo() {
                 @Override
                 public Object doing() throws Exception {
                     int seq = sequence() + 1;
@@ -82,7 +92,7 @@ public class CreateClusterAction extends RequestAction {
                     try {
                         sshClient.connect(sshInfo);
                         mesosConf.withMesosClusterName(mesosClusterName).withQuorum(quorum).withZookeeperId(seq);
-                        mesosConf.withHostName(i.getPublicIpAddress()).withPrivateIpAddress(i.getPrivateIpAddress());
+                        mesosConf.withHostName(master.getPublicIpAddress()).withPrivateIpAddress(master.getPrivateIpAddress());
                         int retCode = sshClient.runCommand(instanceName, scriptFile, mesosConf.toParameter());
                         logger.info("[{}/{}] Configure instance {} ({}) Done. RET = {}", seq, taskSize(), instanceName, ipAddress, retCode);
                     } finally {
@@ -95,14 +105,67 @@ public class CreateClusterAction extends RequestAction {
             });
         }
 
-        task.start();
+        masterTask.start();
 
-        TaskResult taskResult = task.waitAndGetResult();
-        if(taskResult.isSuccess()) {
-           logger.info("{} is success.", task.getName());
-        } else {
-            clusterService.removeClusterIdFromSetting(clusterId);
+        TaskResult masterTaskResult = masterTask.waitAndGetResult();
+        if(masterTaskResult.isSuccess()) {
+           logger.info("{} is success.", masterTask.getName());
         }
+//        clusterService.removeClusterIdFromSetting(clusterId);
+
+        //
+        // 1.2 Reboot mesos master
+        //
+        clusterService.rebootInstances(topology, topology.getMesosMasterList());
+
+
+
+
+        //
+        // 2.1 mesos-slave
+        //
+
+        final MesosSlaveConfiguration slaveConf = new MesosSlaveConfiguration();
+        for (CommonInstance i : topology.getMesosMasterList()) {
+            slaveConf.withZookeeperAddress(i.getPublicIpAddress());
+        }
+        Task slaveTask = new Task("configure mesos-slave");
+        for (final CommonInstance slave : topology.getMesosSlaveList()) {
+            final String instanceName = slave.getName();
+            final String ipAddress = slave.getPublicIpAddress();
+            final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
+            final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.ConfigureMesosSlave);
+
+            slaveTask.addTodo(new Todo() {
+                @Override
+                public Object doing() throws Exception {
+                    int seq = sequence() + 1;
+                    logger.info("[{}/{}] Configure instance {} ({}) ..", seq, taskSize(), instanceName, ipAddress);
+                    MesosSlaveConfiguration mesosConf = slaveConf.clone();
+                    SshClient sshClient = new SshClient();
+                    try {
+                        sshClient.connect(sshInfo);
+                        mesosConf.withHostName(slave.getPublicIpAddress()).withPrivateIpAddress(slave.getPrivateIpAddress());
+                        mesosConf.withContainerizer(MARATHON_CONTAINER).withDockerRegistryAddress(managementAddress);
+                        int retCode = sshClient.runCommand(instanceName, scriptFile, mesosConf.toParameter());
+                        logger.info("[{}/{}] Configure instance {} ({}) Done. RET = {}", seq, taskSize(), instanceName, ipAddress, retCode);
+                    } finally {
+                        if (sshClient != null) {
+                            sshClient.close();
+                        }
+                    }
+                    return null;
+                }
+            });
+        }
+
+        slaveTask.start();
+
+        TaskResult slaveTaskResult = slaveTask.waitAndGetResult();
+        if(slaveTaskResult.isSuccess()) {
+            logger.info("{} is success.", slaveTask.getName());
+        }
+
         status.walkStep();
 
 
@@ -110,6 +173,7 @@ public class CreateClusterAction extends RequestAction {
         /*
          * REBOOT
          */
+        clusterService.rebootInstances(topology, topology.getMesosSlaveList());
         status.walkStep();
 
         return new ActionResult().withResult(true);

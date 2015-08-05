@@ -18,9 +18,9 @@ public interface IaaS {
 
     public void waitUntilInstancesReady(Collection<CommonInstance> instanceList);
 
-    public void terminateInstances(Collection<CommonInstance> instanceList);
+    public void terminateInstances(Collection<String> instanceIdList) ;
 
-    public void terminateInstanceList(Collection<String> instanceIdList) ;
+    public void rebootInstances(Collection<String> instanceIdList);
 
     public String provider();
 

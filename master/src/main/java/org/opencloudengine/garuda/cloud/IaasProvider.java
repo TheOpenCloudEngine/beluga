@@ -90,7 +90,7 @@ public class IaasProvider {
 
     @Override
     public String toString() {
-        return String.format("IaasProvider type[%s] name[%s] identity[%s] credential[%s] endPoint[%s]", type, name, identity, credential, endPoint);
+        return String.format("IaasProvider type[%s] name[%s] endPoint[%s]", type, name, endPoint);
     }
 
 }

@@ -35,12 +35,12 @@ public class OpenstackIaaS extends JcloudIaaS {
     }
 
     @Override
-    public void terminateInstances(Collection<CommonInstance> list) {
+    public void terminateInstances(Collection<String> instanceIdList) {
 
     }
 
     @Override
-    public void terminateInstanceList(Collection<String> instanceIdList) {
+    public void rebootInstances(Collection<String> instanceIdList) {
 
     }
 
