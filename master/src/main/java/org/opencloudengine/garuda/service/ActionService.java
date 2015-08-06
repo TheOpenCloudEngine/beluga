@@ -4,6 +4,7 @@ import org.opencloudengine.garuda.action.ActionException;
 import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.RunnableAction;
+import org.opencloudengine.garuda.action.callback.RemoveRequestMapCallback;
 import org.opencloudengine.garuda.common.thread.ThreadPoolFactory;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
@@ -111,15 +112,13 @@ public class ActionService extends AbstractService {
                 try {
                     action = queue.take();
                     executor.execute(action);
+                    action.setCallback(new RemoveRequestMapCallback(actionRequestStatusMap));
                 } catch (RejectedExecutionException e) {
                     // executor rejecthandler가 abortpolicy의 경우
                     // RejectedExecutionException을 던지게 되어있다.
                     action.getStatus().setError("처리허용량을 초과하여 작업이 거부되었습니다.", e);
                 } catch (Throwable e) {
                     action.getStatus().setError(e);
-                } finally {
-                    actionRequestStatusMap.remove(action.getActionRequest());
-                    logger.debug("remove done action {}", action.getStatus().getActionName());
                 }
             }
 

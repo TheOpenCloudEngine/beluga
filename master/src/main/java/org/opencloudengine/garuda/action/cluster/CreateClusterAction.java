@@ -85,7 +85,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
                 final String instanceName = master.getName();
                 final String ipAddress = master.getPublicIpAddress();
                 final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-                final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.ConfigureMesosMaster);
+                final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.CONFIGURE_MESOS_MASTER);
 
                 masterTask.addTodo(new Todo() {
                     @Override
@@ -141,7 +141,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
                 final String instanceName = slave.getName();
                 final String ipAddress = slave.getPublicIpAddress();
                 final SshInfo sshInfo = new SshInfo().withHost(ipAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-                final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.ConfigureMesosSlave);
+                final File scriptFile = ScriptFileNames.getFile(environment, ScriptFileNames.CONFIGURE_MESOS_SLAVE);
 
                 slaveTask.addTodo(new Todo() {
                     @Override

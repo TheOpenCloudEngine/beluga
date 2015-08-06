@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.action;
 
+import org.opencloudengine.garuda.action.callback.ActionCallback;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -18,6 +19,7 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
     protected ServiceManager serviceManager;
 
     protected RequestType actionRequest;
+    private ActionCallback callback;
 
     public RunnableAction(RequestType actionRequest) {
         this.actionRequest = actionRequest;
@@ -48,6 +50,7 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
         } finally {
             logger.info("### Finished Action {}", status.getActionName(), status.getId());
             logger.info("### Status = {}", status);
+            callback.callback(this);
         }
     }
 
@@ -55,5 +58,9 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
 
     protected void setResult(Object obj) {
         status.setResult(obj);
+    }
+
+    public void setCallback(ActionCallback callback) {
+        this.callback = callback;
     }
 }
