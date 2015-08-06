@@ -31,31 +31,26 @@ import java.util.Map;
  * A utility class for executing shell commands.
  */
 public class CommandUtils {
-	private static final Logger log = LoggerFactory.getLogger(CommandUtils.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(CommandUtils.class);
     private static final String NEW_LINE = System.getProperty("line.separator");
 
     public static String executeCommand(String command) throws IOException {
         String line;
         Runtime r = Runtime.getRuntime();
-        if (log.isDebugEnabled()) {
-            log.debug("command = " + command);
-        }
+        logger.debug("command = {}", command);
         Process p = r.exec(command);
 
         StringBuilder output = new StringBuilder();
         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
         while ((line = in.readLine()) != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("output = " + line);
-            }
+            logger.debug("output = {}", line);
             output.append(line).append(NEW_LINE);
         }
         StringBuilder errors = new StringBuilder();
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
         while ((line = error.readLine()) != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("error = " + line);
-            }
+            logger.debug("error = {}", line);
             errors.append(line).append(NEW_LINE);
         }
         if (errors.length() > 0) {
@@ -75,17 +70,13 @@ public class CommandUtils {
         StringBuilder output = new StringBuilder();
         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
         while ((line = in.readLine()) != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("output = " + line);
-            }
+            logger.debug("output = {}", line);
             output.append(line).append(NEW_LINE);
         }
         StringBuilder errors = new StringBuilder();
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
         while ((line = error.readLine()) != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("error = " + line);
-            }
+            logger.debug("error = {}", line);
             errors.append(line).append(NEW_LINE);
         }
         if (errors.length() > 0) {

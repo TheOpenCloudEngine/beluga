@@ -131,7 +131,7 @@ public class ActionStatus {
         return step;
     }
 
-    public void waitUntilDone() throws InterruptedException {
+    public void waitFor() throws InterruptedException {
         latch.await();
     }
 }

@@ -50,7 +50,7 @@ public class ClustersAPI extends BaseAPI {
         try {
             DestroyClusterActionRequest request = new DestroyClusterActionRequest(clusterId);
             ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitUntilDone();
+            actionStatus.waitFor();
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -67,7 +67,7 @@ public class ClustersAPI extends BaseAPI {
         try {
             GetClustersActionRequest request = new GetClustersActionRequest();
             ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitUntilDone();
+            actionStatus.waitFor();
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -84,7 +84,7 @@ public class ClustersAPI extends BaseAPI {
         try {
             GetClusterActionRequest request = new GetClusterActionRequest(clusterId);
             ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitUntilDone();
+            actionStatus.waitFor();
             if(actionStatus.getResult() == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }

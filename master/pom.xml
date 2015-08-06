@@ -17,8 +17,6 @@
         <aws.version>1.9.39</aws.version>
     </properties>
 
-
-
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -27,6 +25,18 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -118,14 +128,6 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
@@ -160,6 +162,7 @@
             <artifactId>jclouds-enterprise</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -182,7 +185,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <type>bootstrap</type>
+                        <id>bootstrap</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
