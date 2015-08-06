@@ -130,7 +130,7 @@ public class SettingManager {
         storeProperties(props, getSettingFilename(SettingFileNames.topologyConfig, clusterId));
     }
 
-    public void deleteClusterTopology(String clusterId, Properties props) {
+    public void deleteClusterTopology(String clusterId) {
         deleteConfigFile(getSettingFilename(SettingFileNames.topologyConfig, clusterId));
     }
 

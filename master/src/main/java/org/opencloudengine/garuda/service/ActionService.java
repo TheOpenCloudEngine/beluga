@@ -117,6 +117,9 @@ public class ActionService extends AbstractService {
                     action.getStatus().setError("처리허용량을 초과하여 작업이 거부되었습니다.", e);
                 } catch (Throwable e) {
                     action.getStatus().setError(e);
+                } finally {
+                    actionRequestStatusMap.remove(action.getActionRequest());
+                    logger.debug("remove done action {}", action.getStatus().getActionName());
                 }
             }
 

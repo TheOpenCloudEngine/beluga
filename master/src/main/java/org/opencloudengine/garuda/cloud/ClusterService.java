@@ -150,7 +150,10 @@ public class ClusterService extends AbstractService {
         clusterTopologyMap.remove(clusterTopology);
 
         String clusterId = clusterTopology.getClusterId();
+        //clusterId 제거.
         removeClusterIdFromSetting(clusterId);
+        //topology.cluster 설정파일 삭제.
+        environment.settingManager().deleteClusterTopology(clusterId);
     }
 
     private boolean isClusterIdExistInSetting(String clusterId) {
@@ -182,16 +185,17 @@ public class ClusterService extends AbstractService {
         settingManager.storeClustersConfig(settings);
     }
     public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException {
+        logger.info("Load cluster {}..", clusterId);
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
 
-        String iaasType = settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
-        if(iaasType == null) {
+        String iaasProfile = settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
+        if(iaasProfile == null) {
             throw new UnknownIaasProviderException("provider is null.");
         }
-        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasType);
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
         IaaS iaas = iaasProvider.getIaas();
 
-        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasType);
+        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasProfile);
         try {
             loadRole(ClusterTopology.GARUDA_MASTER_ROLE, settings, iaas, clusterTopology);
             loadRole(ClusterTopology.PROXY_ROLE, settings, iaas, clusterTopology);
@@ -230,6 +234,10 @@ public class ClusterService extends AbstractService {
                 clusterTopology.addNode(role, instance);
             }
         }
+    }
+
+    public Collection<ClusterTopology> getAllClusterTopology() {
+        return clusterTopologyMap.values();
     }
 
     public ClusterTopology getClusterTopology(String clusterId) {

@@ -2,6 +2,8 @@ package org.opencloudengine.garuda.action;
 
 import org.opencloudengine.garuda.utils.TimeUtils;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * Created by swsong on 2015. 8. 4..
  */
@@ -22,6 +24,8 @@ public class ActionStatus {
     private Object result;
     private ActionStep step;
 
+    private CountDownLatch latch;
+
     @Override
     public String toString() {
         return String.format("[%s] id[%s] state[%s] actionName[%s] startTime[%s] completeTime[%s] error[%s] result[%s] step[%s]"
@@ -33,6 +37,7 @@ public class ActionStatus {
         this.id = id;
         this.actionName = actionName;
         step = new ActionStep();
+        latch = new CountDownLatch(1);
     }
 
     public String getId() {
@@ -101,6 +106,7 @@ public class ActionStatus {
         this.error = error != null ? error : t.getMessage();
         result = t;
         completeTime = TimeUtils.getCurrentLocalTimeString();
+        latch.countDown();
     }
 
     public void setComplete() {
@@ -110,6 +116,7 @@ public class ActionStatus {
         }
         state = STATE_COMPLETE;
         completeTime = TimeUtils.getCurrentLocalTimeString();
+        latch.countDown();
     }
 
     public void setResult(Object result) {
@@ -122,5 +129,9 @@ public class ActionStatus {
 
     public ActionStep getStep() {
         return step;
+    }
+
+    public void waitUntilDone() throws InterruptedException {
+        latch.await();
     }
 }

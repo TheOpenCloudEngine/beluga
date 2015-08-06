@@ -24,9 +24,9 @@ public class CreateClusterActionRequest extends ActionRequest {
     }
 
     @Override
-    public boolean compareUnique(ActionRequest request) {
-        if(request instanceof CreateClusterActionRequest) {
-            return clusterId.equalsIgnoreCase(((CreateClusterActionRequest) request).clusterId);
+    public boolean compareUnique(ActionRequest other) {
+        if(other instanceof CreateClusterActionRequest) {
+            return clusterId.equalsIgnoreCase(((CreateClusterActionRequest) other).clusterId);
         } else {
             return false;
         }

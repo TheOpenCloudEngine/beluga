@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.cloud;
 
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -56,6 +57,7 @@ public class ClusterTopology {
         return iaasProfile;
     }
 
+    @XmlTransient
     public List<CommonInstance> getAllNodeList() {
         List<CommonInstance> list = new ArrayList<>();
         list.addAll(garudaMasterList);
@@ -123,6 +125,7 @@ public class ClusterTopology {
         return getProperties().toString();
     }
 
+    @XmlTransient
     public Properties getProperties() {
         Properties props = new Properties();
         props.setProperty(CLUSTER_ID_KEY, clusterId);
