@@ -21,7 +21,7 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
 
     public RunnableAction(RequestType actionRequest) {
         this.actionRequest = actionRequest;
-        status = new ActionStatus(getClass().getSimpleName());
+        status = new ActionStatus(actionRequest.getActionId(), getClass().getSimpleName());
         settingManager = SettingManager.getInstance();
         environment = settingManager.getEnvironment();
         serviceManager = ServiceManager.getInstance();

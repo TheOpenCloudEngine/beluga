@@ -13,20 +13,23 @@ public class ActionStatus {
     public static final String STATE_COMPLETE = "completed";
     public static final String STATE_ERROR = "error";
 
-    private String actionName;
+    private final String id;
+    private final String actionName;
     private String startTime = "";
     private String completeTime = "";
     private String error = "";
-
     private String state = STATE_NONE;
-
     private Object result;
-
     private ActionStep step;
 
-    public ActionStatus(String actionName){
+    public ActionStatus(String id, String actionName){
+        this.id = id;
         this.actionName = actionName;
         step = new ActionStep();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getState() {

@@ -22,8 +22,8 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
     private static final int DELAY_BEFORE_CONFIGURATION = 60;//secs
     private static final String MARATHON_CONTAINER = "docker,mesos";
 
-    public CreateClusterAction(CreateClusterActionRequest actionId) {
-        super(actionId);
+    public CreateClusterAction(CreateClusterActionRequest request) {
+        super(request);
         status.registerStep("Prepare instances.");
         status.registerStep("Install packages.");
         status.registerStep("Reboot instances.");

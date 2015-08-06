@@ -33,8 +33,6 @@ public class ClustersAPI extends BaseAPI {
 
         CreateClusterActionRequest actionId = new CreateClusterActionRequest(clusterId, definitionId);
         ActionStatus actionStatus = actionService().request(actionId);
-
-        return Response.ok().build();
+        return Response.ok(actionStatus).build();
     }
-
 }

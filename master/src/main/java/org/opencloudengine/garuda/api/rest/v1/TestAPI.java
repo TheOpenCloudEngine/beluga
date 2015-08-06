@@ -1,10 +1,9 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 
@@ -15,6 +14,15 @@ public class TestAPI extends BaseAPI {
         super();
     }
 
+    @POST
+    @Path("/")
+    public Response test2(@FormDataParam("step") Integer step, @QueryParam("a")Integer a, @FormDataParam("a")Integer b) throws Exception {
+        logger.debug("Original step ={}", step);
+        logger.debug("Original a ={}", a);
+        logger.debug("Original b ={}", b);
+        return Response.ok().build();
+    }
+
     /**
      * Test
      */
@@ -23,7 +31,7 @@ public class TestAPI extends BaseAPI {
     public Response test(@QueryParam("step") Integer step) throws Exception {
         logger.debug("Original step ={}", step);
 
-        ActionStatus status =new ActionStatus("test");
+        ActionStatus status =new ActionStatus("1111111", "test");
 
         if(step != null) {
             status.registerStep("step1");
