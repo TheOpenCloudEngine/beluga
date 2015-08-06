@@ -55,7 +55,7 @@ public class ActionService extends AbstractService {
 
         //1.1 존재한다면 종료되었는가?
         if(status != null) {
-            if(status.isDone()) {
+            if(status.checkDone()) {
                 //1.1.1 종료되었다면 다시 할당한다.
             } else {
                 //1.1.2 종료되지 않았다면 이미 실행중인 작업이라고 바로 리턴한다.

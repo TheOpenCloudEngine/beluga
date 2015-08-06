@@ -21,8 +21,8 @@ public class CreateClusterActionTest extends BaseActionTest {
         ActionStatus status = action.getStatus();
         action.run();
 
-        while(!status.isDone()) {
-            System.out.println(String.format("%d / %d", status.getStep(), status.getTotalStep()));
+        while(!status.checkDone()) {
+            System.out.println(String.format("%d / %d", status.getStep().getCurrentStep(), status.getStep().getTotalStep()));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {

@@ -60,6 +60,7 @@ public class RESTService extends AbstractService {
 
 		try {
 			jettyServer.start();
+            logger.info("REST Service is listening on port {}", servicePort);
 			return true;
 		} catch (Exception e) {
 			throw new GarudaException(e);

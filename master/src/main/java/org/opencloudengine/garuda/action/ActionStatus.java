@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.action;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.opencloudengine.garuda.utils.TimeUtils;
 
 /**
  * Created by swsong on 2015. 8. 4..
@@ -15,18 +14,19 @@ public class ActionStatus {
     public static final String STATE_ERROR = "error";
 
     private String actionName;
-    private long startTime;
-    private long completeTime;
-    private String error;
+    private String startTime = "";
+    private String completeTime = "";
+    private String error = "";
 
     private String state = STATE_NONE;
-    private List<String> stepMessageList;
-    private int step;
+
     private Object result;
+
+    private ActionStep step;
 
     public ActionStatus(String actionName){
         this.actionName = actionName;
-        stepMessageList = new ArrayList<>();
+        step = new ActionStep();
     }
 
     public String getState() {
@@ -37,7 +37,27 @@ public class ActionStatus {
         this.state = state;
     }
 
-    public boolean isDone() {
+    public String getActionName() {
+        return actionName;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public String getCompleteTime() {
+        return completeTime;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public boolean checkDone() {
         return state == STATE_COMPLETE || state == STATE_ERROR;
     }
 
@@ -45,17 +65,15 @@ public class ActionStatus {
     // Step 진행상황.
     //
     public void registerStep(String message) {
-        stepMessageList.add(message);
+        step.getStepMessages().add(message);
     }
 
-    public List<String> getStepMessageList() {
-        return stepMessageList;
-    }
+
 
     public void setStart() {
         state = STATE_PROGRESS;
-        startTime = System.currentTimeMillis();
-        step = 0;
+        startTime = TimeUtils.getCurrentLocalTimeString();
+        step.setCurrentStep(0);
     }
 
     public void setInQueue() {
@@ -69,8 +87,7 @@ public class ActionStatus {
         state = STATE_ERROR;
         this.error = error != null ? error : t.getMessage();
         result = t;
-        completeTime = System.currentTimeMillis();
-        step = 0;
+        completeTime = TimeUtils.getCurrentLocalTimeString();
     }
 
     public void setComplete() {
@@ -79,22 +96,18 @@ public class ActionStatus {
             return;
         }
         state = STATE_COMPLETE;
-        completeTime = System.currentTimeMillis();
-    }
-
-    public void walkStep() {
-        step++;
-    }
-
-    public int getStep() {
-        return step;
-    }
-
-    public int getTotalStep() {
-        return stepMessageList.size();
+        completeTime = TimeUtils.getCurrentLocalTimeString();
     }
 
     public void setResult(Object result) {
         this.result = result;
+    }
+
+    public void walkStep() {
+        step.walkStep();
+    }
+
+    public ActionStep getStep() {
+        return step;
     }
 }
