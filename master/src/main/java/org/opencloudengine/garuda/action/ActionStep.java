@@ -32,4 +32,9 @@ public class ActionStep {
     public List<String> getStepMessages() {
         return stepMessages;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] currentStep[%d] totalStep[%d]", getClass().getSimpleName(), currentStep, getTotalStep());
+    }
 }

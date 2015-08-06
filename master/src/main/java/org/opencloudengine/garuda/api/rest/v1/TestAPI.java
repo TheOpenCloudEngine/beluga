@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.api.rest.v1;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
+import org.opencloudengine.garuda.action.cluster.TestActionRequest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -13,6 +14,31 @@ public class TestAPI extends BaseAPI {
     public TestAPI() {
         super();
     }
+
+    @POST
+    @Path("/testAction")
+    public Response testAction() {
+        try {
+            logger.debug("actionService() = {}", actionService());
+            ActionStatus actionStatus = actionService().request(new TestActionRequest("Good!"));
+
+            while (!actionStatus.checkDone()) {
+                logger.info("{}", actionStatus.toString());
+
+                Thread.sleep(1000);
+            }
+            return Response.ok(actionStatus.getResult()).build();
+        }catch(Throwable t) {
+            t.printStackTrace();
+            return Response.ok(t).build();
+        }
+    }
+    @GET
+    @Path("/testAction")
+    public Response testActionGet() throws Exception {
+        return Response.ok(1).build();
+    }
+
 
     @POST
     @Path("/")

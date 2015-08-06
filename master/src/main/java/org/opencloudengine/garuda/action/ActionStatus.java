@@ -22,6 +22,13 @@ public class ActionStatus {
     private Object result;
     private ActionStep step;
 
+    @Override
+    public String toString() {
+        return String.format("[%s] id[%s] state[%s] actionName[%s] startTime[%s] completeTime[%s] error[%s] result[%s] step[%s]"
+                , getClass().getSimpleName(), id, state, actionName, startTime, completeTime, error
+                , result, step);
+    }
+
     public ActionStatus(String id, String actionName){
         this.id = id;
         this.actionName = actionName;
