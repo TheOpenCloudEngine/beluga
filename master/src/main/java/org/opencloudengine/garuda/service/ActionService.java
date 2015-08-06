@@ -110,7 +110,6 @@ public class ActionService extends AbstractService {
                 RunnableAction action = null;
                 try {
                     action = queue.take();
-                    logger.info("{}", action.getStatus());
                     executor.execute(action);
                 } catch (RejectedExecutionException e) {
                     // executor rejecthandler가 abortpolicy의 경우

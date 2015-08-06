@@ -39,6 +39,7 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
     public void run() {
         try {
             logger.info("### Start Action {}", status.getActionName(), status.getId());
+            logger.info("### Status = {}", status);
             status.setStart();
             doAction();
             status.setComplete();
@@ -46,6 +47,7 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
             status.setError(t);
         } finally {
             logger.info("### Finished Action {}", status.getActionName(), status.getId());
+            logger.info("### Status = {}", status);
         }
     }
 
