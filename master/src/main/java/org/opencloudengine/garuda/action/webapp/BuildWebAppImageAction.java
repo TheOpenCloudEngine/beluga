@@ -2,7 +2,6 @@ package org.opencloudengine.garuda.action.webapp;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteStreamHandler;
 import org.opencloudengine.garuda.action.RunnableAction;
 
 import java.util.List;
@@ -26,7 +25,5 @@ public class BuildWebAppImageAction extends RunnableAction<BuildWebAppImageActio
             cmdLine.addArgument(arg);
         }
         executor.execute(cmdLine);
-        ExecuteStreamHandler h = executor.getStreamHandler();
-        h.
     }
 }
