@@ -4,10 +4,14 @@
 # @author : Sang Wook, Song
 #
 
-registry_address=$1:5000
-image_name_list=(java7_wildfly8.2 php5_apache2)
+if [ $# -ne 1 ] ; then
+    echo "Please put registry server address."
+    exit 1
+fi
 
-for image_name in $image_name_list
+registry_address=$1:5000
+
+for image_name in java7_wildfly8.2 php5_apache2
 do
     docker build -t $registry_address/$image_name -f dockerfile/$image_name dockerfile/ && docker push $registry_address/$image_name
 done

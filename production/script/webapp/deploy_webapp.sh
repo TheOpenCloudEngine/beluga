@@ -4,21 +4,19 @@
 # @author : Sang Wook, Song
 #
 
-if [ $# -ne 6 ] ; then
-    echo "Usage: $0 <user_name> <image_id> <port> <cpus> <memory> <instance_size>"
-    echo "Sample: $0 oce java-calendar 8080 0.3 256 2"
+if [ $# -ne 7 ] ; then
+    echo "Usage: $0 <marathon_address> <user_name> <image_id> <port> <cpus> <memory> <instance_size>"
+    echo "Sample: $0 192.168.0.10 oce java-calendar 8080 0.3 256 2"
     exit 1
 fi
 
-user_name="$1"
-image_id="$2"
-port="$3"
-cpus="$4"
-memory="$5"
-instance_size="$6"
-
-
-. config.sh
+marathon_address="$1"
+user_name="$2"
+image_id="$3"
+port="$4"
+cpus="$5"
+memory="$6"
+instance_size="$7"
 
 app_name="$user_name"-"$image_id"
 
@@ -60,5 +58,4 @@ cat <<EndOfMessage > request.json
 }
 EndOfMessage
 
-#echo curl -X POST -H "\"Content-Type: application/json\"" http://$marathon_address/v2/apps -d@request.json
-curl -X POST -H "\"Content-Type: application/json\"" http://$marathon_address/v2/apps -d@request.json
+curl -X POST -H "\"Content-Type: application/json\"" http://$marathon_address:8080/v2/apps -d@request.json

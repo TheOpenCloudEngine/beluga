@@ -5,16 +5,16 @@
 #
 
 if [ $# -ne 3 ] ; then
-    echo "Usage: $0 <work_dir> <war_file> <new_image>"
-    echo "Sample: $0 oce Calendar.war java-calendar"
+    echo "Usage: $0 <registry_address> <war_file> <new_image>"
+    echo "Sample: $0 192.168.0 Calendar.war java-calendar"
     exit 1
 fi
 
-work_dir="$1"
+registry_address="$1:5000"
 war_file="$2"
 new_image="$3"
 
-. config.sh
+work_dir="/tmp"
 
 cd "$work_dir"
 
