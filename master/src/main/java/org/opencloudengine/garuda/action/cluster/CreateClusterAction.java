@@ -7,7 +7,7 @@ import org.opencloudengine.garuda.action.task.Todo;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.CommonInstance;
-import org.opencloudengine.garuda.common.ScriptFileNames;
+import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.utils.SshClient;
 import org.opencloudengine.garuda.utils.SshInfo;
