@@ -12,13 +12,14 @@ import org.slf4j.LoggerFactory;
 public abstract class RequestAction {
     protected Logger logger = LoggerFactory.getLogger(RequestAction.class);
     protected ActionStatus status = new ActionStatus();
-    private ActionResult result;
 
     protected Environment environment;
     protected SettingManager settingManager;
     protected ServiceManager serviceManager;
 
-    public RequestAction() {
+    protected ActionId actionId;
+
+    public RequestAction(ActionId actionId) {
         settingManager = SettingManager.getInstance();
         environment = settingManager.getEnvironment();
         serviceManager = ServiceManager.getInstance();
@@ -28,22 +29,30 @@ public abstract class RequestAction {
         return status;
     }
 
-    public ActionResult getResult() {
-        return result;
+    public ActionId getActionId() {
+        return actionId;
+    }
+//    public ActionResult getResult() {
+//        return result;
+//    }
+
+    public void run() {
+
     }
 
-    public ActionStatus request(Object... params) {
+    public ActionStatus request() {
 
         try {
-            result = doAction(params);
+            doAction();
         } catch (Throwable t) {
-            result = new ActionResult().withError(t);
+//            result = new ActionResult().withError(t);
+
         } finally {
             status.setDone();
         }
         return status;
     }
 
-    protected abstract ActionResult doAction(Object... params) throws Exception;
+    protected abstract void doAction() throws Exception;
 
 }

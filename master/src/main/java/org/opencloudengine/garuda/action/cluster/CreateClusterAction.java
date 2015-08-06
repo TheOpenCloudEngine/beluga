@@ -23,16 +23,17 @@ public class CreateClusterAction extends RequestAction {
     private static final int DELAY_BEFORE_CONFIGURATION = 60;//secs
     private static final String MARATHON_CONTAINER = "docker,mesos";
 
-    public CreateClusterAction() {
+    public CreateClusterAction(Object... params) {
+        super(params);
         status.registerStep("Prepare instances.");
         status.registerStep("Install packages.");
         status.registerStep("Reboot instances.");
     }
 
     @Override
-    protected ActionResult doAction(Object... params) throws Exception {
-        String clusterId = (String) params[0];
-        String definitionId = (String) params[1];
+    protected ActionResult doAction() throws Exception {
+        String clusterId = getParamAsString(0);
+        String definitionId = getParamAsString(1);
 
         ClusterService clusterService = serviceManager.getService(ClusterService.class);
 
