@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # 관리 노드에 Docker registry와 Mysql 패키지를 설치한다.
+# mysql의 root계정 비번은 garuda123:) 이다.
 # @author : Sang Wook, Song
 #
 
@@ -13,9 +14,9 @@ sudo usermod -aG docker ubuntu
 sudo docker run --name garuda-registry -d -p 5000:5000 registry
 
 echo 'start on runlevel [2345]' | sudo tee /etc/init/docker-registry.conf
-echo 'respawn' | sudo tee /etc/init/docker-registry.conf
-echo 'kill timeout 20' | sudo tee /etc/init/docker-registry.conf
-echo 'exec docker start garuda-registry' | sudo tee /etc/init/docker-registry.conf
+echo 'respawn' | sudo tee -a /etc/init/docker-registry.conf
+echo 'kill timeout 20' | sudo tee -a /etc/init/docker-registry.conf
+echo 'exec docker start garuda-registry' | sudo tee -a /etc/init/docker-registry.conf
 
 echo "mysql-server-5.6 mysql-server/root_password password garuda123:)" | sudo debconf-set-selections
 echo "mysql-server-5.6 mysql-server/root_password_again password garuda123:)" | sudo debconf-set-selections

@@ -24,9 +24,9 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
 
     public CreateClusterAction(CreateClusterActionRequest request) {
         super(request);
-        status.registerStep("Prepare instances.");
-        status.registerStep("Install packages.");
-        status.registerStep("Reboot instances.");
+        status.registerStep("Create instances.");
+        status.registerStep("Configure mesos-master.");
+        status.registerStep("Configure mesos-slave.");
     }
 
     @Override
@@ -40,11 +40,11 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         * Prepare instances
         * */
         //create instances and wait until available
+        status.walkStep();
         logger.debug("Create Cluster..");
         ClusterTopology topology = clusterService.createCluster(clusterId, definitionId, true);
         logger.debug("Create Cluster.. Done.");
 //        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
-        status.walkStep();
 
         logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);
         Thread.sleep(DELAY_BEFORE_CONFIGURATION);
@@ -53,13 +53,13 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         //
         //관리인스턴스는 하나만 존재한다고 가정한다.
         //
-//        CommonInstance managementInstance= topology.getManagementList().get(0);
-//        final String managementAddress = managementInstance.getPublicIpAddress();//나중에 private IP로 바꾼다.
-        final String managementAddress = "localhost";
+        CommonInstance managementInstance = topology.getManagementList().get(0);
+        final String managementAddress = managementInstance.getPrivateIpAddress();
 
         /*
         * Configure packages
         * */
+
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();
@@ -68,11 +68,12 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         //
         // 1.1 mesos-master
         //
+        status.walkStep();
         if(topology.getMesosMasterList().size() > 0) {
             final MesosMasterConfiguration conf = new MesosMasterConfiguration();
 
             for (CommonInstance i : topology.getMesosMasterList()) {
-                conf.withZookeeperAddress(i.getPublicIpAddress());
+                conf.withZookeeperAddress(i.getPrivateIpAddress());
             }
             final String mesosClusterName = "mesos-" + clusterId;
             final int quorum = topology.getMesosMasterList().size() / 2 + 1; //과반수.
@@ -129,10 +130,11 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         //
         // 2.1 mesos-slave
         //
+        status.walkStep();
         if(topology.getMesosSlaveList().size() > 0) {
             final MesosSlaveConfiguration slaveConf = new MesosSlaveConfiguration();
             for (CommonInstance i : topology.getMesosMasterList()) {
-                slaveConf.withZookeeperAddress(i.getPublicIpAddress());
+                slaveConf.withZookeeperAddress(i.getPrivateIpAddress());
             }
             Task slaveTask = new Task("configure mesos-slave");
             for (final CommonInstance slave : topology.getMesosSlaveList()) {
@@ -171,15 +173,12 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
                 logger.info("{} is success.", slaveTask.getName());
             }
 
-            status.walkStep();
-
             /*
              * REBOOT
              */
             logger.debug("Reboot mesos-slave : {}", topology.getMesosSlaveList());
             clusterService.rebootInstances(topology, topology.getMesosSlaveList(), true);
             logger.debug("Reboot mesos-slave Done.");
-            status.walkStep();
 
         }
     }

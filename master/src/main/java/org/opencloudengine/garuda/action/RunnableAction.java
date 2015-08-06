@@ -38,11 +38,14 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
     @Override
     public void run() {
         try {
+            logger.info("### Start Action {}", status.getActionName(), status.getId());
             status.setStart();
             doAction();
             status.setComplete();
         } catch (Throwable t) {
             status.setError(t);
+        } finally {
+            logger.info("### Finished Action {}", status.getActionName(), status.getId());
         }
     }
 

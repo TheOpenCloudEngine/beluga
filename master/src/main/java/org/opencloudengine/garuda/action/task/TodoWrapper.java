@@ -36,7 +36,7 @@ public class TodoWrapper extends Thread {
             logger.error("error while todo " + task.getName(), t);
         } finally {
             countDownLatchHolder[0].countDown();
-            logger.debug("Todo[{} / {}] of Task [{}] Done.", target.sequence(), target.taskSize(), task.getName());
+            logger.debug("Todo[{} / {}] of Task [{}] Done.", target.sequence() + 1, target.taskSize(), task.getName());
         }
     }
 

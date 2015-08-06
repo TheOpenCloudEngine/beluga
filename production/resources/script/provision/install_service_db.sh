@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # DB서비스를 위해 Mysql 패키지를 설치한다.
+# mysql의 root계정 비번은 garuda123:) 이다.
 # @author : Sang Wook, Song
 #
 

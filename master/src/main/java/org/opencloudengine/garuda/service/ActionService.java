@@ -28,6 +28,7 @@ public class ActionService extends AbstractService {
     private ThreadPoolExecutor executor;
     private BlockingQueue<RunnableAction> queue;
     private ActionConsumer consumer;
+    private Random actionIdGenerator = new Random(System.nanoTime());
 
     public ActionService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
@@ -89,8 +90,6 @@ public class ActionService extends AbstractService {
         return status;
     }
 
-    Random actionIdGenerator = new Random(System.nanoTime());
-
     // 8자리 숫자를 만들어준다.
     private String createActionId() {
         return String.valueOf(actionIdGenerator.nextInt(90000000) + 10000000);
@@ -111,6 +110,7 @@ public class ActionService extends AbstractService {
                 RunnableAction action = null;
                 try {
                     action = queue.take();
+                    logger.info("{}", action.getStatus());
                     executor.execute(action);
                 } catch (RejectedExecutionException e) {
                     // executor rejecthandler가 abortpolicy의 경우

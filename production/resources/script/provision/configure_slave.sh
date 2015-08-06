@@ -7,7 +7,7 @@
 # @param 2 : mesos slave public ip
 # @param 3 : mesos slave private ip
 # @param 4 : mesos container. Comma separated list of containerizer. "docker" for docker, "mesos" for mesos
-# @param 5 : docker registry address
+# @param 5 : docker registry address        192.168.2.40:5000
 #
 
 #zk
@@ -23,7 +23,7 @@ echo $3 | sudo tee /etc/mesos-slave/ip
 echo $4 | sudo tee /etc/mesos-slave/containerizers
 
 #docker configuration
-echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5\" | sudo tee -a /etc/default/docker
+echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5:5000\" | sudo tee -a /etc/default/docker
 
 
 
