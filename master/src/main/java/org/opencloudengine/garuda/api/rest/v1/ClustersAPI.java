@@ -2,8 +2,7 @@ package org.opencloudengine.garuda.api.rest.v1;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
-import org.opencloudengine.garuda.action.cluster.CreateClusterAction;
-import org.opencloudengine.garuda.action.cluster.CreateClusterActionId;
+import org.opencloudengine.garuda.action.cluster.CreateClusterActionRequest;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -32,7 +31,7 @@ public class ClustersAPI extends BaseAPI {
     public Response createCluster(@FormDataParam("id") String clusterId
             , @FormDataParam("definition") String definitionId) throws Exception {
 
-        CreateClusterActionId actionId = new CreateClusterActionId(clusterId, definitionId);
+        CreateClusterActionRequest actionId = new CreateClusterActionRequest(clusterId, definitionId);
         ActionStatus actionStatus = actionService().request(actionId);
 
         return Response.ok().build();

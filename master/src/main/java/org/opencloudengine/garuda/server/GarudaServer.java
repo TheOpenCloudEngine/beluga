@@ -18,7 +18,7 @@ import java.nio.channels.FileLock;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Garuda Master Server
+ * Garuda Server
  *
  * @author Sang Wook, Song
  * @since 1.0

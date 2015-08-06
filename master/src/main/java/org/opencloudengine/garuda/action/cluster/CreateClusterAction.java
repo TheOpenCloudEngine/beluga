@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.action.cluster;
 
-import org.opencloudengine.garuda.action.ActionResult;
-import org.opencloudengine.garuda.action.RequestAction;
+import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.action.task.Task;
 import org.opencloudengine.garuda.action.task.TaskResult;
 import org.opencloudengine.garuda.action.task.Todo;
@@ -18,26 +17,25 @@ import java.io.File;
 /**
  * Created by swsong on 2015. 8. 4..
  */
-public class CreateClusterAction extends RequestAction {
+public class CreateClusterAction extends RunnableAction<CreateClusterActionRequest> {
 
     private static final int DELAY_BEFORE_CONFIGURATION = 60;//secs
     private static final String MARATHON_CONTAINER = "docker,mesos";
 
-    public CreateClusterAction(Object... params) {
-        super(params);
+    public CreateClusterAction(CreateClusterActionRequest actionId) {
+        super(actionId);
         status.registerStep("Prepare instances.");
         status.registerStep("Install packages.");
         status.registerStep("Reboot instances.");
     }
 
     @Override
-    protected ActionResult doAction() throws Exception {
-        String clusterId = getParamAsString(0);
-        String definitionId = getParamAsString(1);
+    protected void doAction() throws Exception {
+        CreateClusterActionRequest request = getActionRequest();
+        String clusterId = request.getClusterId();
+        String definitionId = request.getDefinitionId();
 
         ClusterService clusterService = serviceManager.getService(ClusterService.class);
-
-        status.startStep();
         /*
         * Prepare instances
         * */
@@ -184,7 +182,6 @@ public class CreateClusterAction extends RequestAction {
             status.walkStep();
 
         }
-        return new ActionResult().withResult(true);
     }
 
 }

@@ -19,7 +19,6 @@
 
 package org.opencloudengine.bak.loadbalancer.haproxy;
 
-import org.opencloudengine.garuda.common.thread.ThreadPoolFactory;
 import org.opencloudengine.bak.loadbalancer.LoadBalancerExtension;
 import org.opencloudengine.bak.loadbalancer.TopologyProvider;
 import org.slf4j.Logger;
@@ -62,7 +61,7 @@ public class Main {
                 }
             });
 
-			executorService = ThreadPoolFactory.getExecutorService("haproxy.extension.thread.pool", 10);
+			executorService = null;//ThreadPoolFactory.getExecutorService("haproxy.extension.thread.pool", 10);
 			// Validate runtime parameters
 			HAProxyContext.getInstance().validate();
             TopologyProvider topologyProvider = new TopologyProvider();

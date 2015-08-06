@@ -8,40 +8,30 @@ import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * Created by swsong on 2015. 8. 4..
  */
 public class ActionService extends AbstractService {
 
-    private Map<ActionId, ActionStatus> actionStatusMap;
-//    private Map<ActionId, ActionResult> actionResultMap;
+    private Map<ActionRequest, ActionStatus> actionStatusMap;
 
     private ThreadPoolExecutor executor;
-    private BlockingQueue<RequestAction> queue;
+    private BlockingQueue<RunnableAction> queue;
     private ActionConsumer consumer;
 
     public ActionService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
-
-
     }
 
     @Override
     protected boolean doStart() throws GarudaException {
         actionStatusMap = new ConcurrentHashMap<>();
-//        actionResultMap = new ConcurrentHashMap<>();
-
         executor = ThreadPoolFactory.newUnlimitedCachedDaemonThreadPool("actionService.executor");
+        queue = new LinkedBlockingQueue<>();
         consumer = new ActionConsumer();
         consumer.start();
-
-
-
         return true;
     }
 
@@ -57,17 +47,11 @@ public class ActionService extends AbstractService {
         return false;
     }
 
-    private String nextAnctionId() {
-        return null;
-    }
-
-    public ActionStatus request(ActionId actionId) throws ActionException {
-
-        //검증.
+    //같은작업이 동시에 들어올 수 있으므로 동기화 시킨다.
+    public synchronized ActionStatus request(ActionRequest actionId) throws ActionException {
 
         //1. 존재하는가?
         ActionStatus status = actionStatusMap.get(actionId);
-
 
         //1.1 존재한다면 종료되었는가?
         if(status != null) {
@@ -81,32 +65,16 @@ public class ActionService extends AbstractService {
             //2. 존재하지 않는다면 할당한다.
         }
 
-        status = new ActionStatus();
-
-        RequestAction action = actionId.createRequestAction();
-
-//        long myJobId = jobIdIncrement.getAndIncrement();
-////		logger.debug("### OFFER Job-{} : {}", myJobId, job.getClass().getSimpleName());
-//
-//        ResultFuture resultFuture = new ResultFuture(myJobId, resultFutureMap);
-//        resultFutureMap.put(myJobId, resultFuture);
-//        job.setId(myJobId);
-        status = offerAction(action);
-
-        return status;
-    }
-
-
-    private ActionStatus offerAction(RequestAction action){
-        ActionStatus status = new ActionStatus();
-        actionStatusMap.put(action.getActionId(), status);
+        RunnableAction action = actionId.createAction();
+        status = action.getStatus();
+        actionStatusMap.put(actionId, status);
         queue.offer(action);
+        status.setInQueue();
         return status;
     }
 
-    public ActionStatus getStatus(ActionId actionId){
-        //TODO
-        return null;
+    public ActionStatus getStatus(ActionRequest actionId){
+        return actionStatusMap.get(actionId);
     }
 
     class ActionConsumer extends Thread {
@@ -117,21 +85,18 @@ public class ActionService extends AbstractService {
 
         public void run() {
             while (!Thread.interrupted()) {
-                RequestAction action = null;
+                RunnableAction action = null;
                 try {
                     action = queue.take();
-                    runningJobList.put(job.getId(), job);
                     executor.execute(action);
-                } catch (InterruptedException e) {
-                    logger.debug(this.getClass().getName() + " is interrupted.");
                 } catch (RejectedExecutionException e) {
                     // executor rejecthandler가 abortpolicy의 경우
                     // RejectedExecutionException을 던지게 되어있다.
-                    logger.error("처리허용량을 초과하여 작업이 거부되었습니다. max.pool = {}, job={}", executorMaxPoolSize, job);
-                    result(job, new ExecutorMaxCapacityExceedException("처리허용량을 초과하여 작업이 거부되었습니다. max.pool =" + executorMaxPoolSize), false);
-
+                    ActionStatus status = actionStatusMap.get(action.getActionRequest());
+                    status.setError("처리허용량을 초과하여 작업이 거부되었습니다.", e);
                 } catch (Throwable e) {
-                    logger.error("", e);
+                    ActionStatus status = actionStatusMap.get(action.getActionRequest());
+                    status.setError(e);
                 }
             }
 

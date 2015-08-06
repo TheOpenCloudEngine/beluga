@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.action.cluster;
 
 import org.junit.Test;
-import org.opencloudengine.garuda.action.ActionResult;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.BaseActionTest;
 import org.opencloudengine.garuda.exception.GarudaException;
@@ -17,8 +16,10 @@ public class CreateClusterActionTest extends BaseActionTest {
         String definitionId = "ec2-real";
 
         logger.debug("clusterService Hash {}", clusterService);
-        CreateClusterAction action = new CreateClusterAction();
-        ActionStatus status = action.request(clusterId, definitionId);
+        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+        CreateClusterAction action = new CreateClusterAction(request);
+        ActionStatus status = action.getStatus();
+        action.run();
 
         while(!status.isDone()) {
             System.out.println(String.format("%d / %d", status.getStep(), status.getTotalStep()));
@@ -28,8 +29,5 @@ public class CreateClusterActionTest extends BaseActionTest {
             }
         }
         logger.info("#### Done.");
-        ActionResult result = action.getResult();
-        logger.info("#### Result = {}", result.getResult());
-        logger.info("#### Result error = {} // {}", result.getErrorMessage(), result.getException());
     }
 }

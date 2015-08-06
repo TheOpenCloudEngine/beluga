@@ -9,17 +9,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by swsong on 2015. 8. 4..
  */
-public abstract class RequestAction {
-    protected Logger logger = LoggerFactory.getLogger(RequestAction.class);
-    protected ActionStatus status = new ActionStatus();
+public abstract class RunnableAction<RequestType extends ActionRequest> implements Runnable {
+    protected Logger logger = LoggerFactory.getLogger(RunnableAction.class);
 
+    protected ActionStatus status;
     protected Environment environment;
     protected SettingManager settingManager;
     protected ServiceManager serviceManager;
 
-    protected ActionId actionId;
+    protected RequestType actionRequest;
 
-    public RequestAction(ActionId actionId) {
+    public RunnableAction(RequestType actionRequest) {
+        this.actionRequest = actionRequest;
+        status = new ActionStatus(getClass().getSimpleName());
         settingManager = SettingManager.getInstance();
         environment = settingManager.getEnvironment();
         serviceManager = ServiceManager.getInstance();
@@ -29,30 +31,24 @@ public abstract class RequestAction {
         return status;
     }
 
-    public ActionId getActionId() {
-        return actionId;
+    public RequestType getActionRequest() {
+        return actionRequest;
     }
-//    public ActionResult getResult() {
-//        return result;
-//    }
 
+    @Override
     public void run() {
-
-    }
-
-    public ActionStatus request() {
-
         try {
+            status.setStart();
             doAction();
+            status.setComplete();
         } catch (Throwable t) {
-//            result = new ActionResult().withError(t);
-
-        } finally {
-            status.setDone();
+            status.setError(t);
         }
-        return status;
     }
 
     protected abstract void doAction() throws Exception;
 
+    protected void setResult(Object obj) {
+        status.setResult(obj);
+    }
 }
