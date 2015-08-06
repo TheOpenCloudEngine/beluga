@@ -90,6 +90,9 @@ public class ActionStatus {
         state = STATE_QUEUE;
     }
 
+    public void setError(String error) {
+        setError(error, null);
+    }
     public void setError(Throwable t) {
         setError(null, t);
     }

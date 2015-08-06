@@ -29,8 +29,8 @@ public class TestAPI extends BaseAPI {
             }
             return Response.ok(actionStatus.getResult()).build();
         }catch(Throwable t) {
-            t.printStackTrace();
-            return Response.ok(t).build();
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
     @GET

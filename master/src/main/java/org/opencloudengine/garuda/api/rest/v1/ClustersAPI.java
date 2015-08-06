@@ -13,8 +13,7 @@ import javax.ws.rs.core.Response;
  * uri : clusters
  * method : post
  * param : clusterId 클러스터명
- * param : clusterId 클러스터명
- *
+ * param : definitionId 클러스터정의 설정아이디
  */
 @Path("/v1/clusters")
 public class ClustersAPI extends BaseAPI {
@@ -30,9 +29,13 @@ public class ClustersAPI extends BaseAPI {
     @Path("/")
     public Response createCluster(@FormDataParam("id") String clusterId
             , @FormDataParam("definition") String definitionId) throws Exception {
-
-        CreateClusterActionRequest actionId = new CreateClusterActionRequest(clusterId, definitionId);
-        ActionStatus actionStatus = actionService().request(actionId);
-        return Response.ok(actionStatus).build();
+        try {
+            CreateClusterActionRequest actionId = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionStatus actionStatus = actionService().request(actionId);
+            return Response.ok(actionStatus).build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

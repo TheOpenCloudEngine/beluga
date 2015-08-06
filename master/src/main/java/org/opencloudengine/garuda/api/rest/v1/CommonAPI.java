@@ -14,7 +14,6 @@ public class CommonAPI extends BaseAPI {
         super();
     }
 
-
     /**
      * Get Action Status
      */
@@ -22,6 +21,9 @@ public class CommonAPI extends BaseAPI {
     @Path("/{actionId}")
     public Response checkStatus(@PathParam("actionId") String actionId) throws Exception {
         ActionStatus actionStatus = actionService().getStatus(actionId);
+        if(actionStatus == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(actionStatus).build();
     }
 
