@@ -20,11 +20,11 @@ import java.util.concurrent.*;
  */
 public class ActionService extends AbstractService {
 
-    //TODO 주기적으로 두 map 을 지워준다. 현재는 완료액션까지 계속 쌓이게 된다.시간이 5분이상 지난것을 먼저지우는등의 기법.
     //동일한 request가 여러번 들어오는 것을 막아주는 용도.
     private Map<ActionRequest, ActionStatus> actionRequestStatusMap;
     //id를 통해 상태를 찾을 수 있는 용도.
     private Map<String, ActionStatus> actionIdStatusMap;
+    //TODO 주기적으로 actionIdStatusMap을 확인해서 완료된것중 시간이 5분이상 지난것을 먼저 지워준다. 현재는 계속 쌓이게 된다.
 
     private ThreadPoolExecutor executor;
     private BlockingQueue<RunnableAction> queue;
