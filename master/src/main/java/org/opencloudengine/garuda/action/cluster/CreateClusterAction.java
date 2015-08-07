@@ -54,7 +54,8 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         //관리인스턴스는 하나만 존재한다고 가정한다.
         //
         CommonInstance managementInstance = topology.getManagementList().get(0);
-        final String managementAddress = managementInstance.getPrivateIpAddress();
+        //FIXME 개발이 끝나면 private으로 바꾼다.
+        final String managementAddress = managementInstance.getPublicIpAddress();
 
         /*
         * Configure packages

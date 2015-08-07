@@ -13,7 +13,7 @@ fi
 base_image=fastcat/php5_apache2
 work_dir="/tmp"
 
-registry_address="$1:5000"
+registry_address=$1
 zip_file="$2"
 image_name="$3"
 

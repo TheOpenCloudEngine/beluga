@@ -67,6 +67,8 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             throw new GarudaException("No registry instance in " + clusterId);
         }
         String registryAddress = list.get(0).getPrivateIpAddress() + ":" + ClusterPorts.REGISTRY_PORT;
+        //FIXME 개발시 테스트를 하니, 레지스트리 서버에 public으로 접근해야함..향후 private으로 변경.
+        String registryPublicAddress = list.get(0).getPublicIpAddress() + ":" + ClusterPorts.REGISTRY_PORT;
 
         list = topology.getMesosMasterList();
         if(list.size() == 0) {
@@ -88,7 +90,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         DefaultExecutor executor = new DefaultExecutor();
         CommandLine cmdLine = CommandLine.parse(command);
         // registry address
-        cmdLine.addArgument(registryAddress);
+        cmdLine.addArgument(registryPublicAddress);
         // war,zip file path
         cmdLine.addArgument(webAppFile);
         // new image name
@@ -108,7 +110,8 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         * 2. Deploy to Marathon
         * */
         status.walkStep();
-        CreateApp createApp = createApp(registryAddress, newImageName, webAppPort, cpus, memory, scale);
+        //이름에 주소가 포함되므로, 동일한 registryAddress를 적어주어야 이름을 찾을 수 있다.
+        CreateApp createApp = createApp(registryPublicAddress, newImageName, webAppPort, cpus, memory, scale);
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://"+marathonAddress).path("/v2/apps");
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));

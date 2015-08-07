@@ -15,13 +15,13 @@ public class DeployWebAppActionTest extends BaseActionTest {
     public void deployTest() {
         String clusterId = "test-cluster";
         String appId = "webapp-java";
-        String webAppFile = new File("production/sampleapp/webapp-java-1.0.jar").getAbsolutePath();
+        String webAppFile = new File("production/sampleapp/webapp-java-1.0.war").getAbsolutePath();
         String webAppType = "java7_wildfly8.2";
 
         //어느 클러스터에 보낼지
         int webAppPort = 8080; //Stack별로 정해져 있다. WAS는 8080
-        float cpus = 1.0f;
-        float memory = 1024; //최소 768이다. WAS가 512로 뜨기때문에.
+        float cpus = 0.5f;
+        float memory = 800; //최소 768이다. WAS가 512로 뜨기때문에.
         int scale = 1;
 
         DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, webAppPort, cpus, memory, scale);
