@@ -28,14 +28,14 @@ public class AppLoggerFactory {
     /**
      * 앱에 해당하는 로거를 가져온다.
      * */
-    public static Logger getLogger(String appId) {
+    public static org.slf4j.Logger getLogger(String appId) {
         return loggerMap.get(appId);
     }
 
-    public static void createLogger(File home, String appId) {
-        createLogger(home, appId, null);
+    public static org.slf4j.Logger createLogger(File home, String appId) {
+        return createLogger(home, appId, null);
     }
-    public static void createLogger(File home, String appId, String identity) {
+    public static org.slf4j.Logger createLogger(File home, String appId, String identity) {
         String logFilePath = new File(home, appId + ".log").getAbsolutePath();
         String rollingLogNamePattern = new File(home, appId + ".%i.log.zip").getAbsolutePath();
 
@@ -95,5 +95,7 @@ public class AppLoggerFactory {
         logger.info("Logger [{}] generated!", appId);
 
         loggerMap.put(appId, logger);
+
+        return logger;
     }
 }

@@ -5,15 +5,15 @@ import org.slf4j.Logger;
 /**
  * Created by swsong on 2015. 8. 7..
  */
-public class AppInfoOutputStream extends Slf4jOutputStream {
+public class ErrorLogOutputStream extends Slf4jOutputStream {
 
-    public AppInfoOutputStream(Logger logger) {
+    public ErrorLogOutputStream(Logger logger) {
         super(logger);
     }
 
 
     @Override
     protected void processLine(String line) {
-        logger.info(line);
+        logger.error(line);
     }
 }

@@ -1,7 +1,7 @@
 package org.opencloudengine.garuda.common.log;
 
-import ch.qos.logback.classic.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.io.File;
 
