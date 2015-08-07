@@ -9,7 +9,7 @@ if [ $# -ne 1 ] ; then
     exit 1
 fi
 
-registry_address=$1
+registry_address="$1:5000"
 
 for image_name in java7_wildfly8.2 php5_apache2
 do
