@@ -104,7 +104,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         executor.setExitValue(0);
         int exitValue = executor.execute(cmdLine);
 
-        appLogger.info("Build docker images process exit with {}", appId, exitValue);
+        appLogger.info("Build and push docker images for [{}] process exit with {}", appId, exitValue);
 
         /*
         * 2. Deploy to Marathon

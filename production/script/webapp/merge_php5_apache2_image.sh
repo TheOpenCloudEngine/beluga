@@ -34,5 +34,11 @@ docker build -t "$image_name" .
 
 docker push "$registry_address"/"$image_name"
 
+push_result=$?
+
 cd ..
 rm -rf $filename
+
+if [ $push_result -ne 0 ]; then
+    exit 1
+fi

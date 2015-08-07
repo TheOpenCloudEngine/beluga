@@ -34,5 +34,11 @@ docker build -t "$registry_address"/"$image_name" .
 echo docker push "$registry_address"/"$image_name"
 docker push "$registry_address"/"$image_name"
 
+push_result=$?
+
 cd ..
 rm -rf $temp_dir
+
+if [ $push_result -ne 0 ]; then
+    exit 1
+fi
