@@ -5,29 +5,34 @@
 #
 
 if [ $# -ne 3 ] ; then
-    echo "Usage: $0 <registry_address> <zip_file> <new_image>"
+    echo "Usage: $0 <registry_address> <zip_file> <image_name>"
     echo "Sample: $0 192.168.0.10 Calendar.zip php-calendar"
     exit 1
 fi
 
+base_image=fastcat/php5_apache2
+work_dir="/tmp"
+
 registry_address="$1:5000"
 zip_file="$2"
-new_image="$3"
-
-work_dir="/tmp"
+image_name="$3"
 
 cd "$work_dir"
 
-#registry_address=
-base_image=php5_apache2
-filename=$(uuidgen -t)
+filename=$(uuidgen)
+mkdir $filename
+cd $filename
 
-echo FROM "$registry_address"/"$base_image" >> $filename
-echo COPY "$zip_file" /var/www/html/ >> $filename
-echo RUN ["\"unzip\"", "\"-oq\"", "\"/var/www/html/$zip_file\"", "\"-d\"", "\"/var/www/html/\""] >> $filename
-echo RUN ["\"rm\"", "\"-f\"", "\"/var/www/html/$zip_file\""] >> $filename
-docker build -t "$registry_address"/"$new_image" -f $filename .
+cp $zip_file ./app.zip
 
-docker push "$registry_address"/"$new_image"
+echo FROM "$registry_address"/"$base_image" > Dockerfile
+echo COPY app.zip /var/www/html/ >> Dockerfile
+echo RUN ["\"unzip\"", "\"-oq\"", "\"/var/www/html/app.zip\"", "\"-d\"", "\"/var/www/html/\""] >> Dockerfile
+echo RUN ["\"rm\"", "\"-f\"", "\"/var/www/html/app.zip\""] >> Dockerfile
 
-rm $filename
+docker build -t "$image_name" .
+
+docker push "$registry_address"/"$image_name"
+
+cd ..
+rm -rf $filename

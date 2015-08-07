@@ -4,6 +4,9 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.action.RunnableAction;
+import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.log.AppLoggerFactory;
 import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
 import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
@@ -11,9 +14,9 @@ import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.CreateApp;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Docker;
 import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.PortMapping;
+import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.env.ScriptFileNames;
-import org.opencloudengine.garuda.env.SettingManager;
-import org.opencloudengine.garuda.env.Settings;
+import org.opencloudengine.garuda.exception.GarudaException;
 import org.slf4j.Logger;
 
 import javax.ws.rs.client.Client;
@@ -39,34 +42,53 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
     @Override
     protected void doAction() throws Exception {
         DeployWebAppActionRequest request = getActionRequest();
+        String clusterId = request.getClusterId();
         String appId = request.getAppId();
         String webAppFile = request.getWebAppFile();
         String webAppType = request.getWebAppType();
-
         //
         //for marathon
         //
-        int webAppPort = 80; //Stack별로 정해져 있다. 80고정.
-        float cpus = 0.1f;
-        float memory = 32;
-        int scale = 1;
+        int webAppPort = request.getWebAppPort();
+        float cpus = request.getCpus();
+        float memory = request.getMemory();
+        int scale = request.getScale();
 
-        String registryIPAddress = "";
+        // clusterId를 통해 인스턴스 주소를 받아온다.
+        ClusterService clusterService = serviceManager.getService(ClusterService.class);
+        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+        if(topology == null) {
+            // 그런 클러스터가 없다.
+            throw new GarudaException("No such cluster: "+ clusterId);
+        }
 
-        String marathonAddress = "";
+        List<CommonInstance> list = topology.getManagementList();
+        if(list.size() == 0) {
+            throw new GarudaException("No registry instance in " + clusterId);
+        }
+        String registryAddress = list.get(0).getPrivateIpAddress() + ":" + ClusterPorts.REGISTRY_PORT;
+
+        list = topology.getMesosMasterList();
+        if(list.size() == 0) {
+            throw new GarudaException("No marathon instance in " + clusterId);
+        }
+        //FIXME 3개일 경우 자동으로 리다이렉트 되는지 확인필요.
+        String marathonAddress = list.get(0).getPublicIpAddress() + ":" + ClusterPorts.MARATHON_PORT;
+
         /*
         * 1. Merge Image
         *
         * */
-
+        //TODO 자동으로 버전이 올라가도록..
         String newImageName = appId;
 
         status.walkStep();
+
         String command = ScriptFileNames.getMergeWebAppScriptPath(environment, webAppType);
         DefaultExecutor executor = new DefaultExecutor();
         CommandLine cmdLine = CommandLine.parse(command);
         // registry address
-        cmdLine.addArgument(registryIPAddress);
+        cmdLine.addArgument(registryAddress);
         // war,zip file path
         cmdLine.addArgument(webAppFile);
         // new image name
@@ -81,29 +103,27 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         int exitValue = executor.execute(cmdLine);
 
         appLogger.info("Build docker images process exit with {}", appId, exitValue);
+
         /*
         * 2. Deploy to Marathon
         * */
-
         status.walkStep();
-        CreateApp createApp = createApp(newImageName, webAppPort, cpus, memory, scale);
+        CreateApp createApp = createApp(registryAddress, newImageName, webAppPort, cpus, memory, scale);
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(marathonAddress).path("/v2/apps");
+        WebTarget target = client.target("http://"+marathonAddress).path("/v2/apps");
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
+        logger.debug("response status : {}", response.getStatusInfo());
+        logger.debug("response entity : {}", response.getEntity());
     }
 
 
-    //TODO 여기 코드들은 Action으로 옮겨야함.
-    private CreateApp createApp(String imageId, int containerPort, float cpus, float memory, int scale) {
+    private CreateApp createApp(String registryAddress, String imageId, int containerPort, float cpus, float memory, int scale) {
         List<PortMapping> portMappings = new ArrayList<>();
         PortMapping portMapping = new PortMapping();
         portMapping.setContainerPort(containerPort);
         //서비스 포트는 자동할당이다.
         portMapping.setServicePort(0);
         portMappings.add(portMapping);
-
-        Settings settings = SettingManager.getInstance().getSystemSettings();
-        String registryAddress = settings.getString("registry.address");
 
         Docker docker = new Docker();
         docker.setImage(String.format("%s/%s", registryAddress, imageId));

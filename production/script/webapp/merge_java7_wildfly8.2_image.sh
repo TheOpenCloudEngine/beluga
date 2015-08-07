@@ -5,26 +5,34 @@
 #
 
 if [ $# -ne 3 ] ; then
-    echo "Usage: $0 <registry_address> <war_file> <new_image>"
+    echo "Usage: $0 <registry_address> <war_file> <image_name>"
     echo "Sample: $0 192.168.0.10 Calendar.war java-calendar"
     exit 1
 fi
 
+base_image=fastcat/java7_wildfly8.2
+work_dir="/tmp"
+
 registry_address="$1:5000"
 war_file="$2"
-new_image="$3"
-
-work_dir="/tmp"
+image_name="$3"
 
 cd "$work_dir"
 
-base_image=java7_wildfly8.2
-filename=$(uuidgen -t)
+temp_dir=$(uuidgen)
+mkdir $temp_dir
+cd $temp_dir
 
-echo FROM "$registry_address"/"$base_image" >> $filename
-echo COPY "$war_file" /root/wildfly/standalone/deployments/ROOT.war >> $filename
-docker build -t "$registry_address"/"$new_image" -f $filename .
+cp $war_file ./app.war
 
-docker push "$registry_address"/"$new_image"
+echo FROM "$base_image" > Dockerfile
+echo COPY app.war /root/wildfly/standalone/deployments/ROOT.war >> Dockerfile
 
-rm $filename
+echo docker build -t "$registry_address"/"$image_name" .
+docker build -t "$registry_address"/"$image_name" .
+
+echo docker push "$registry_address"/"$image_name"
+docker push "$registry_address"/"$image_name"
+
+cd ..
+rm -rf $temp_dir

@@ -100,11 +100,11 @@ public class EC2IaaS implements IaaS {
         DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(instanceList);
         DescribeInstancesResult result = client.describeInstances(request);
         List<Reservation> reservationList = result.getReservations();
-       for(Reservation r : reservationList) {
-           for(Instance i : r.getInstances()) {
-               list.add(new CommonInstance(i));
-           }
-       }
+        for (Reservation r : reservationList) {
+            for (Instance i : r.getInstances()) {
+                list.add(new CommonInstance(i));
+            }
+        }
 
         return list;
     }

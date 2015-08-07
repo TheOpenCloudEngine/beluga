@@ -11,7 +11,6 @@ public class ErrorLogOutputStream extends Slf4jOutputStream {
         super(logger);
     }
 
-
     @Override
     protected void processLine(String line) {
         logger.error(line);
