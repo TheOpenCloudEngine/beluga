@@ -73,8 +73,8 @@ public class LoadBalancerExtension {
 
 			}
 		} catch (Exception e) {
-//			if (log.isErrorEnabled()) {
-//				log.error("Could not reload load balancer configuration", e);
+//			if (logger.isErrorEnabled()) {
+//				logger.error("Could not reload load balancer configuration", e);
 //			}
 		}
 	}

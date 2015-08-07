@@ -270,7 +270,7 @@ public class EC2Interface {
                 + keyPair.getKeyFingerprint() + "\n";
         sshAuthenticationKey += keyPair.getKeyMaterial();
 
-        // log.info("Successfully generated ssh authentication key");
+        // logger.info("Successfully generated ssh authentication key");
 
         return sshAuthenticationKey;
     }
