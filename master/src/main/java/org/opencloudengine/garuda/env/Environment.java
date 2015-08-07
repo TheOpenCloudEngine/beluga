@@ -22,7 +22,8 @@ public class Environment {
 	
 	private String home = "";
 	private File homeFile;
-	
+	private File logHomeFile;
+
 	private SettingManager settingManager;
 	
 	public Environment(String homeDirPath){
@@ -32,9 +33,10 @@ public class Environment {
 		if (home.length() > 0 && !home.endsWith(FILE_SEPARATOR)) {
 			home = home + FILE_SEPARATOR;
 		}
-		
+        logHomeFile = new File(homeFile, "logs");
+
 		System.setProperty("logback.configurationFile", new File(new File(homeFile, "conf"), "logback.xml").getAbsolutePath());
-		System.setProperty("log.path", new File(homeFile, "logs").getAbsolutePath());
+		System.setProperty("log.path", logHomeFile.getAbsolutePath());
 		
 		logger = LoggerFactory.getLogger(Environment.class);
 		 
@@ -50,10 +52,15 @@ public class Environment {
 	public String home() {
 		return home;
 	}
-	public File homeFile() {
+
+    public File homeFile() {
 		return homeFile;
 	}
-	
+
+    public File logHomeFile() {
+        return logHomeFile;
+    }
+
 	public SettingManager settingManager(){
 		return settingManager;
 	}

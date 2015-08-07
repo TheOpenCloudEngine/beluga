@@ -8,7 +8,18 @@ package org.opencloudengine.garuda.exception;
  */
 public class GarudaException extends Exception {
 
-	public GarudaException(Exception e) {
-		super(e);
-	}
+    public GarudaException() {
+    }
+
+    public GarudaException(String message) {
+        super(message);
+    }
+
+    public GarudaException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public GarudaException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -7,6 +7,7 @@ import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.StatusPrinter;
+import org.opencloudengine.garuda.env.Environment;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class AppLoggerFactory {
 
     private static Map<String, Logger> loggerMap = new ConcurrentHashMap<>();
 
+    private static final String WEBAPP_LOG_DIR = "webapp";
     private static final String APP_LOG_PATTERN1 = "[%date %level]";
     private static final String APP_LOG_PATTERN2 = "%msg%n";
     private static final String MAX_LOG_SIZE = "10MB";
@@ -32,10 +34,22 @@ public class AppLoggerFactory {
         return loggerMap.get(appId);
     }
 
+    public static org.slf4j.Logger createLogger(Environment env, String appId) {
+        return createLogger(new File(env.logHomeFile(), WEBAPP_LOG_DIR), appId, null);
+    }
+    public static org.slf4j.Logger createLogger(Environment env, String appId, String identity) {
+        return createLogger(new File(env.logHomeFile(), WEBAPP_LOG_DIR), appId, identity);
+    }
     public static org.slf4j.Logger createLogger(File home, String appId) {
         return createLogger(home, appId, null);
     }
     public static org.slf4j.Logger createLogger(File home, String appId, String identity) {
+        if(loggerMap.containsKey(appId)) {
+            return loggerMap.get(appId);
+        }
+
+        String logHomePath = System.getProperty("log.path");
+
         String logFilePath = new File(home, appId + ".log").getAbsolutePath();
         String rollingLogNamePattern = new File(home, appId + ".%i.log.zip").getAbsolutePath();
 

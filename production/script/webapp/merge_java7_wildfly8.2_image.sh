@@ -6,7 +6,7 @@
 
 if [ $# -ne 3 ] ; then
     echo "Usage: $0 <registry_address> <war_file> <new_image>"
-    echo "Sample: $0 192.168.0 Calendar.war java-calendar"
+    echo "Sample: $0 192.168.0.10 Calendar.war java-calendar"
     exit 1
 fi
 
