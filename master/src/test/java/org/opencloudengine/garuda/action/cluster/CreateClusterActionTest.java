@@ -15,7 +15,6 @@ public class CreateClusterActionTest extends BaseActionTest {
         String clusterId = "test-cluster";
         String definitionId = "ec2-real";
 
-        logger.debug("clusterService Hash {}", clusterService);
         CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
         CreateClusterAction action = new CreateClusterAction(request);
         ActionStatus status = action.getStatus();

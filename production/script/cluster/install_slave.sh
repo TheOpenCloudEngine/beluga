@@ -22,5 +22,5 @@ sudo wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker ubuntu
 
 sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
-
+sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
 

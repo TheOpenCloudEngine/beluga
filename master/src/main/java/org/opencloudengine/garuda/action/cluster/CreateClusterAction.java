@@ -74,7 +74,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
             final MesosMasterConfiguration conf = new MesosMasterConfiguration();
 
             for (CommonInstance i : topology.getMesosMasterList()) {
-                conf.withZookeeperAddress(i.getPrivateIpAddress());
+                conf.withZookeeperAddress(i.getPublicIpAddress());
             }
             final String mesosClusterName = "mesos-" + clusterId;
             final int quorum = topology.getMesosMasterList().size() / 2 + 1; //과반수.
@@ -135,7 +135,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         if(topology.getMesosSlaveList().size() > 0) {
             final MesosSlaveConfiguration slaveConf = new MesosSlaveConfiguration();
             for (CommonInstance i : topology.getMesosMasterList()) {
-                slaveConf.withZookeeperAddress(i.getPrivateIpAddress());
+                slaveConf.withZookeeperAddress(i.getPublicIpAddress());
             }
             Task slaveTask = new Task("configure mesos-slave");
             for (final CommonInstance slave : topology.getMesosSlaveList()) {
