@@ -1,14 +1,12 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
-import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.ActionStatus;
-import org.opencloudengine.garuda.action.cluster.CreateClusterActionRequest;
-import org.opencloudengine.garuda.action.cluster.DestroyClusterActionRequest;
-import org.opencloudengine.garuda.action.cluster.GetClusterActionRequest;
-import org.opencloudengine.garuda.action.cluster.GetClustersActionRequest;
+import org.opencloudengine.garuda.action.cluster.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
 /**
  * 1. 클러스터 생성
@@ -25,19 +23,51 @@ public class ClustersAPI extends BaseAPI {
     }
 
     /**
-     * Create cluster.
+     * Change clusters state
+     * type             : create | start | stop | destroy
+     * definition       : definition id. Only needed when a type is 'create'.
+     * await (optional) : boolean. wait until action task is completed.
      */
     @POST
-    @Path("/")
-    public Response createCluster(@FormDataParam("id") String clusterId
-            , @FormDataParam("definition") String definitionId) throws Exception {
+    @Path("/{id}")
+    public Response changeClusterState(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
+
+        if(data == null) {
+            return getErrorMessageOkResponse("No data transferred.");
+        }
+        String type = (String) data.get("type");
+
+        if(type == null) {
+            return getErrorMessageOkResponse("Type must be set among 'create | start | stop | destroy'");
+        }
+
+        Boolean await = (Boolean) data.get("await");
         try {
-            CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionRequest request = null;
+            if (type.equalsIgnoreCase("create")) {
+                String definitionId = (String) data.get("definition");
+                if(definitionId == null) {
+                    return getErrorMessageOkResponse("Definition must be set when type is 'create'");
+                }
+                request = new CreateClusterActionRequest(clusterId, definitionId);
+            } else if (type.equalsIgnoreCase("start")) {
+                request = new StartClusterActionRequest(clusterId);
+            } else if (type.equalsIgnoreCase("stop")) {
+                request = new StopClusterActionRequest(clusterId);
+            } else if (type.equalsIgnoreCase("destroy")) {
+                request = new DestroyClusterActionRequest(clusterId);
+            } else {
+                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'create | start | stop | destroy'");
+            }
             ActionStatus actionStatus = actionService().request(request);
+            if(await != null && await.booleanValue()) {
+                actionStatus.waitForDone();
+            }
+
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
 
@@ -54,7 +84,7 @@ public class ClustersAPI extends BaseAPI {
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
 
@@ -71,7 +101,7 @@ public class ClustersAPI extends BaseAPI {
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
 
@@ -91,7 +121,7 @@ public class ClustersAPI extends BaseAPI {
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
 }

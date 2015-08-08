@@ -134,24 +134,31 @@ public class EC2IaaS implements IaaS {
             idList.add(i.getInstanceId());
         }
 
-        while(statusSet.cardinality() < size) {
-            DescribeInstanceStatusRequest request = new DescribeInstanceStatusRequest().withInstanceIds(idList);
-            DescribeInstanceStatusResult result = client.describeInstanceStatus(request);
-            List<InstanceStatus> list = result.getInstanceStatuses();
-
-            for (int i = 0; i < list.size(); i++) {
-                InstanceStatus status = list.get(i);
-                InstanceState state = status.getInstanceState();
-                logger.debug("Instance status [{}] {} / {}", idList.get(i), state.getName(), status.getInstanceStatus().getStatus());
-                logger.debug("{}", status.getInstanceStatus().getDetails());
-                //완료되지 않았고, 실행중으로 변했다면.
-                if (!statusSet.get(i) && state.getCode() == stateCode) {
-                    statusSet.set(i);
+        while(true) {
+            DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(idList);
+            DescribeInstancesResult result = client.describeInstances(request);
+            List<Reservation> reservations = result.getReservations();
+            int i = 0;
+            for(Reservation reservation : reservations) {
+                List<Instance> instances = reservation.getInstances();
+                for(Instance instance : instances) {
+                    InstanceState state = instance.getState();
+                    logger.debug("Instance status [{}] {}/{}/{}", instance.getInstanceId(), state.getName(), state.getCode(), instance.getStateReason());
+                    //완료되지 않았고, 실행중으로 변했다면.
+                    if (!statusSet.get(i) && state.getCode() == stateCode) {
+                        statusSet.set(i);
+                    }
+                    i++;
                 }
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
+
+            if(statusSet.cardinality() < size) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+            } else {
+                break;
             }
         }
     }

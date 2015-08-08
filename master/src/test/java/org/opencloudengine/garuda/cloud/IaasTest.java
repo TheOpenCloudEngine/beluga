@@ -45,7 +45,7 @@ public class IaaSTest {
         }
 
         logger.debug("Wait..");
-        iaas.waitUntilInstancesReady(list);
+        iaas.waitUntilInstancesRunning(list);
         logger.debug("Done!!");
     }
 
@@ -62,7 +62,7 @@ public class IaaSTest {
         }
 
         logger.debug("Wait..");
-        iaas.waitUntilInstancesReady(list);
+        iaas.waitUntilInstancesRunning(list);
         logger.debug("Done!!");
     }
 
@@ -77,7 +77,7 @@ public class IaaSTest {
         }
 
         logger.debug("Wait..");
-        iaas.waitUntilInstancesReady(list);
+        iaas.waitUntilInstancesRunning(list);
         logger.debug("Launch Done!!");
 
 

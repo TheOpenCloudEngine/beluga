@@ -123,6 +123,7 @@ public class ClusterService extends AbstractService {
     }
 
     public void destroyCluster(String clusterId) throws GarudaException {
+        checkIfClusterExists(clusterId);
         ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
         try {
             destroyCluster(clusterTopology);
@@ -157,6 +158,7 @@ public class ClusterService extends AbstractService {
     }
 
     public void stopCluster(String clusterId) throws GarudaException {
+        checkIfClusterExists(clusterId);
         ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
         try {
             stopCluster(clusterTopology);
@@ -189,6 +191,7 @@ public class ClusterService extends AbstractService {
     }
 
     public void startCluster(String clusterId) throws GarudaException {
+        checkIfClusterExists(clusterId);
         ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
         try {
             startCluster(clusterTopology);
@@ -197,8 +200,13 @@ public class ClusterService extends AbstractService {
         }
     }
 
-    private void startCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+    private void checkIfClusterExists(String clusterId) throws GarudaException {
+        if(! clusterTopologyMap.containsKey(clusterId)) {
+            throw new GarudaException("Cluster not found : " + clusterId);
+        }
+    }
 
+    private void startCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
 
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
@@ -248,10 +256,12 @@ public class ClusterService extends AbstractService {
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
     }
-    public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException {
+    public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
         logger.info("Load cluster {}..", clusterId);
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
-
+        if(settings == null) {
+            throw new GarudaException("Cluster topology config not found : " + clusterId);
+        }
         String iaasProfile = settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
         if(iaasProfile == null) {
             throw new UnknownIaasProviderException("provider is null.");

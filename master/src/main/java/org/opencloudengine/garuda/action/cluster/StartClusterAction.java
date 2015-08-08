@@ -4,14 +4,14 @@ import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
 
 /**
- * 클러스터를 정지한다.
+ * 클러스터를 시작한다.
  * Created by swsong on 2015. 8. 6..
  */
-public class StopClusterAction extends RunnableAction<StopClusterActionRequest> {
+public class StartClusterAction extends RunnableAction<StartClusterActionRequest> {
 
-    public StopClusterAction(StopClusterActionRequest actionRequest) {
+    public StartClusterAction(StartClusterActionRequest actionRequest) {
         super(actionRequest);
-        status.registerStep("stop cluster instances.");
+        status.registerStep("start cluster instances.");
     }
 
     @Override
@@ -19,6 +19,6 @@ public class StopClusterAction extends RunnableAction<StopClusterActionRequest> 
         String clusterId = getActionRequest().getClusterId();
         ClusterService clusterService = serviceManager.getService(ClusterService.class);
         status.walkStep();
-        clusterService.stopCluster(clusterId);
+        clusterService.startCluster(clusterId);
     }
 }

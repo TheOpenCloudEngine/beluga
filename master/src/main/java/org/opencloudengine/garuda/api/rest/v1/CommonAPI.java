@@ -18,13 +18,12 @@ public class CommonAPI extends BaseAPI {
      * Get Action Status
      */
     @GET
-    @Path("/{actionId}")
-    public Response checkStatus(@PathParam("actionId") String actionId) throws Exception {
+    @Path("/{id}")
+    public Response checkStatus(@PathParam("id") String actionId) throws Exception {
         ActionStatus actionStatus = actionService().getStatus(actionId);
         if(actionStatus == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return getErrorMessageOkResponse("Cannot find the action id : " + actionId);
         }
         return Response.ok(actionStatus).build();
     }
-
 }

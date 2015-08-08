@@ -141,14 +141,14 @@ public class AppsAPIBak {
 		return Response.serverError().build();
 	}
 
-    @GET
-    @Path("/")
-    public Response getAppList() {
-
-        //TODO
-
-        return null;
-    }
+//    @GET
+//    @Path("/")
+//    public Response getAppList() {
+//
+//        //TODO
+//
+//        return null;
+//    }
 
 
     @GET

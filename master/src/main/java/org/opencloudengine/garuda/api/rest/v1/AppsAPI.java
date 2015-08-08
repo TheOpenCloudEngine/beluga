@@ -1,6 +1,8 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /**
@@ -9,17 +11,9 @@ import javax.ws.rs.core.Response;
 @Path("/v1/apps")
 public class AppsAPI {
 
-
-
-    /**
-     * 앱 메타데이터를 초기화한다.
-     * */
-    public Response crateApp(){
-
-        return null;
-    }
-
-    public Response deployApp(){
+    @POST
+    @Path("/{id}")
+    public Response deployApp(@PathParam("id") String appId) throws Exception {
 
         return null;
     }

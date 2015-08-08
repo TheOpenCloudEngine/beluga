@@ -154,6 +154,9 @@ public class SettingManager {
 		
 		Properties properties = getProperties(configFilepath);
 
+        if(properties == null) {
+            return null;
+        }
         String includeFilepath = properties.getProperty("@include");
         if(includeFilepath != null) {
             Properties includeProperties = getProperties(includeFilepath);
