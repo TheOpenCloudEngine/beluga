@@ -21,6 +21,18 @@ sudo wget -qO- https://get.docker.com/ | sh
 
 sudo usermod -aG docker ubuntu
 
+# cadvisor를 시작한다.
+sudo docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --detach=true --name=cadvisor   google/cadvisor:latest
+
+# cadvisor 자동시작을 등록한다.
+echo 'start on runlevel [2345]' | sudo tee /etc/init/cadvisor.conf
+echo 'respawn' | sudo tee -a /etc/init/cadvisor.conf
+echo 'kill timeout 20' | sudo tee -a /etc/init/cadvisor.conf
+echo 'exec docker start cadvisor' | sudo tee -a /etc/init/cadvisor.conf
+
+
 sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
 sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
+
+
 
