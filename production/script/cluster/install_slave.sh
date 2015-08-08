@@ -30,9 +30,5 @@ echo 'respawn' | sudo tee -a /etc/init/cadvisor.conf
 echo 'kill timeout 20' | sudo tee -a /etc/init/cadvisor.conf
 echo 'exec docker start cadvisor' | sudo tee -a /etc/init/cadvisor.conf
 
-
 sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
 sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
-
-
-
