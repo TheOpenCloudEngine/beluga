@@ -64,7 +64,7 @@ public class ClusterDefinition extends PropertyConfig {
         iaasProfile= p.getProperty("iaasProfile");
 
         try {
-            timeout = Integer.parseInt(p.getProperty("timeout"));
+            timeout = Integer.parseInt(p.getProperty("ssh.timeout"));
         } catch (Exception e) {
             timeout = 60;
         }
