@@ -200,12 +200,6 @@ public class ClusterService extends AbstractService {
         }
     }
 
-    private void checkIfClusterExists(String clusterId) throws GarudaException {
-        if(! clusterTopologyMap.containsKey(clusterId)) {
-            throw new GarudaException("Cluster not found : " + clusterId);
-        }
-    }
-
     private void startCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
 
@@ -227,6 +221,42 @@ public class ClusterService extends AbstractService {
         iaas.updateInstancesInfo(allNodeList);
     }
 
+    public void restartCluster(String clusterId) throws GarudaException {
+        checkIfClusterExists(clusterId);
+        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
+        try {
+            restartCluster(clusterTopology);
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
+    }
+
+    private void restartCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        IaaS iaas = iaasProvider.getIaas();
+
+        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
+        try {
+            iaas.rebootInstances(IaasUtils.getIdList(allNodeList));
+            iaas.waitUntilInstancesRunning(allNodeList);
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+        // 상태 정보를 업데이트 한다.
+        iaas.updateInstancesInfo(allNodeList);
+    }
+
+    private void checkIfClusterExists(String clusterId) throws GarudaException {
+        if(! clusterTopologyMap.containsKey(clusterId)) {
+            throw new GarudaException("Cluster not found : " + clusterId);
+        }
+    }
 
     private boolean isClusterIdExistInSetting(String clusterId) {
         SettingManager settingManager = environment.settingManager();
