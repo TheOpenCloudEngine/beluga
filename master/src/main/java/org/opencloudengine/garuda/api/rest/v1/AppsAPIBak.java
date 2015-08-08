@@ -6,10 +6,10 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.common.util.CommandUtils;
 import org.opencloudengine.garuda.common.util.JsonUtils;
-import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Container;
-import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.CreateApp;
-import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.Docker;
-import org.opencloudengine.garuda.controller.mesos.marathon.model.apps.createapp.req.PortMapping;
+import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.Container;
+import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.CreateApp;
+import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.Docker;
+import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.PortMapping;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.env.Settings;
@@ -110,7 +110,7 @@ public class AppsAPIBak {
 
             Map<String, String> envParameters = new HashMap<>();
             envParameters.put("registry_address", settings.getString("registry.address"));
-            envParameters.put("marathon_address", settings.getString("marathon-master.address"));
+            envParameters.put("marathon_address", settings.getString("marathon-master1.address"));
 
 			//실행 deploy_php_apache.sh <작업디렉토리> <App파일명> <Docker 이미지명>
 			String output = CommandUtils.executeCommand(new String[]{"/bin/bash", targetScriptFilePath.getAbsolutePath(), workDir.getAbsolutePath(), fileName, newImageName}, envParameters);
@@ -209,7 +209,7 @@ public class AppsAPIBak {
         }
 
         Settings settings = SettingManager.getInstance().getSystemSettings();
-        String marathonAddress = String.format("http://%s", settings.getString("marathon-master.address"));
+        String marathonAddress = String.format("http://%s", settings.getString("marathon-master1.address"));
 
         String type = typeNode.asText();
 

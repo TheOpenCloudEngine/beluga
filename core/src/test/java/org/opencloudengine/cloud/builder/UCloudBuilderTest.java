@@ -24,7 +24,7 @@ public class UCloudBuilderTest {
 		System.out.println("setUpOnce");
 		Properties options = new Properties();
 		try {
-			File file = new File("/Users/somehow/Documents/workspace/garuda-ws/garuda-master/src/main/resources/conf/arvue.conf");
+			File file = new File("/Users/somehow/Documents/workspace/garuda-ws/garuda-master1/src/main/resources/conf/arvue.conf");
 			if(file.exists())
 				options.load(new FileInputStream(file));
 		} catch (Exception e) {

@@ -25,7 +25,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
     public CreateClusterAction(CreateClusterActionRequest request) {
         super(request);
         status.registerStep("Create instances.");
-        status.registerStep("Configure mesos-master.");
+        status.registerStep("Configure mesos-master1.");
         status.registerStep("Configure mesos-slave.");
     }
 
@@ -67,7 +67,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         int timeout = clusterDefinition.getTimeout();
 
         //
-        // 1.1 mesos-master
+        // 1.1 mesos-master1
         //
         status.walkStep();
         if(topology.getMesosMasterList().size() > 0) {
@@ -121,11 +121,11 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
 
 
             //
-            // 1.2 Reboot mesos master
+            // 1.2 Reboot mesos master1
             //
-            logger.debug("Reboot mesos-master : {}", topology.getMesosMasterList());
+            logger.debug("Reboot mesos-master1 : {}", topology.getMesosMasterList());
             clusterService.rebootInstances(topology, topology.getMesosMasterList(), true);
-            logger.debug("Reboot mesos-master Done.");
+            logger.debug("Reboot mesos-master1 Done.");
         }
 
         //

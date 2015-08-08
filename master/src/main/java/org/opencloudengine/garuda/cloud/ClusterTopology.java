@@ -17,9 +17,9 @@ public class ClusterTopology {
     public static final String IAAS_PROFILE_KEY = "iaasProfile";
     public static final String CLUSTER_ID_KEY = "clusterId";
 
-    public static final String GARUDA_MASTER_ROLE = "garuda-master";
+    public static final String GARUDA_MASTER_ROLE = "garuda-master1";
     public static final String PROXY_ROLE = "proxy";
-    public static final String MESOS_MASTER_ROLE = "mesos-master";
+    public static final String MESOS_MASTER_ROLE = "mesos-master1";
     public static final String MESOS_SLAVE_ROLE = "mesos-slave";
     public static final String MANAGEMENT_DB_REGISTRY_ROLE = "management";
     public static final String SERVICE_NODES_ROLE = "service-db";

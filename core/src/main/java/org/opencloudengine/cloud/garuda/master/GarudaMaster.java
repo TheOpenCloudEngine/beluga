@@ -102,7 +102,7 @@ public class GarudaMaster {
 			List<CloudInstance> runningInstances = cloudBuilder.getRunningInstances(groupId);
 			
 			checkAppServers(runningInstances);
-			/* Broadcast master address to running backends */
+			/* Broadcast master1 address to running backends */
 			//broadcastMasterAddress();
 
 			// Update backend statuses
@@ -974,7 +974,7 @@ public class GarudaMaster {
 					instanceAddress = inst.getPublicDnsName();
 				}
 				
-				System.out.println("Sending master address (" + masterAddress + ") to instance (" + instanceAddress + ")");
+				System.out.println("Sending master1 address (" + masterAddress + ") to instance (" + instanceAddress + ")");
 				// Send the request
 				URL url = new URL("http://"+instanceAddress+":" + backend.getControllerPort() + data);
 				URLConnection conn = url.openConnection();
