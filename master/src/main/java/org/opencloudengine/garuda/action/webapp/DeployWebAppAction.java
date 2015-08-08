@@ -10,13 +10,13 @@ import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.log.AppLoggerFactory;
 import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
 import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
-import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.Container;
-import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.CreateApp;
-import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.Docker;
-import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.createapp.req.PortMapping;
 import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.marathon.model.App;
+import org.opencloudengine.garuda.mesos.marathon.model.Container;
+import org.opencloudengine.garuda.mesos.marathon.model.Docker;
+import org.opencloudengine.garuda.mesos.marathon.model.PortMapping;
 import org.slf4j.Logger;
 
 import javax.ws.rs.client.Client;
@@ -111,18 +111,18 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         * */
         status.walkStep();
         //이름에 주소가 포함되므로, 동일한 registryAddress를 적어주어야 이름을 찾을 수 있다.
-        CreateApp createApp = createApp(registryPublicAddress, newImageName, webAppPort, cpus, memory, scale);
+        App app = createApp(registryPublicAddress, newImageName, webAppPort, cpus, memory, scale);
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://"+marathonAddress).path("/v2/apps");
         //PUT하면 업데이트
 //        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
-        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(createApp));
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(app));
         logger.debug("response status : {}", response.getStatusInfo());
         logger.debug("response entity : {}", response.getEntity());
     }
 
 
-    private CreateApp createApp(String registryAddress, String imageId, int containerPort, float cpus, float memory, int scale) {
+    private App createApp(String registryAddress, String imageId, int containerPort, float cpus, float memory, int scale) {
         List<PortMapping> portMappings = new ArrayList<>();
         PortMapping portMapping = new PortMapping();
         portMapping.setContainerPort(containerPort);
@@ -140,7 +140,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         container.setDocker(docker);
         container.setType("DOCKER");
 
-        CreateApp createApp = new CreateApp();
+        App createApp = new App();
         createApp.setId(imageId);
         createApp.setContainer(container);
         createApp.setInstances(scale);
