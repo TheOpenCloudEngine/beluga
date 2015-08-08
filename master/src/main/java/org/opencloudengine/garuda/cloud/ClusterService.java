@@ -148,7 +148,7 @@ public class ClusterService extends AbstractService {
                 iaas.close();
             }
         }
-        clusterTopologyMap.remove(clusterTopology);
+        clusterTopologyMap.remove(clusterTopology.getClusterId());
 
         String clusterId = clusterTopology.getClusterId();
         //clusterId 제거.

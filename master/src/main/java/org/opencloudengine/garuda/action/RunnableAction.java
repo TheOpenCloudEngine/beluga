@@ -47,8 +47,8 @@ public abstract class RunnableAction<RequestType extends ActionRequest> implemen
             status.setComplete();
         } catch (Throwable t) {
             status.setError(t);
-            logger.error("### Error {} : {}", status.getActionName(), t.getMessage());
-            logger.error("", t);
+            logger.warn("### Action Error: {} : {}", status.getActionName(), t.getMessage());
+//            logger.error("", t);
         } finally {
             logger.info("### Finished Action {}", status.getActionName(), status.getId());
             logger.info("### Status = {}", status);
