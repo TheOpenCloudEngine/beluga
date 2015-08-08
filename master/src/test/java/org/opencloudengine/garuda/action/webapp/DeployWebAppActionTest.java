@@ -21,7 +21,7 @@ public class DeployWebAppActionTest extends BaseActionTest {
         //어느 클러스터에 보낼지
         int webAppPort = 8080; //Stack별로 정해져 있다. WAS는 8080
         float cpus = 0.2f;
-        float memory = 600; //최소 768이다. WAS가 512로 뜨기때문에.
+        float memory = 700; //최소 768이다. WAS가 512로 뜨기때문에.
         int scale = 1;
 
         DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, webAppPort, cpus, memory, scale);

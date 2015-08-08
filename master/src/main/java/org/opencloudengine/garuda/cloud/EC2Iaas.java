@@ -18,7 +18,13 @@ public class EC2IaaS implements IaaS {
 
     private final AmazonEC2Client client;
     private final static String DEVICE_NAME = "/dev/sda1";
+
+    private final static int PENDING_STATE = 0;
     private final static int RUNNING_STATE = 16;
+    private final static int SHUTTING_DOWN_STATE = 32;
+    private final static int TERMINATED_STATE = 48;
+    private final static int STOPPING_STATE = 64;
+    private final static int STOPPED_STATE = 80;
 
     public EC2IaaS(String endPoint, String accessKey, String secretKey, Properties overrides) {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -75,7 +81,7 @@ public class EC2IaaS implements IaaS {
     }
 
     @Override
-    public void updateInstances(List<CommonInstance> instanceList) {
+    public void updateInstancesInfo(List<CommonInstance> instanceList) {
         List<String> idList = IaasUtils.getIdList(instanceList);
         DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(idList);
         DescribeInstancesResult result = client.describeInstances(request);
@@ -109,7 +115,17 @@ public class EC2IaaS implements IaaS {
         return list;
     }
 
-    public void waitUntilInstancesReady(Collection<CommonInstance> instanceList) {
+    @Override
+    public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList) {
+        waitUntilInstancesState(instanceList, RUNNING_STATE);
+    }
+
+    @Override
+    public void waitUntilInstancesStopped(Collection<CommonInstance> instanceList) {
+        waitUntilInstancesState(instanceList, STOPPED_STATE);
+    }
+
+    private void waitUntilInstancesState(Collection<CommonInstance> instanceList, int stateCode) {
         int size = instanceList.size();
         BitSet statusSet = new BitSet(size);
 
@@ -129,7 +145,7 @@ public class EC2IaaS implements IaaS {
                 logger.debug("Instance status [{}] {} / {}", idList.get(i), state.getName(), status.getInstanceStatus().getStatus());
                 logger.debug("{}", status.getInstanceStatus().getDetails());
                 //완료되지 않았고, 실행중으로 변했다면.
-                if (!statusSet.get(i) && state.getCode() == RUNNING_STATE) {
+                if (!statusSet.get(i) && state.getCode() == stateCode) {
                     statusSet.set(i);
                 }
             }
@@ -152,6 +168,20 @@ public class EC2IaaS implements IaaS {
         TerminateInstancesRequest terminateInstancesRequest = new TerminateInstancesRequest();
         terminateInstancesRequest.setInstanceIds(instanceIdList);
         client.terminateInstances(terminateInstancesRequest);
+    }
+
+    @Override
+    public void stopInstances(Collection<String> instanceIdList) {
+        StopInstancesRequest stopInstancesRequest = new StopInstancesRequest();
+        stopInstancesRequest.setInstanceIds(instanceIdList);
+        client.stopInstances(stopInstancesRequest);
+    }
+
+    @Override
+    public void startInstances(Collection<String> instanceIdList) {
+        StartInstancesRequest startInstancesRequest = new StartInstancesRequest();
+        startInstancesRequest.setInstanceIds(instanceIdList);
+        client.startInstances(startInstancesRequest);
     }
 
     @Override

@@ -109,9 +109,9 @@ public class ClusterService extends AbstractService {
         if(waitUntilInstanceAvailable) {
             List<CommonInstance> list = clusterTopology.getAllNodeList();
             //Wait until available
-            iaas.waitUntilInstancesReady(list);
+            iaas.waitUntilInstancesRunning(list);
             //Fetch latest instance information
-            iaas.updateInstances(list);
+            iaas.updateInstancesInfo(list);
         }
 
         //runtime 토폴로지에 넣어준다.
@@ -155,6 +155,70 @@ public class ClusterService extends AbstractService {
         //topology.cluster 설정파일 삭제.
         environment.settingManager().deleteClusterTopology(clusterId);
     }
+
+    public void stopCluster(String clusterId) throws GarudaException {
+        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
+        try {
+            stopCluster(clusterTopology);
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
+    }
+
+    private void stopCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+
+        String iaasProfile = clusterTopology.getIaasProfile();
+
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        IaaS iaas = iaasProvider.getIaas();
+
+        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
+        try {
+            iaas.stopInstances(IaasUtils.getIdList(allNodeList));
+            iaas.waitUntilInstancesStopped(allNodeList);
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+
+        // 상태 정보를 업데이트 한다.
+        iaas.updateInstancesInfo(clusterTopology.getAllNodeList());
+    }
+
+    public void startCluster(String clusterId) throws GarudaException {
+        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
+        try {
+            startCluster(clusterTopology);
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
+    }
+
+    private void startCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+
+        String iaasProfile = clusterTopology.getIaasProfile();
+
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        IaaS iaas = iaasProvider.getIaas();
+
+        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
+        try {
+            iaas.startInstances(IaasUtils.getIdList(allNodeList));
+            iaas.waitUntilInstancesRunning(allNodeList);
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+        // 상태 정보를 업데이트 한다.
+        iaas.updateInstancesInfo(allNodeList);
+    }
+
 
     private boolean isClusterIdExistInSetting(String clusterId) {
         SettingManager settingManager = environment.settingManager();
@@ -255,9 +319,9 @@ public class ClusterService extends AbstractService {
             sleep(5);
             if(waitUntilInstanceAvailable) {
                 //Wait until available
-                iaas.waitUntilInstancesReady(instanceList);
+                iaas.waitUntilInstancesRunning(instanceList);
                 //Fetch latest instance information
-                iaas.updateInstances(instanceList);
+                iaas.updateInstancesInfo(instanceList);
             }
         } finally {
             if(iaas != null) {

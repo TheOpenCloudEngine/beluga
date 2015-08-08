@@ -12,13 +12,19 @@ public interface IaaS {
 
     public void terminateInstance(String id);
 
-    public void updateInstances(List<CommonInstance> instanceList);
+    public void updateInstancesInfo(List<CommonInstance> instanceList);
 
     public List<CommonInstance> getInstances(Collection<String> instanceList);
 
-    public void waitUntilInstancesReady(Collection<CommonInstance> instanceList);
+    public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList);
+
+    public void waitUntilInstancesStopped(Collection<CommonInstance> instanceList);
 
     public void terminateInstances(Collection<String> instanceIdList) ;
+
+    public void stopInstances(Collection<String> instanceIdList) ;
+
+    public void startInstances(Collection<String> instanceIdList) ;
 
     public void rebootInstances(Collection<String> instanceIdList);
 

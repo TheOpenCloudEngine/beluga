@@ -20,7 +20,7 @@ public class OpenstackIaaS extends JcloudIaaS {
     }
 
     @Override
-    public void updateInstances(List<CommonInstance> instanceList) {
+    public void updateInstancesInfo(List<CommonInstance> instanceList) {
 
     }
 
@@ -30,12 +30,27 @@ public class OpenstackIaaS extends JcloudIaaS {
     }
 
     @Override
-    public void waitUntilInstancesReady(Collection<CommonInstance> instanceList) {
+    public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList) {
+
+    }
+
+    @Override
+    public void waitUntilInstancesStopped(Collection<CommonInstance> instanceList) {
 
     }
 
     @Override
     public void terminateInstances(Collection<String> instanceIdList) {
+
+    }
+
+    @Override
+    public void stopInstances(Collection<String> instanceIdList) {
+
+    }
+
+    @Override
+    public void startInstances(Collection<String> instanceIdList) {
 
     }
 

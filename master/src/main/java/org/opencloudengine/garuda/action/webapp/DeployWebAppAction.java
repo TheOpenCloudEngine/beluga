@@ -114,7 +114,9 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         CreateApp createApp = createApp(registryPublicAddress, newImageName, webAppPort, cpus, memory, scale);
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://"+marathonAddress).path("/v2/apps");
-        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
+        //PUT하면 업데이트
+//        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(createApp));
         logger.debug("response status : {}", response.getStatusInfo());
         logger.debug("response entity : {}", response.getEntity());
     }
