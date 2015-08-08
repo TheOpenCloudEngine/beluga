@@ -24,7 +24,7 @@ public class ClustersAPI extends BaseAPI {
 
     /**
      * Change clusters state
-     * type             : create | start | stop | destroy
+     * type             : create | start | stop | restart | destroy
      * definition       : definition id. Only needed when a type is 'create'.
      * await (optional) : boolean. wait until action task is completed.
      */
@@ -38,7 +38,7 @@ public class ClustersAPI extends BaseAPI {
         String type = (String) data.get("type");
 
         if(type == null) {
-            return getErrorMessageOkResponse("Type must be set among 'create | start | stop | destroy'");
+            return getErrorMessageOkResponse("Type must be set among 'create | start | stop | restart | destroy'");
         }
 
         Boolean await = (Boolean) data.get("await");
@@ -54,10 +54,12 @@ public class ClustersAPI extends BaseAPI {
                 request = new StartClusterActionRequest(clusterId);
             } else if (type.equalsIgnoreCase("stop")) {
                 request = new StopClusterActionRequest(clusterId);
+            } else if (type.equalsIgnoreCase("restart")) {
+                request = new RestartClusterActionRequest(clusterId);
             } else if (type.equalsIgnoreCase("destroy")) {
                 request = new DestroyClusterActionRequest(clusterId);
             } else {
-                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'create | start | stop | destroy'");
+                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'create | start | stop | restart | destroy'");
             }
             ActionStatus actionStatus = actionService().request(request);
             if(await != null && await.booleanValue()) {
