@@ -11,7 +11,19 @@ import org.opencloudengine.garuda.exception.GarudaException;
 public class CreateClusterActionTest extends BaseActionTest {
 
     @Test
-    public void createCluster() throws GarudaException, InterruptedException {
+    public void createEC2DevelopmentCluster() throws GarudaException, InterruptedException {
+        String clusterId = "test-cluster";
+        String definitionId = "ec2-dev";
+
+        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+        CreateClusterAction action = new CreateClusterAction(request);
+        ActionStatus status = action.getStatus();
+        action.run();
+        status.waitForDone();
+    }
+
+    @Test
+    public void createEC2RealCluster() throws GarudaException, InterruptedException {
         String clusterId = "test-cluster";
         String definitionId = "ec2-real";
 
@@ -19,14 +31,6 @@ public class CreateClusterActionTest extends BaseActionTest {
         CreateClusterAction action = new CreateClusterAction(request);
         ActionStatus status = action.getStatus();
         action.run();
-
-        while(!status.checkDone()) {
-            System.out.println(String.format("%d / %d", status.getStep().getCurrentStep(), status.getStep().getTotalStep()));
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-        logger.info("#### Done.");
+        status.waitForDone();
     }
 }
