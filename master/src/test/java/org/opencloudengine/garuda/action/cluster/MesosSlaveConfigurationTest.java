@@ -1,6 +1,7 @@
 package org.opencloudengine.garuda.action.cluster;
 
 import org.junit.Test;
+import org.opencloudengine.garuda.mesos.MesosSlaveConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

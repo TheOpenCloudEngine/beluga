@@ -19,6 +19,7 @@ public class ScriptFileNames {
     * */
     private static final String WEBAPP_SCRIPT_FILE_ROOT = "script/webapp/";
     public static final String MERGE_IMAGE_FORMAT = "merge_%s_image.sh";
+    public static final String PUSH_IMAGE = "push_image_to_registry.sh";
 
     public static String getClusterScriptPath(Environment env, String path) {
         return env.filePaths().makeRelativePath(CLUSTER_SCRIPT_FILE_ROOT + path).file().getAbsolutePath();
@@ -28,8 +29,19 @@ public class ScriptFileNames {
         return env.filePaths().makeRelativePath(CLUSTER_SCRIPT_FILE_ROOT + path).file();
     }
 
-    public static String getMergeWebAppScriptPath(Environment env, String stackType) {
-        String fileName = String.format(MERGE_IMAGE_FORMAT, stackType);
-        return env.filePaths().makeRelativePath(WEBAPP_SCRIPT_FILE_ROOT + fileName).file().getAbsolutePath();
+    public static String getMergeWebAppImageScriptPath(Environment env, String stackType) {
+        return getWebAppScriptPath(env, String.format(MERGE_IMAGE_FORMAT, stackType));
+    }
+
+    public static String getPushImageToRegistryScriptPath(Environment env) {
+        return getWebAppScriptPath(env, PUSH_IMAGE);
+    }
+
+    public static String getWebAppScriptPath(Environment env, String fileName) {
+        File f = env.filePaths().makeRelativePath(WEBAPP_SCRIPT_FILE_ROOT + fileName).file();
+        if(!f.canExecute()) {
+            f.setExecutable(true);
+        }
+        return f.getAbsolutePath();
     }
 }

@@ -1,17 +1,25 @@
 package org.opencloudengine.garuda.mesos;
 
-import org.opencloudengine.garuda.action.cluster.MesosMasterConfiguration;
-import org.opencloudengine.garuda.action.cluster.MesosSlaveConfiguration;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.action.task.Task;
 import org.opencloudengine.garuda.action.task.TaskResult;
 import org.opencloudengine.garuda.action.task.Todo;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.CommonInstance;
+import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
+import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.marathon.message.GetApp;
+import org.opencloudengine.garuda.mesos.marathon.model.App;
+import org.opencloudengine.garuda.mesos.marathon.model.Container;
+import org.opencloudengine.garuda.mesos.marathon.model.Docker;
+import org.opencloudengine.garuda.mesos.marathon.model.PortMapping;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -19,7 +27,15 @@ import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.utils.SshClient;
 import org.opencloudengine.garuda.utils.SshInfo;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by swsong on 2015. 8. 9..
@@ -48,6 +64,9 @@ public class MesosService extends AbstractService {
         return false;
     }
 
+    private int calculateQuorum(int size) {
+        return size / 2 + 1; //과반수.
+    }
 
     public void configureMesosMasterInstances(String clusterId, String definitionId) throws GarudaException {
 
@@ -66,7 +85,7 @@ public class MesosService extends AbstractService {
                         conf.withZookeeperAddress(i.getPublicIpAddress());
                     }
                     final String mesosClusterName = "mesos-" + clusterId;
-                    final int quorum = topology.getMesosMasterList().size() / 2 + 1; //과반수.
+                    final int quorum = calculateQuorum(topology.getMesosMasterList().size());
 
 
                     Task masterTask = new Task("configure mesos-masters");
@@ -131,7 +150,7 @@ public class MesosService extends AbstractService {
             CommonInstance managementInstance = topology.getManagementList().get(0);
             final String managementAddress = managementInstance.getPublicIpAddress();
 
-            if(topology.getMesosSlaveList().size() > 0) {
+            if (topology.getMesosSlaveList().size() > 0) {
                 ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
                 String userId = clusterDefinition.getUserId();
                 String keyPairFile = clusterDefinition.getKeyPairFile();
@@ -177,9 +196,10 @@ public class MesosService extends AbstractService {
                     logger.info("{} is success.", slaveTask.getName());
                 }
 
-            /*
-             * REBOOT
-             */
+                //
+                // reboot
+                // TODO 향후에는 각 데몬을 재시작하는 것으로 수정한다.
+                //
                 logger.debug("Reboot mesos-slave : {}", topology.getMesosSlaveList());
                 clusterService.rebootInstances(topology, topology.getMesosSlaveList(), true);
                 logger.debug("Reboot mesos-slave Done.");
@@ -188,5 +208,103 @@ public class MesosService extends AbstractService {
         } catch (Exception e) {
             throw new GarudaException("error while configure mesos slave.", e);
         }
+    }
+
+    public int buildWebAppDockerImage(String imageName, String webAppType, String webAppFile) throws IOException {
+        String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
+        DefaultExecutor executor = new DefaultExecutor();
+        CommandLine cmdLine = CommandLine.parse(command);
+        // war,zip file path
+        cmdLine.addArgument(webAppFile);
+        // new image name
+        cmdLine.addArgument(imageName);
+
+//        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
+        InfoLogOutputStream outLog = new InfoLogOutputStream(logger);
+        ErrorLogOutputStream errLog = new ErrorLogOutputStream(logger);
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
+        executor.setStreamHandler(streamHandler);
+        executor.setExitValue(0);
+        int exitValue = executor.execute(cmdLine);
+        logger.info("Build and push docker images process exit with {}", exitValue);
+        return exitValue;
+    }
+
+    public int pushDockerImageToRegistry(String imageName) throws IOException {
+        String command = ScriptFileNames.getPushImageToRegistryScriptPath(environment);
+        DefaultExecutor executor = new DefaultExecutor();
+        CommandLine cmdLine = CommandLine.parse(command);
+        // new image name
+        cmdLine.addArgument(imageName);
+
+//        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
+        InfoLogOutputStream outLog = new InfoLogOutputStream(logger);
+        ErrorLogOutputStream errLog = new ErrorLogOutputStream(logger);
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
+        executor.setStreamHandler(streamHandler);
+        executor.setExitValue(0);
+        int exitValue = executor.execute(cmdLine);
+        logger.info("Build and push docker images process exit with {}", exitValue);
+        return exitValue;
+    }
+
+
+    private String getMarathonAPIAddres() {
+        // 여러개중 장애없는 것을 가져온다.
+
+        //TODO
+
+        return "";
+    }
+    public WebTarget getMarathonWebTarget(String path) {
+        Client client = ClientBuilder.newClient();
+        return client.target(getMarathonAPIAddres()).path(path);
+    }
+
+    public void deployDockerAppToMarathon(String appId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+
+        WebTarget target = getMarathonWebTarget("/v2/apps");
+        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest), GetApp.class);
+        App appResponse = getApp.getApp();
+    }
+
+    public void updateDockerAppToMarathon(String appId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+
+        WebTarget target = getMarathonWebTarget("/v2/apps");
+        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest), GetApp.class);
+        App appResponse = getApp.getApp();
+    }
+
+    private App createDockerTypeApp(String imageId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
+        List<PortMapping> portMappings = new ArrayList<>();
+        if(usedPorts != null) {
+            for (int port : usedPorts) {
+                PortMapping portMapping = new PortMapping();
+                portMapping.setContainerPort(port);
+                //서비스 포트는 자동할당이다.
+                portMapping.setServicePort(0);
+                portMappings.add(portMapping);
+            }
+        }
+        Docker docker = new Docker();
+        docker.setImage(imageName);
+        docker.setNetwork("BRIDGE");
+        docker.setPrivileged(true);
+        docker.setPortMappings(portMappings);
+
+        Container container = new Container();
+        container.setDocker(docker);
+        container.setType("DOCKER");
+
+        App createApp = new App();
+        createApp.setId(imageId);
+        createApp.setContainer(container);
+        createApp.setInstances(scale);
+        createApp.setCpus(cpus);
+        createApp.setMem(memory);
+
+        return createApp;
     }
 }

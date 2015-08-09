@@ -1,4 +1,4 @@
-package org.opencloudengine.garuda.action.cluster;
+package org.opencloudengine.garuda.mesos;
 
 import java.util.ArrayList;
 import java.util.List;

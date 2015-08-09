@@ -86,7 +86,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
 
         status.walkStep();
 
-        String command = ScriptFileNames.getMergeWebAppScriptPath(environment, webAppType);
+        String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
         DefaultExecutor executor = new DefaultExecutor();
         CommandLine cmdLine = CommandLine.parse(command);
         // registry address
