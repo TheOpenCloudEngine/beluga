@@ -26,10 +26,7 @@ public class BaseActionTest {
         serviceManager = new ServiceManager(environment);
         serviceManager.asSingleton();
 
-        clusterService = serviceManager.createService("cluster", ClusterService.class);
-        logger.info("Cluster service start [{}]", clusterService.start());
-//        GarudaServer s = new GarudaServer();
-//        s.setKeepAlive(false);
-//        s.main(home);
+        serviceManager.registerService("cluster", ClusterService.class);
+        clusterService = serviceManager.getService(ClusterService.class);
     }
 }

@@ -2,7 +2,6 @@ package org.opencloudengine.garuda.service;
 
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
-import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.service.common.Lifecycle;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ public abstract class AbstractService {
 		return settings;
 	}
 	
-	public boolean start() throws GarudaException {
+	public boolean start() throws ServiceException {
 
 		//엔진구동시 시작되는 서비스가 아니라면, 현 상태가 구동시점인지 stop상태인지 확인해봐야한다.
 		if(!settings.getBoolean("start_on_load", true)){
@@ -64,9 +63,9 @@ public abstract class AbstractService {
 		return false;
 	}
 	
-	protected abstract boolean doStart() throws GarudaException;
+	protected abstract boolean doStart() throws ServiceException;
 		
-	public boolean stop() throws GarudaException {
+	public boolean stop() throws ServiceException {
 		
 		if(lifecycle.canMoveToStopped()){
 			if(doStop()){
@@ -80,9 +79,9 @@ public abstract class AbstractService {
 		return false;
 	}
 	
-	protected abstract boolean doStop() throws GarudaException;
+	protected abstract boolean doStop() throws ServiceException;
 	
-	public boolean restart() throws GarudaException {
+	public boolean restart() throws ServiceException {
 		logger.info(this.getClass().getName()+" restart..");
 		if(stop()){
 		//start는 성공해야 하므로 해당값을 리턴해준다.
@@ -91,7 +90,7 @@ public abstract class AbstractService {
 		return false;
 	}
 	
-	public boolean close() throws GarudaException {
+	public boolean close() throws ServiceException {
 		if(lifecycle.canMoveToClosed()){
 			if(doClose()){
 				logger.info(getClass().getSimpleName()+" 정지!");
@@ -104,6 +103,6 @@ public abstract class AbstractService {
 		return false;
 	}
 	
-	protected abstract boolean doClose() throws GarudaException;
+	protected abstract boolean doClose() throws ServiceException;
 	
 }

@@ -7,6 +7,7 @@ import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
@@ -29,7 +30,7 @@ public class ClusterService extends AbstractService {
     }
 
     @Override
-    protected boolean doStart() throws GarudaException {
+    protected boolean doStart() throws ServiceException {
 
         clusterTopologyMap = new HashMap<>();
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
@@ -51,12 +52,12 @@ public class ClusterService extends AbstractService {
     }
 
     @Override
-    protected boolean doStop() throws GarudaException {
+    protected boolean doStop() throws ServiceException {
         return true;
     }
 
     @Override
-    protected boolean doClose() throws GarudaException {
+    protected boolean doClose() throws ServiceException {
         return true;
     }
 

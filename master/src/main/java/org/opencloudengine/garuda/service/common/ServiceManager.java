@@ -4,6 +4,7 @@ import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,8 @@ public class ServiceManager {
 	private static ServiceManager instance;
 	private Environment environment;
 	private Map<Class<?>, AbstractService> serviceMap;
-	
+    private Map<Class<? extends AbstractService>, String> serviceIdMap;
+
 	public static ServiceManager getInstance(){
 		return instance;
 	}
@@ -35,23 +37,40 @@ public class ServiceManager {
 	public ServiceManager(Environment environment){
 		this.environment = environment;
 		serviceMap = new ConcurrentHashMap<Class<?>, AbstractService>();
+        serviceIdMap = new ConcurrentHashMap<>();
 	}
-	
-	public <T extends AbstractService> T createService(String settingName, Class<T> serviceClass){
+
+    public Class<? extends AbstractService> registerService(String serviceId, Class<? extends AbstractService> serviceClass){
+        serviceIdMap.put(serviceClass, serviceId);
+        return serviceClass;
+    }
+
+	private <T extends AbstractService> T createService(String serviceId, Class<T> serviceClass) throws ServiceException {
 		try {
 			Constructor<T> construct = serviceClass.getConstructor(Environment.class, Settings.class, ServiceManager.class);
-			T t = construct.newInstance(environment, environment.settingManager().getSystemSettings().getSubSettings(settingName), this);
+			T t = construct.newInstance(environment, environment.settingManager().getSystemSettings().getSubSettings(serviceId), this);
 			serviceMap.put(serviceClass, t);
 			return t;
 		} catch (Exception e) {
-			logger.error("can not make instance of class <"+serviceClass.getName()+">, {}", e);
+			throw new ServiceException("Can not make instance of class <"+serviceClass.getName()+">, {}", e);
 		}
-		return null;
 	}
-	
-	
-	public <T extends AbstractService> T getService(Class<T> serviceClass) {
-		return (T) serviceMap.get(serviceClass);
+
+	public <T extends AbstractService> T getService(Class<T> serviceClass) throws ServiceException {
+
+		T t = (T) serviceMap.get(serviceClass);
+        if(t == null) {
+            String serviceId = serviceIdMap.get(serviceClass);
+            if(serviceId == null) {
+                throw new RuntimeException("Not registered service : " + serviceId + " : " + serviceClass.getName());
+            }
+            t = createService(serviceId, serviceClass);
+            if(!t.isRunning()) {
+                t.start();
+            }
+            serviceMap.put(serviceClass, t);
+        }
+        return t;
 	}
 	
 	public <T extends AbstractService> boolean stopService(Class<T> serviceClass) throws GarudaException {
@@ -71,5 +90,14 @@ public class ServiceManager {
 			return false;
 		}
 	}
+
+    public void loadServices() {
+        if(serviceMap != null) {
+
+            for(Class serviceClass : serviceIdMap.keySet()) {
+                getService(serviceClass);
+            }
+        }
+    }
 
 }

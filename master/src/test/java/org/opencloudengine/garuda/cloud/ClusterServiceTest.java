@@ -26,8 +26,8 @@ public class ClusterServiceTest {
         serviceManager = new ServiceManager(environment);
         serviceManager.asSingleton();
 
-        clusterService = serviceManager.createService("cluster", ClusterService.class);
-        clusterService.start();
+        serviceManager.registerService("cluster", ClusterService.class);
+        clusterService = serviceManager.getService(ClusterService.class);
         System.out.println("Before finished.");
     }
 
