@@ -6,6 +6,7 @@ import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.common.util.VersionConfigurer;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +150,7 @@ public class GarudaServer {
 		serviceManager.registerService("rest", RestAPIService.class);
         serviceManager.registerService("cluster", ClusterService.class);
         serviceManager.registerService("action", ActionService.class);
+        serviceManager.registerService("mesos", MesosService.class);
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 

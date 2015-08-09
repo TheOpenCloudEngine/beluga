@@ -53,11 +53,16 @@ public class ClusterService extends AbstractService {
 
     @Override
     protected boolean doStop() throws ServiceException {
+
+        //TODO
+
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
+        //TODO
+
         return true;
     }
 

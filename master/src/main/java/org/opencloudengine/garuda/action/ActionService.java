@@ -47,12 +47,15 @@ public class ActionService extends AbstractService {
     protected boolean doStop() throws ServiceException {
         consumer.interrupt();
         executor.shutdownNow();
+        queue.clear();
+        actionRequestStatusMap.clear();
+        actionIdStatusMap.clear();
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
-        return false;
+        return true;
     }
 
     //같은작업이 동시에 들어올 수 있으므로 동기화 시킨다.
