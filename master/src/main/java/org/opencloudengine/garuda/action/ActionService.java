@@ -1,14 +1,11 @@
-package org.opencloudengine.garuda.service;
+package org.opencloudengine.garuda.action;
 
-import org.opencloudengine.garuda.action.ActionException;
-import org.opencloudengine.garuda.action.ActionRequest;
-import org.opencloudengine.garuda.action.ActionStatus;
-import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.action.callback.RemoveRequestMapCallback;
 import org.opencloudengine.garuda.common.thread.ThreadPoolFactory;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
-import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import java.util.Map;
@@ -36,7 +33,7 @@ public class ActionService extends AbstractService {
     }
 
     @Override
-    protected boolean doStart() throws GarudaException {
+    protected boolean doStart() throws ServiceException {
         actionRequestStatusMap = new ConcurrentHashMap<>();
         actionIdStatusMap = new ConcurrentHashMap<>();
         executor = ThreadPoolFactory.newUnlimitedCachedDaemonThreadPool("actionService.executor");
@@ -47,14 +44,14 @@ public class ActionService extends AbstractService {
     }
 
     @Override
-    protected boolean doStop() throws GarudaException {
+    protected boolean doStop() throws ServiceException {
         consumer.interrupt();
         executor.shutdownNow();
         return true;
     }
 
     @Override
-    protected boolean doClose() throws GarudaException {
+    protected boolean doClose() throws ServiceException {
         return false;
     }
 

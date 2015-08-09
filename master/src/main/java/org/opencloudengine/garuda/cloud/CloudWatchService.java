@@ -1,8 +1,9 @@
-package org.opencloudengine.garuda.service;
+package org.opencloudengine.garuda.cloud;
 
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
-import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 /**
@@ -14,17 +15,17 @@ public class CloudWatchService extends AbstractService {
     }
 
     @Override
-    protected boolean doStart() throws GarudaException {
+    protected boolean doStart() throws ServiceException {
         return false;
     }
 
     @Override
-    protected boolean doStop() throws GarudaException {
+    protected boolean doStop() throws ServiceException {
         return false;
     }
 
     @Override
-    protected boolean doClose() throws GarudaException {
+    protected boolean doClose() throws ServiceException {
         return false;
     }
 }

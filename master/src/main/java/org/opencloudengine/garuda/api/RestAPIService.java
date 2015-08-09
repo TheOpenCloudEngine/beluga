@@ -1,4 +1,4 @@
-package org.opencloudengine.garuda.service;
+package org.opencloudengine.garuda.api;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -9,7 +9,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
-import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.service.AbstractService;
+import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 /**
@@ -18,20 +19,20 @@ import org.opencloudengine.garuda.service.common.ServiceManager;
  * @author Sang Wook, Song
  *
  */
-public class RESTService extends AbstractService {
+public class RestAPIService extends AbstractService {
 
 	private Server jettyServer;
 
 	private static final String jersey_provider_class = "jersey.config.server.provider.classnames";
 	private static final String garuda_rest_api_package = "org.opencloudengine.garuda.api.rest";
 
-	public RESTService(Environment environment, Settings settings, ServiceManager serviceManager) {
+	public RestAPIService(Environment environment, Settings settings, ServiceManager serviceManager) {
 		super(environment, settings, serviceManager);
 
 	}
 
 	@Override
-	protected boolean doStart() throws GarudaException {
+	protected boolean doStart() throws ServiceException {
 
 
 		int servicePort = environment.settingManager().getSystemSettings().getInt("service.port");
@@ -63,28 +64,28 @@ public class RESTService extends AbstractService {
             logger.info("REST Service is listening on port {}", servicePort);
 			return true;
 		} catch (Exception e) {
-			throw new GarudaException(e);
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
-	protected boolean doStop() throws GarudaException {
+	protected boolean doStop() throws ServiceException {
 		try {
 			jettyServer.stop();
 			return true;
 		} catch (Exception e) {
-			throw new GarudaException(e);
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
-	protected boolean doClose() throws GarudaException {
+	protected boolean doClose() throws ServiceException {
 		try {
 			jettyServer.destroy();
 			jettyServer = null;
 			return true;
 		} catch (Exception e) {
-			throw new GarudaException(e);
+			throw new ServiceException(e);
 		}
 	}
 }
