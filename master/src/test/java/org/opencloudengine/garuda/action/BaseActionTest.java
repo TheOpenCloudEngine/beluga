@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class BaseActionTest {
         serviceManager.asSingleton();
 
         serviceManager.registerService("cluster", ClusterService.class);
+        serviceManager.registerService("mesos", MesosService.class);
         clusterService = serviceManager.getService(ClusterService.class);
     }
 }

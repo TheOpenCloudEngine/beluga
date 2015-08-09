@@ -37,6 +37,7 @@ public class SettingManager {
 	}
 
 	public String getConfigFilepath(String filename) {
+        logger.debug(">>>>>> {}", environment.filePaths().configPath().path(filename).file().getAbsolutePath());
 		return environment.filePaths().configPath().path(filename).toString();
 	}
 

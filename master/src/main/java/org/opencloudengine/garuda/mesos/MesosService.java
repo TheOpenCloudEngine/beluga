@@ -214,10 +214,10 @@ public class MesosService extends AbstractService {
         String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
         DefaultExecutor executor = new DefaultExecutor();
         CommandLine cmdLine = CommandLine.parse(command);
+        // new image name
+        cmdLine.addArgument(imageName);
         // war,zip file path
         cmdLine.addArgument(webAppFile);
-        // new image name
-        cmdLine.addArgument(imageName);
 
 //        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
         InfoLogOutputStream outLog = new InfoLogOutputStream(logger);
@@ -226,14 +226,17 @@ public class MesosService extends AbstractService {
         executor.setStreamHandler(streamHandler);
         executor.setExitValue(0);
         int exitValue = executor.execute(cmdLine);
-        logger.info("Build and push docker images process exit with {}", exitValue);
+        logger.info("Build docker images process exit with {}", exitValue);
         return exitValue;
     }
+
+    private static final String DOCKER_EXEC = "docker";
+    private static final String DOCKER_PUSH_COMMAND = "push";
 
     public int pushDockerImageToRegistry(String imageName) throws IOException {
-        String command = ScriptFileNames.getPushImageToRegistryScriptPath(environment);
         DefaultExecutor executor = new DefaultExecutor();
-        CommandLine cmdLine = CommandLine.parse(command);
+        CommandLine cmdLine = CommandLine.parse(DOCKER_EXEC);
+        cmdLine.addArgument(DOCKER_PUSH_COMMAND);
         // new image name
         cmdLine.addArgument(imageName);
 
@@ -244,42 +247,52 @@ public class MesosService extends AbstractService {
         executor.setStreamHandler(streamHandler);
         executor.setExitValue(0);
         int exitValue = executor.execute(cmdLine);
-        logger.info("Build and push docker images process exit with {}", exitValue);
+        logger.info("Push docker images process exit with {}", exitValue);
         return exitValue;
     }
 
-
-    private String getMarathonAPIAddres() {
+    protected String chooseMarathonEndPoint(String clusterId) {
         // 여러개중 장애없는 것을 가져온다.
-
-        //TODO
-
-        return "";
-    }
-    public WebTarget getMarathonWebTarget(String path) {
+        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+        List<String> list = topology.getMarathonEndPoints();
+        if(list == null) {
+            return null;
+        }
         Client client = ClientBuilder.newClient();
-        return client.target(getMarathonAPIAddres()).path(path);
+        for(String endPoint : list) {
+            String response = client.target(endPoint).path("/ping").request(MediaType.TEXT_PLAIN).get(String.class);
+            if("pong".equalsIgnoreCase(response.trim())) {
+                return endPoint;
+            }
+        }
+        return null;
     }
 
-    public void deployDockerAppToMarathon(String appId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
+    private WebTarget getMarathonWebTarget(String clusterId, String path) {
+        Client client = ClientBuilder.newClient();
+        return client.target(chooseMarathonEndPoint(clusterId)).path(path);
+    }
+
+    public App deployDockerAppToMarathon(String clusterId, String appId, String imageName, Integer[] usedPorts, float cpus, float memory, int scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getMarathonWebTarget("/v2/apps");
+        WebTarget target = getMarathonWebTarget(clusterId, "/v2/apps");
         GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest), GetApp.class);
-        App appResponse = getApp.getApp();
+        return getApp.getApp();
     }
 
-    public void updateDockerAppToMarathon(String appId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
+    public App updateDockerAppToMarathon(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getMarathonWebTarget("/v2/apps");
+        WebTarget target = getMarathonWebTarget(clusterId, "/v2/apps");
         GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest), GetApp.class);
-        App appResponse = getApp.getApp();
+        return getApp.getApp();
     }
 
-    private App createDockerTypeApp(String imageId, String imageName, int[] usedPorts, float cpus, float memory, int scale) {
-        List<PortMapping> portMappings = new ArrayList<>();
+    private App createDockerTypeApp(String imageId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+        List<PortMapping> portMappings = null;
         if(usedPorts != null) {
+            portMappings = new ArrayList<>();
             for (int port : usedPorts) {
                 PortMapping portMapping = new PortMapping();
                 portMapping.setContainerPort(port);
@@ -288,15 +301,17 @@ public class MesosService extends AbstractService {
                 portMappings.add(portMapping);
             }
         }
-        Docker docker = new Docker();
-        docker.setImage(imageName);
-        docker.setNetwork("BRIDGE");
-        docker.setPrivileged(true);
-        docker.setPortMappings(portMappings);
-
-        Container container = new Container();
-        container.setDocker(docker);
-        container.setType("DOCKER");
+        Container container = null;
+        if(imageName != null) {
+            Docker docker = new Docker();
+            docker.setImage(imageName);
+            docker.setNetwork("BRIDGE");
+            docker.setPrivileged(true);
+            docker.setPortMappings(portMappings);
+            container = new Container();
+            container.setDocker(docker);
+            container.setType("DOCKER");
+        }
 
         App createApp = new App();
         createApp.setId(imageId);

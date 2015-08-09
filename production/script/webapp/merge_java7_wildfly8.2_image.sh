@@ -4,18 +4,17 @@
 # @author : Sang Wook, Song
 #
 
-if [ $# -ne 3 ] ; then
-    echo "Usage: $0 <registry_address> <war_file> <image_name>"
-    echo "Sample: $0 192.168.0.10 Calendar.war java-calendar"
+if [ $# -ne 2 ] ; then
+    echo "Usage: $0 <image_name> <war_file>"
+    echo "Sample: $0 192.168.0.10/java-calendar Calendar.war"
     exit 1
 fi
 
 base_image=fastcat/java7_wildfly8.2
 work_dir="/tmp"
 
-registry_address=$1
+image_name="$1"
 war_file="$2"
-image_name="$3"
 
 cd "$work_dir"
 
@@ -28,11 +27,7 @@ cp $war_file ./app.war
 echo FROM "$base_image" > Dockerfile
 echo COPY app.war /root/wildfly/standalone/deployments/ROOT.war >> Dockerfile
 
-echo docker build -t "$registry_address"/"$image_name" .
-docker build -t "$registry_address"/"$image_name" .
-
-echo docker push "$registry_address"/"$image_name"
-docker push "$registry_address"/"$image_name"
+docker build -t "$image_name" .
 
 push_result=$?
 

@@ -1,0 +1,379 @@
+[2015-08-09 16:56:20,660 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 16:56:20,671 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 16:56:31,541 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 16:56:31,542 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 16:56:31,545 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 16:56:31,546 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 16:56:31,554 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.conf
+[2015-08-09 16:56:31,560 ERROR] (SettingManager.java:58) /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.conf (No such file or directory)
+java.io.FileNotFoundException: /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.conf (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method) ~[na:1.8.0_45]
+	at java.io.FileInputStream.open(FileInputStream.java:195) ~[na:1.8.0_45]
+	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[na:1.8.0_45]
+	at java.io.FileInputStream.<init>(FileInputStream.java:93) ~[na:1.8.0_45]
+	at org.opencloudengine.garuda.env.SettingManager.getProperties(SettingManager.java:54) [classes/:na]
+	at org.opencloudengine.garuda.env.SettingManager.getSettings(SettingManager.java:163) [classes/:na]
+	at org.opencloudengine.garuda.env.SettingManager.getIaasProviderConfig(SettingManager.java:123) [classes/:na]
+	at org.opencloudengine.garuda.cloud.ClusterService.doStart(ClusterService.java:36) [classes/:na]
+	at org.opencloudengine.garuda.service.AbstractService.start(AbstractService.java:55) [classes/:na]
+	at org.opencloudengine.garuda.service.common.ServiceManager.getService(ServiceManager.java:69) [classes/:na]
+	at org.opencloudengine.garuda.action.BaseActionTest.setUp(BaseActionTest.java:32) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_45]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_45]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_45]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[na:1.8.0_45]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47) [junit-4.11.jar:na]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.11.jar:na]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44) [junit-4.11.jar:na]
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271) [junit-4.11.jar:na]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70) [junit-4.11.jar:na]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:309) [junit-4.11.jar:na]
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:160) [junit-4.11.jar:na]
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78) [junit-rt.jar:na]
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212) [junit-rt.jar:na]
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68) [junit-rt.jar:na]
+[2015-08-09 16:59:47,283 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 16:59:47,294 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 16:59:47,295 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 16:59:47,297 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 16:59:47,300 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 16:59:47,301 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 16:59:47,301 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 16:59:47,303 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 16:59:47,304 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 16:59:47,305 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 16:59:47,305 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 16:59:47,306 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 16:59:47,307 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 16:59:47,307 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 16:59:49,014 ERROR] (ClusterService.java:46) error loading cluster topology.
+com.amazonaws.AmazonServiceException: AWS was not able to validate the provided access credentials (Service: AmazonEC2; Status Code: 401; Error Code: AuthFailure; Request ID: c6a3353c-e159-4366-a96f-b341982847ea)
+	at com.amazonaws.http.AmazonHttpClient.handleErrorResponse(AmazonHttpClient.java:1160) ~[aws-java-sdk-core-1.9.39.jar:na]
+	at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:748) ~[aws-java-sdk-core-1.9.39.jar:na]
+	at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:467) ~[aws-java-sdk-core-1.9.39.jar:na]
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:302) ~[aws-java-sdk-core-1.9.39.jar:na]
+	at com.amazonaws.services.ec2.AmazonEC2Client.invoke(AmazonEC2Client.java:11598) ~[aws-java-sdk-ec2-1.9.39.jar:na]
+	at com.amazonaws.services.ec2.AmazonEC2Client.describeInstances(AmazonEC2Client.java:5748) ~[aws-java-sdk-ec2-1.9.39.jar:na]
+	at org.opencloudengine.garuda.cloud.EC2IaaS.getInstances(EC2IaaS.java:107) ~[classes/:na]
+	at org.opencloudengine.garuda.cloud.ClusterService.loadRole(ClusterService.java:342) ~[classes/:na]
+	at org.opencloudengine.garuda.cloud.ClusterService.loadCluster(ClusterService.java:313) ~[classes/:na]
+	at org.opencloudengine.garuda.cloud.ClusterService.doStart(ClusterService.java:44) ~[classes/:na]
+	at org.opencloudengine.garuda.service.AbstractService.start(AbstractService.java:55) [classes/:na]
+	at org.opencloudengine.garuda.service.common.ServiceManager.getService(ServiceManager.java:69) [classes/:na]
+	at org.opencloudengine.garuda.action.BaseActionTest.setUp(BaseActionTest.java:32) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_45]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_45]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_45]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[na:1.8.0_45]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47) [junit-4.11.jar:na]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.11.jar:na]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44) [junit-4.11.jar:na]
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271) [junit-4.11.jar:na]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70) [junit-4.11.jar:na]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229) [junit-4.11.jar:na]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:309) [junit-4.11.jar:na]
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:160) [junit-4.11.jar:na]
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78) [junit-rt.jar:na]
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212) [junit-rt.jar:na]
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68) [junit-rt.jar:na]
+[2015-08-09 16:59:49,019 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 16:59:49,022 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 16:59:49,023 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:01:45,475 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:01:45,484 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:01:45,484 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:01:45,485 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:01:45,487 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:01:45,488 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:01:45,488 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:01:45,492 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:01:45,493 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:01:45,494 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:01:45,502 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:01:45,502 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:01:45,503 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:01:45,503 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:01:47,483 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:01:47,488 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:01:47,489 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:03:27,050 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:03:27,060 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:03:27,061 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:03:27,062 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:03:27,076 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:03:27,078 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:03:27,079 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:03:27,091 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:03:27,092 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:03:27,092 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:03:27,093 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:03:27,094 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:03:27,094 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:03:27,096 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:03:28,925 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:03:28,931 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:03:28,932 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:05:37,540 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:05:37,550 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:05:37,551 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:05:37,552 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:05:37,554 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:05:37,554 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:05:37,555 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:05:37,559 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:05:37,560 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:05:37,560 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:05:37,561 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:05:37,561 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:05:37,561 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:05:37,561 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:05:39,223 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:05:39,230 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:05:39,231 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:07:19,959 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:07:19,966 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:07:19,966 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:07:19,967 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:07:19,969 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:07:19,969 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:07:19,970 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:07:19,971 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:07:19,972 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:07:19,972 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:07:19,973 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:07:19,973 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:07:19,973 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:07:19,974 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:07:21,798 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:07:21,805 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:07:21,805 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:10:02,559 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:10:02,567 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:10:02,568 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:10:02,568 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:10:02,570 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:10:02,571 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:10:02,571 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:10:02,573 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:10:02,574 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:10:02,574 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:10:02,575 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:10:02,575 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:10:02,575 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:10:02,576 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:10:04,485 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:10:04,488 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:10:04,488 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:10:04,990 DEBUG] (MesosService.java:266) resp entity class = org.glassfish.jersey.client.HttpUrlConnector$1
+[2015-08-09 17:16:09,358 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:16:09,365 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:16:09,366 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:16:09,367 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:16:09,369 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:16:09,370 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:16:09,370 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:16:09,371 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:16:09,372 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:16:09,373 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:16:09,373 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:16:09,373 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:16:09,374 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:16:09,374 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:16:11,397 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:16:11,404 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:16:11,404 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:19:24,268 DEBUG] (MesosService.java:266) resp entity class = org.glassfish.jersey.client.HttpUrlConnector$1
+[2015-08-09 17:19:49,670 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:19:49,679 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:19:49,680 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:19:49,680 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:19:49,682 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:19:49,683 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:19:49,683 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:19:49,685 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:19:49,686 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:19:49,686 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:19:49,686 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:19:49,687 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:19:49,687 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:19:49,687 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:19:51,603 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:19:51,606 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:19:51,606 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:20:20,065 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:20:20,074 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:20:20,075 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:20:20,076 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:20:20,080 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:20:20,081 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:20:20,082 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:20:20,087 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:20:20,088 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:20:20,088 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:20:20,089 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:20:20,089 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:20:20,089 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:20:20,090 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:20:21,905 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:20:21,908 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:20:21,909 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:20:22,565 DEBUG] (MesosService.java:266) resp = InboundJaxrsResponse{ClientResponse{method=GET, uri=http://52.69.233.61:8080/v2/leader, status=200, reason=OK}}
+[2015-08-09 17:22:08,138 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:22:08,146 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:22:08,147 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:22:08,148 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:22:08,150 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:22:08,151 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:22:08,152 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:22:08,153 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:22:08,154 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:22:08,155 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:22:08,155 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:22:08,156 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:22:08,156 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:22:08,156 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:22:09,915 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:22:09,918 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:22:09,918 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:22:10,456 DEBUG] (MesosService.java:266) resp = pong
+
+[2015-08-09 17:23:53,332 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:23:53,340 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:23:53,340 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:23:53,341 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:23:53,343 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:23:53,344 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:23:53,344 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:23:53,347 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:23:53,348 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:23:53,348 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:23:53,349 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:23:53,349 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:23:53,350 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:23:53,350 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:23:55,241 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:23:55,244 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:23:55,244 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 17:23:55,752 DEBUG] (MesosService.java:266) resp = pong
+
+[2015-08-09 17:36:36,778 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 17:36:36,785 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:36:36,786 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 17:36:36,786 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 17:36:36,788 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 17:36:36,789 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 17:36:36,790 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 17:36:36,791 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 17:36:36,792 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 17:36:36,793 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 17:36:36,793 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 17:36:36,794 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 17:36:36,794 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 17:36:36,794 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 17:36:38,682 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 17:36:38,685 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 17:36:38,685 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 18:24:53,277 INFO] (Environment.java:43) Setting Home = production/
+[2015-08-09 18:24:53,283 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 18:24:53,283 DEBUG] (SettingManager.java:50) Read properties = production/conf/garuda.conf
+[2015-08-09 18:24:53,284 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.cloud.ClusterService]
+[2015-08-09 18:24:53,286 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/iaas.profile.conf
+[2015-08-09 18:24:53,286 DEBUG] (SettingManager.java:50) Read properties = production/conf/iaas.profile.conf
+[2015-08-09 18:24:53,287 DEBUG] (SettingManager.java:50) Read properties = /Users/swsong/TEST_HOME/garuda-1.0/conf/iaas.profile.conf
+[2015-08-09 18:24:53,288 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[ec2] name[AWS EC2 Asia Pacific] endPoint[ec2.ap-northeast-1.amazonaws.com]
+[2015-08-09 18:24:53,289 DEBUG] (IaasProviderConfig.java:45) IaasProvider type[openstack] name[ì¤íì¤í1] endPoint[null]
+[2015-08-09 18:24:53,290 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/clusters.conf
+[2015-08-09 18:24:53,290 DEBUG] (SettingManager.java:50) Read properties = production/conf/clusters.conf
+[2015-08-09 18:24:53,290 INFO] (ClusterService.java:296) Load cluster test-cluster..
+[2015-08-09 18:24:53,291 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/topology.test-cluster.conf
+[2015-08-09 18:24:53,291 DEBUG] (SettingManager.java:50) Read properties = production/conf/topology.test-cluster.conf
+[2015-08-09 18:24:55,425 INFO] (AbstractService.java:56) ClusterService 시작!
+[2015-08-09 18:24:55,427 INFO] (RunnableAction.java:43) ### Start Action DeployWebAppAction
+[2015-08-09 18:24:55,427 INFO] (RunnableAction.java:44) ### Status = [ActionStatus] id[null] state[none] actionName[DeployWebAppAction] startTime[] completeTime[] error[] result[null] step[[ActionStep] currentStep[0] totalStep[3]]
+[2015-08-09 18:24:55,430 DEBUG] (SettingManager.java:40) >>>>>> /Users/swsong/Projects/garuda/production/conf/garuda.conf
+[2015-08-09 18:24:55,430 DEBUG] (AbstractService.java:25) Service [org.opencloudengine.garuda.mesos.MesosService]
+[2015-08-09 18:24:55,431 DEBUG] (ActionStep.java:28) Walk step [1] Build webapp docker image.
+[2015-08-09 18:24:55,684 INFO] (InfoLogOutputStream.java:17) Sending build context to Docker daemon 9.216 kB
+[2015-08-09 18:24:55,685 INFO] (InfoLogOutputStream.java:17) Sending build context to Docker daemon 
+[2015-08-09 18:24:55,722 INFO] (InfoLogOutputStream.java:17) Step 0 : FROM fastcat/java7_wildfly8.2
+[2015-08-09 18:25:01,869 INFO] (InfoLogOutputStream.java:17) latest: Pulling from fastcat/java7_wildfly8.2
+[2015-08-09 18:25:01,869 INFO] (InfoLogOutputStream.java:17) 2eaf0096818b: Pulling fs layer
+[2015-08-09 18:25:01,870 INFO] (InfoLogOutputStream.java:17) dac7bccb8ac3: Pulling fs layer
+[2015-08-09 18:25:01,870 INFO] (InfoLogOutputStream.java:17) 389028aa9e91: Pulling fs layer
+[2015-08-09 18:25:01,870 INFO] (InfoLogOutputStream.java:17) 63e3c10217b8: Pulling fs layer
+[2015-08-09 18:25:01,870 INFO] (InfoLogOutputStream.java:17) 399e097a6ff2: Pulling fs layer
+[2015-08-09 18:25:01,870 INFO] (InfoLogOutputStream.java:17) b4e98336edbd: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) 5aa5110128aa: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) 1bfbb3089b6f: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) ff5a90f672c6: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) 11df22149502: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) 395436be3adc: Pulling fs layer
+[2015-08-09 18:25:01,871 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Pulling fs layer
+[2015-08-09 18:25:01,872 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Pulling fs layer
+[2015-08-09 18:25:01,873 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Layer already being pulled by another client. Waiting.
+[2015-08-09 18:25:03,507 INFO] (InfoLogOutputStream.java:17) 1bfbb3089b6f: Verifying Checksum
+[2015-08-09 18:25:03,507 INFO] (InfoLogOutputStream.java:17) 1bfbb3089b6f: Download complete
+[2015-08-09 18:25:03,634 INFO] (InfoLogOutputStream.java:17) dac7bccb8ac3: Verifying Checksum
+[2015-08-09 18:25:03,635 INFO] (InfoLogOutputStream.java:17) dac7bccb8ac3: Download complete
+[2015-08-09 18:25:03,679 INFO] (InfoLogOutputStream.java:17) 399e097a6ff2: Verifying Checksum
+[2015-08-09 18:25:03,680 INFO] (InfoLogOutputStream.java:17) 399e097a6ff2: Download complete
+[2015-08-09 18:25:03,681 INFO] (InfoLogOutputStream.java:17) 11df22149502: Verifying Checksum
+[2015-08-09 18:25:03,682 INFO] (InfoLogOutputStream.java:17) 11df22149502: Download complete
+[2015-08-09 18:25:03,780 INFO] (InfoLogOutputStream.java:17) 389028aa9e91: Verifying Checksum
+[2015-08-09 18:25:03,781 INFO] (InfoLogOutputStream.java:17) 389028aa9e91: Download complete
+[2015-08-09 18:25:03,790 INFO] (InfoLogOutputStream.java:17) 63e3c10217b8: Verifying Checksum
+[2015-08-09 18:25:03,790 INFO] (InfoLogOutputStream.java:17) 63e3c10217b8: Download complete
+[2015-08-09 18:25:04,080 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Verifying Checksum
+[2015-08-09 18:25:04,081 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Download complete
+[2015-08-09 18:25:04,081 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Download complete
+[2015-08-09 18:25:04,081 INFO] (InfoLogOutputStream.java:17) 395436be3adc: Verifying Checksum
+[2015-08-09 18:25:04,082 INFO] (InfoLogOutputStream.java:17) 395436be3adc: Download complete
+[2015-08-09 18:25:11,354 INFO] (InfoLogOutputStream.java:17) 2eaf0096818b: Verifying Checksum
+[2015-08-09 18:25:11,355 INFO] (InfoLogOutputStream.java:17) 2eaf0096818b: Download complete
+[2015-08-09 18:25:12,580 INFO] (InfoLogOutputStream.java:17) b4e98336edbd: Verifying Checksum
+[2015-08-09 18:25:12,580 INFO] (InfoLogOutputStream.java:17) b4e98336edbd: Download complete
+[2015-08-09 18:25:14,947 INFO] (InfoLogOutputStream.java:17) 2eaf0096818b: Pull complete
+[2015-08-09 18:25:15,000 INFO] (InfoLogOutputStream.java:17) dac7bccb8ac3: Pull complete
+[2015-08-09 18:25:15,037 INFO] (InfoLogOutputStream.java:17) 389028aa9e91: Pull complete
+[2015-08-09 18:25:15,081 INFO] (InfoLogOutputStream.java:17) 63e3c10217b8: Pull complete
+[2015-08-09 18:25:15,123 INFO] (InfoLogOutputStream.java:17) 399e097a6ff2: Pull complete
+[2015-08-09 18:25:15,298 INFO] (InfoLogOutputStream.java:17) b4e98336edbd: Pull complete
+[2015-08-09 18:25:39,080 INFO] (InfoLogOutputStream.java:17) ff5a90f672c6: Verifying Checksum
+[2015-08-09 18:25:39,081 INFO] (InfoLogOutputStream.java:17) ff5a90f672c6: Download complete
+[2015-08-09 18:25:52,633 INFO] (InfoLogOutputStream.java:17) 5aa5110128aa: Verifying Checksum
+[2015-08-09 18:25:52,633 INFO] (InfoLogOutputStream.java:17) 5aa5110128aa: Download complete
+[2015-08-09 18:25:58,040 INFO] (InfoLogOutputStream.java:17) 5aa5110128aa: Pull complete
+[2015-08-09 18:25:58,081 INFO] (InfoLogOutputStream.java:17) 1bfbb3089b6f: Pull complete
+[2015-08-09 18:26:00,803 INFO] (InfoLogOutputStream.java:17) ff5a90f672c6: Pull complete
+[2015-08-09 18:26:00,843 INFO] (InfoLogOutputStream.java:17) 11df22149502: Pull complete
+[2015-08-09 18:26:00,884 INFO] (InfoLogOutputStream.java:17) 395436be3adc: Pull complete
+[2015-08-09 18:26:00,919 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Pull complete
+[2015-08-09 18:26:00,920 INFO] (InfoLogOutputStream.java:17) 4cf9aad819a6: Already exists
+[2015-08-09 18:26:00,920 INFO] (InfoLogOutputStream.java:17) Digest: sha256:7ac30196f41b350443e2505aad0d20bf328a3ce71b9ba0d32b96cb8f6b3a3588
+[2015-08-09 18:26:00,951 INFO] (InfoLogOutputStream.java:17) Status: Downloaded newer image for fastcat/java7_wildfly8.2:latest
+[2015-08-09 18:26:00,951 INFO] (InfoLogOutputStream.java:17)  ---> 4cf9aad819a6
+[2015-08-09 18:26:00,951 INFO] (InfoLogOutputStream.java:17) Step 1 : COPY app.war /root/wildfly/standalone/deployments/ROOT.war
+[2015-08-09 18:26:01,311 INFO] (InfoLogOutputStream.java:17)  ---> 00e3c9bd1b9d
+[2015-08-09 18:26:01,318 INFO] (InfoLogOutputStream.java:17) Removing intermediate container 181a5de570e8
+[2015-08-09 18:26:01,318 INFO] (InfoLogOutputStream.java:17) Successfully built 00e3c9bd1b9d
+[2015-08-09 18:26:01,322 INFO] (MesosService.java:229) Build docker images process exit with 0
+[2015-08-09 18:26:01,322 DEBUG] (ActionStep.java:28) Walk step [2] Push image to registry.
+[2015-08-09 18:26:01,598 ERROR] (ErrorLogOutputStream.java:16) Error response from daemon: invalid registry endpoint https://52.69.38.49/v0/: unable to ping registry endpoint https://52.69.38.49/v0/
+[2015-08-09 18:26:01,599 ERROR] (ErrorLogOutputStream.java:16) v2 ping attempt failed with error: Get https://52.69.38.49/v2/: dial tcp 52.69.38.49:443: connection refused
+[2015-08-09 18:26:01,600 ERROR] (ErrorLogOutputStream.java:16)  v1 ping attempt failed with error: Get https://52.69.38.49/v1/_ping: dial tcp 52.69.38.49:443: connection refused. If this private registry supports only HTTP or HTTPS with an unknown CA certificate, please add `--insecure-registry 52.69.38.49` to the daemon's arguments. In the case of HTTPS, if you have access to the registry's CA certificate, no need for the flag; simply place the CA certificate at /etc/docker/certs.d/52.69.38.49/ca.crt
+[2015-08-09 18:26:01,601 WARN] (RunnableAction.java:50) ### Action Error: DeployWebAppAction : Process exited with an error: 1 (Exit value: 1)
+[2015-08-09 18:26:01,601 INFO] (RunnableAction.java:53) ### Finished Action DeployWebAppAction
+[2015-08-09 18:26:01,601 INFO] (RunnableAction.java:54) ### Status = [ActionStatus] id[null] state[error] actionName[DeployWebAppAction] startTime[2015-08-09 18:24:55] completeTime[2015-08-09 18:26:01] error[Process exited with an error: 1 (Exit value: 1)] result[org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1)] step[[ActionStep] currentStep[2] totalStep[3]]

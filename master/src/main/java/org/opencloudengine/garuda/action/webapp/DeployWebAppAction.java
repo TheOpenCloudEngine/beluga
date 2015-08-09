@@ -11,8 +11,10 @@ import org.opencloudengine.garuda.common.log.AppLoggerFactory;
 import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
 import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
 import org.opencloudengine.garuda.env.ClusterPorts;
+import org.opencloudengine.garuda.env.DockerWebAppPorts;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.mesos.marathon.model.App;
 import org.opencloudengine.garuda.mesos.marathon.model.Container;
 import org.opencloudengine.garuda.mesos.marathon.model.Docker;
@@ -36,7 +38,8 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
     public DeployWebAppAction(DeployWebAppActionRequest actionRequest) {
         super(actionRequest);
         status.registerStep("Build webapp docker image.");
-        status.registerStep("Deploy to marathon");
+        status.registerStep("Push image to registry.");
+        status.registerStep("Deploy to marathon.");
     }
 
     @Override
@@ -49,7 +52,6 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         //
         //for marathon
         //
-        int webAppPort = request.getWebAppPort();
         float cpus = request.getCpus();
         float memory = request.getMemory();
         int scale = request.getScale();
@@ -62,91 +64,34 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             throw new GarudaException("No such cluster: "+ clusterId);
         }
 
-        List<CommonInstance> list = topology.getManagementList();
-        if(list.size() == 0) {
+        String registryAddress = topology.getRegistryAddressPort();
+        if(registryAddress == null) {
             throw new GarudaException("No registry instance in " + clusterId);
         }
-        String registryAddress = list.get(0).getPrivateIpAddress() + ":" + ClusterPorts.REGISTRY_PORT;
-        //FIXME 개발시 테스트를 하니, 레지스트리 서버에 public으로 접근해야함..향후 private으로 변경.
-        String registryPublicAddress = list.get(0).getPublicIpAddress() + ":" + ClusterPorts.REGISTRY_PORT;
 
-        list = topology.getMesosMasterList();
-        if(list.size() == 0) {
-            throw new GarudaException("No marathon instance in " + clusterId);
-        }
-        //FIXME 3개일 경우 자동으로 리다이렉트 되는지 확인필요.
-        String marathonAddress = list.get(0).getPublicIpAddress() + ":" + ClusterPorts.MARATHON_PORT;
+        MesosService mesosService = serviceManager.getService(MesosService.class);
 
         /*
-        * 1. Merge Image
-        *
+        * 1. Build Image
         * */
-        //TODO 자동으로 버전이 올라가도록..
-        String newImageName = appId;
+        //TODO 자동으로 버전이 올라가도록.. :tag 추가.
+        String imageName = registryAddress + "/" + appId;
 
         status.walkStep();
-
-        String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
-        DefaultExecutor executor = new DefaultExecutor();
-        CommandLine cmdLine = CommandLine.parse(command);
-        // registry address
-        cmdLine.addArgument(registryPublicAddress);
-        // war,zip file path
-        cmdLine.addArgument(webAppFile);
-        // new image name
-        cmdLine.addArgument(newImageName);
-
-        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
-        InfoLogOutputStream outLog = new InfoLogOutputStream(appLogger);
-        ErrorLogOutputStream errLog = new ErrorLogOutputStream(appLogger);
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
-        executor.setStreamHandler(streamHandler);
-        executor.setExitValue(0);
-        int exitValue = executor.execute(cmdLine);
-
-        appLogger.info("Build and push docker images for [{}] process exit with {}", appId, exitValue);
+        int exitValue = mesosService.buildWebAppDockerImage(imageName, webAppType, webAppFile);
 
         /*
-        * 2. Deploy to Marathon
+         * 2 push image to registry
+         * */
+        status.walkStep();
+        exitValue = mesosService.pushDockerImageToRegistry(imageName);
+
+        /*
+        * 3. Deploy to Marathon
         * */
         status.walkStep();
-        //이름에 주소가 포함되므로, 동일한 registryAddress를 적어주어야 이름을 찾을 수 있다.
-        App app = createApp(registryPublicAddress, newImageName, webAppPort, cpus, memory, scale);
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://"+marathonAddress).path("/v2/apps");
-        //PUT하면 업데이트
-//        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(createApp));
-        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(app));
-        logger.debug("response status : {}", response.getStatusInfo());
-        logger.debug("response entity : {}", response.getEntity());
-    }
+        Integer[] usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
+        App appResponse = mesosService.deployDockerAppToMarathon(clusterId, appId, imageName, usedPort, cpus, memory, scale);
 
-
-    private App createApp(String registryAddress, String imageId, int containerPort, float cpus, float memory, int scale) {
-        List<PortMapping> portMappings = new ArrayList<>();
-        PortMapping portMapping = new PortMapping();
-        portMapping.setContainerPort(containerPort);
-        //서비스 포트는 자동할당이다.
-        portMapping.setServicePort(0);
-        portMappings.add(portMapping);
-
-        Docker docker = new Docker();
-        docker.setImage(String.format("%s/%s", registryAddress, imageId));
-        docker.setNetwork("BRIDGE");
-        docker.setPrivileged(true);
-        docker.setPortMappings(portMappings);
-
-        Container container = new Container();
-        container.setDocker(docker);
-        container.setType("DOCKER");
-
-        App createApp = new App();
-        createApp.setId(imageId);
-        createApp.setContainer(container);
-        createApp.setInstances(scale);
-        createApp.setCpus(cpus);
-        createApp.setMem(memory);
-
-        return createApp;
     }
 }

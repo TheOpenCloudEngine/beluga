@@ -1,7 +1,0 @@
-[2015-08-09 02:12:59,945 INFO] (MarathonAPITest.java:52) additional : 
-[2015-08-09 02:13:29,655 INFO] (MarathonAPITest.java:52) additional : 
-[2015-08-09 02:14:20,133 INFO] (MarathonAPITest.java:54) additional : 
-[2015-08-09 02:14:58,656 INFO] (MarathonAPITest.java:54) additional : 
-[2015-08-09 02:38:04,286 DEBUG] (MarathonAPITest.java:72) data : javax.ws.rs.client.Entity@7fb67ae1
-[2015-08-09 02:38:45,390 DEBUG] (MarathonAPITest.java:72) data : javax.ws.rs.client.Entity@7394743b
-[2015-08-09 02:42:36,040 DEBUG] (MarathonAPITest.java:72) data : javax.ws.rs.client.Entity@253d8b48

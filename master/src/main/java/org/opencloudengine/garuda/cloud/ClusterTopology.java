@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.cloud;
 
+import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -12,14 +13,16 @@ import java.util.Properties;
 * Created by swsong on 2015. 7. 20..
 */
 public class ClusterTopology {
-
+    private static final String REGISTRY_ADDRESS_PORT_FORMAT = "%s:" + ClusterPorts.REGISTRY_PORT;
+    private static final String REGISTRY_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.REGISTRY_PORT;
+    private static final String MARATHON_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.MARATHON_PORT;
 
     public static final String IAAS_PROFILE_KEY = "iaasProfile";
     public static final String CLUSTER_ID_KEY = "clusterId";
 
-    public static final String GARUDA_MASTER_ROLE = "garuda-master1";
+    public static final String GARUDA_MASTER_ROLE = "garuda-master";
     public static final String PROXY_ROLE = "proxy";
-    public static final String MESOS_MASTER_ROLE = "mesos-master1";
+    public static final String MESOS_MASTER_ROLE = "mesos-master";
     public static final String MESOS_SLAVE_ROLE = "mesos-slave";
     public static final String MANAGEMENT_DB_REGISTRY_ROLE = "management";
     public static final String SERVICE_NODES_ROLE = "service-db";
@@ -151,4 +154,29 @@ public class ClusterTopology {
         props.put(roleName, addressList.toString());
     }
 
+    public String getRegistryAddressPort() {
+        if(managementList.size() > 0) {
+            //무조건 1개로 처리.
+            String ipAddress = managementList.get(0).getPublicIpAddress();
+            return String.format(REGISTRY_ADDRESS_PORT_FORMAT, ipAddress);
+        }
+        return null;
+    }
+    public String getRegistryEndPoint() {
+        if(managementList.size() > 0) {
+            //무조건 1개로 처리.
+            String ipAddress = managementList.get(0).getPublicIpAddress();
+            return String.format(REGISTRY_ENDPOINT_FORMAT, ipAddress);
+        }
+        return null;
+    }
+
+    public List<String> getMarathonEndPoints() {
+        List<String> list = new ArrayList<>();
+        for(CommonInstance i : mesosMasterList) {
+            //무조건 1개로 처리.
+            list.add(String.format(MARATHON_ENDPOINT_FORMAT, i.getPublicIpAddress()));
+        }
+        return list;
+    }
 }
