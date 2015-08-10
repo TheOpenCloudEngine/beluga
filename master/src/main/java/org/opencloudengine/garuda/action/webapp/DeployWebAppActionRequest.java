@@ -15,8 +15,9 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Float cpus;
     private Float memory;
     private Integer scale;
+    private Boolean isUpdate;
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.webAppFile = webAppFile;
@@ -24,6 +25,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
         this.cpus = cpus;
         this.memory = memory;
         this.scale = scale;
+        this.isUpdate = isUpdate;
     }
 
     public String getClusterId() {
@@ -52,6 +54,13 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     public Integer getScale() {
         return scale;
+    }
+
+    /**
+     * 이미 실행된 app에 설정을 변경하는 업데이트 작업인지 여부.
+     * */
+    public Boolean getIsUpdate() {
+        return isUpdate;
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.opencloudengine.garuda.mesos.marathon.model;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

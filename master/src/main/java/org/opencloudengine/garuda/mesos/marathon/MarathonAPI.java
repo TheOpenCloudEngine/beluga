@@ -5,10 +5,7 @@ import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.mesos.marathon.message.GetApp;
 import org.opencloudengine.garuda.mesos.marathon.message.GetApps;
-import org.opencloudengine.garuda.mesos.marathon.model.App;
-import org.opencloudengine.garuda.mesos.marathon.model.Container;
-import org.opencloudengine.garuda.mesos.marathon.model.Docker;
-import org.opencloudengine.garuda.mesos.marathon.model.PortMapping;
+import org.opencloudengine.garuda.mesos.marathon.model.*;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,13 +108,21 @@ public class MarathonAPI {
             container.setType("DOCKER");
         }
 
-        App createApp = new App();
-        createApp.setId(imageId);
-        createApp.setContainer(container);
-        createApp.setInstances(scale);
-        createApp.setCpus(cpus);
-        createApp.setMem(memory);
+        App app = new App();
+        app.setId(imageId);
+        app.setContainer(container);
+        app.setInstances(scale);
+        app.setCpus(cpus);
+        app.setMem(memory);
 
-        return createApp;
+        // 업그레이드 방식 설정
+        // minimumHealthCapacity=0.5, maximumOverCapacity=0.2
+        // 즉, 새로운 앱으로 재시작될때, 최소 1/2은 살아있는 상태를 유지. Rolling 과정에서 총갯수의 0.2정도는 초과해서 컨테이너가 생길수 있다.
+        // scale이 5개라면 1개정도는 작업과정에서 잠깐 초과될수 있음.
+        UpgradeStrategy upgradeStrategy = new UpgradeStrategy();
+        upgradeStrategy.setMinimumHealthCapacity(0.5f);
+        upgradeStrategy.setMaximumOverCapacity(0.2f);
+        app.setUpgradeStrategy(upgradeStrategy);
+        return app;
     }
 }

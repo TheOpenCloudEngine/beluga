@@ -53,9 +53,10 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         //
         //for marathon
         //
-        float cpus = request.getCpus();
-        float memory = request.getMemory();
-        int scale = request.getScale();
+        Float cpus = request.getCpus();
+        Float memory = request.getMemory();
+        Integer scale = request.getScale();
+        Boolean isUpdate = request.getIsUpdate();
 
         // clusterId를 통해 인스턴스 주소를 받아온다.
         ClusterService clusterService = serviceManager.getService(ClusterService.class);
@@ -71,27 +72,41 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         }
 
         MesosService mesosService = serviceManager.getService(MesosService.class);
-
+        boolean needImageBuild = webAppFile != null && webAppFile != null;
         /*
         * 1. Build Image
         * */
-        //TODO 자동으로 버전이 올라가도록.. :tag 추가.
         String imageName = registryAddress + "/" + appId;
         status.walkStep();
-        int exitValue = mesosService.getDockerAPI().buildWebAppDockerImage(imageName, webAppType, webAppFile);
+        if(needImageBuild) {
+            int exitValue = mesosService.getDockerAPI().buildWebAppDockerImage(imageName, webAppType, webAppFile);
+            if(exitValue != 0) {
+                throw new GarudaException(String.format("Error while build docker image : %s, %s, %s", imageName, webAppType, webAppFile));
+            }
+        }
 
         /*
          * 2 push image to registry
          * */
         status.walkStep();
-        exitValue = mesosService.getDockerAPI().pushDockerImageToRegistry(imageName);
+        if(needImageBuild) {
+            int exitValue = mesosService.getDockerAPI().pushDockerImageToRegistry(imageName);
+            if(exitValue != 0) {
+                throw new GarudaException(String.format("Error while push docker image : %s", imageName));
+            }
+        }
 
         /*
         * 3. Deploy to Marathon
         * */
         status.walkStep();
         Integer[] usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
-        App appResponse = mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
-
+        App appResponse = null;
+        if(!isUpdate) {
+            mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
+        } else {
+            mesosService.getMarathonAPI().updateDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
+        }
+        setResult(appResponse);
     }
 }
