@@ -1,27 +1,17 @@
 package org.opencloudengine.garuda.mesos;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.action.task.Task;
 import org.opencloudengine.garuda.action.task.TaskResult;
 import org.opencloudengine.garuda.action.task.Todo;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.CommonInstance;
-import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
-import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
-import org.opencloudengine.garuda.mesos.marathon.message.GetApp;
-import org.opencloudengine.garuda.mesos.marathon.model.App;
-import org.opencloudengine.garuda.mesos.marathon.model.Container;
-import org.opencloudengine.garuda.mesos.marathon.model.Docker;
-import org.opencloudengine.garuda.mesos.marathon.model.PortMapping;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -29,15 +19,7 @@ import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.utils.SshClient;
 import org.opencloudengine.garuda.utils.SshInfo;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by swsong on 2015. 8. 9..

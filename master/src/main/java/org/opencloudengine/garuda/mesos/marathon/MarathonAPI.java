@@ -2,9 +2,6 @@ package org.opencloudengine.garuda.mesos.marathon;
 
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
-import org.opencloudengine.garuda.env.Environment;
-import org.opencloudengine.garuda.mesos.marathon.message.GetApp;
-import org.opencloudengine.garuda.mesos.marathon.message.GetApps;
 import org.opencloudengine.garuda.mesos.marathon.model.*;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
@@ -59,32 +56,18 @@ public class MarathonAPI {
         return client.target(chooseMarathonEndPoint(clusterId)).path(path);
     }
 
-    public List<App> getApps(String clusterId) {
+    public Response deployDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+
         WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
-        GetApps getApps = target.request(MediaType.APPLICATION_JSON_TYPE).get(GetApps.class);
-        return getApps.getApps();
+        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
-    public App getApp(String clusterId, String appId) {
+    public Response updateDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+
         WebTarget target = getWebTarget(clusterId, API_PATH_APPS + SLASH + appId);
-        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).get(GetApp.class);
-        return getApp.getApp();
-    }
-
-    public App deployDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
-
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
-        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest), GetApp.class);
-        return getApp.getApp();
-    }
-
-    public App updateDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
-
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
-        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest), GetApp.class);
-        return getApp.getApp();
+        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
 
     private App createDockerTypeApp(String imageId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {

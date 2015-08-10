@@ -78,7 +78,7 @@ public class ClustersAPI extends BaseAPI {
      * Get all clusters info.
      */
     @GET
-    @Path("/c")
+    @Path("/")
     public Response getClusters() throws Exception {
         try {
             Collection<ClusterTopology> set = clusterService.getAllClusterTopology();
@@ -134,6 +134,21 @@ public class ClustersAPI extends BaseAPI {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
+    }
+
+    @GET
+    @Path("/{id}/deployments")
+    public Response getDeployments(@PathParam("id") String clusterId) throws Exception {
+        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+        return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+    }
+
+    @DELETE
+    @Path("/{id}/deployments/{deploymentsId}")
+    public Response deleteDeployments(@PathParam("id") String clusterId
+            , @PathParam("deploymentsId") String deploymentsId) throws Exception {
+        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+        return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
     }
 
 }

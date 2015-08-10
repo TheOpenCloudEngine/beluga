@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Created by swsong on 2015. 8. 7..
  */
-@Path("/v1/clusters/{clusterId}")
+@Path("/v1/clusters/{clusterId}/apps")
 public class AppsAPI extends BaseAPI {
 
     private MesosService mesosService;
@@ -38,7 +38,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/apps")
+    @Path("/")
     public Response getApps(@PathParam("clusterId") String clusterId) throws Exception {
         try {
             return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps");
@@ -49,7 +49,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response getApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId);
@@ -63,7 +63,7 @@ public class AppsAPI extends BaseAPI {
      * 앱 파일을 업로드한다.
      */
     @POST
-    @Path("/apps/{id}/file")
+    @Path("/{id}/file")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
                                @FormDataParam("file") InputStream uploadedInputStream,
@@ -115,7 +115,7 @@ public class AppsAPI extends BaseAPI {
      * 전달된 설정대로 앱을 실행한다.
      */
     @POST
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response deployApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
         return deployOrUpdateApp(clusterId, appId, data, false);
     }
@@ -127,7 +127,7 @@ public class AppsAPI extends BaseAPI {
      * minimumHealthCapacity=0.5, maximumOverCapacity=0.2
      */
     @PUT
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response updateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
         return deployOrUpdateApp(clusterId, appId, data, true);
     }
@@ -157,28 +157,15 @@ public class AppsAPI extends BaseAPI {
     }
 
     @POST
-    @Path("/apps/{id}/restart")
+    @Path("/{id}/restart")
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
     }
 
     @DELETE
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
-    }
-
-    @GET
-    @Path("/deployments")
-    public Response getDeployments(@PathParam("clusterId") String clusterId) throws Exception {
-        return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
-    }
-
-    @DELETE
-    @Path("/deployments/{deploymentsId}")
-    public Response deleteDeployments(@PathParam("clusterId") String clusterId
-            , @PathParam("deploymentsId") String deploymentsId) throws Exception {
-        return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
     }
 
 }
