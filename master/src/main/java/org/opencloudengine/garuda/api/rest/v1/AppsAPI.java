@@ -158,15 +158,14 @@ public class AppsAPI extends BaseAPI {
 
     @POST
     @Path("/apps/{id}/restart")
-    public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
-        return null;
+    public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
+        return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
     }
 
     @DELETE
     @Path("/apps/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
-
-        return null;
+        return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
     }
 
     @GET

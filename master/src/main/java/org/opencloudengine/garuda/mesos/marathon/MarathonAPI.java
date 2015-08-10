@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 8. 10..
@@ -134,6 +135,14 @@ public class MarathonAPI {
     public Response requestGetAPI(String clusterId, String path) {
         WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
         return target.request(MediaType.APPLICATION_JSON_TYPE).get();
+    }
+
+    /*
+    * Marathon 의 POST API를 직접호출한다.
+    * */
+    public Response requestPostAPI(String clusterId, String path, Map<String, Object> data) {
+        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(data));
     }
 
     /*

@@ -78,7 +78,7 @@ public class ClustersAPI extends BaseAPI {
      * Get all clusters info.
      */
     @GET
-    @Path("/")
+    @Path("/c")
     public Response getClusters() throws Exception {
         try {
             Collection<ClusterTopology> set = clusterService.getAllClusterTopology();
@@ -125,7 +125,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}/marathonInfo")
+    @Path("/{id}/info")
     public Response getMarathonInfo(@PathParam("id") String clusterId) throws Exception {
         MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
         try {
