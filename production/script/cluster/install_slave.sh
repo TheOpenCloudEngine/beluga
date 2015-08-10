@@ -25,10 +25,13 @@ sudo usermod -aG docker ubuntu
 sudo docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --detach=true --name=cadvisor   google/cadvisor:latest
 
 # cadvisor 자동시작을 등록한다.
-echo 'start on runlevel [2345]' | sudo tee /etc/init/cadvisor.conf
-echo 'respawn' | sudo tee -a /etc/init/cadvisor.conf
-echo 'kill timeout 20' | sudo tee -a /etc/init/cadvisor.conf
-echo 'exec docker start cadvisor' | sudo tee -a /etc/init/cadvisor.conf
+sudo touch /etc/init/cadvisor.conf
+cat << CAdvisorConfig | sudo tee -a /etc/init/cadvisor.conf
+start on runlevel [2345]
+respawn
+kill timeout 20
+exec docker start cadvisor
+CAdvisorConfig
 
 sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
 sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
