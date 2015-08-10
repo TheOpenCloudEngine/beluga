@@ -99,19 +99,28 @@ public class EC2IaaS implements IaaS {
         }
     }
 
-
     @Override
     public List<CommonInstance> getInstances(Collection<String> instanceList) {
-        List<CommonInstance> list = new ArrayList<>();
+
+        Map<String, Instance> map = new HashMap<>();
         DescribeInstancesRequest request = new DescribeInstancesRequest().withInstanceIds(instanceList);
         DescribeInstancesResult result = client.describeInstances(request);
         List<Reservation> reservationList = result.getReservations();
         for (Reservation r : reservationList) {
             for (Instance i : r.getInstances()) {
-                list.add(new CommonInstance(i));
+                map.put(i.getInstanceId(), i);
             }
         }
 
+        List<CommonInstance> list = new ArrayList<>();
+        for(String id : instanceList) {
+            Instance instance = map.get(id);
+            if(instance != null) {
+                list.add(new CommonInstance(instance));
+            } else {
+                list.add(new CommonInstance(id));
+            }
+        }
         return list;
     }
 

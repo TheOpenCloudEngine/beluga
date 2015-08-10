@@ -12,8 +12,13 @@ public class CommonInstance {
     private String name;
     private String publicIpAddress;
     private String privateIpAddress;
-
+    private String state;
     private Object instance;
+
+    public CommonInstance(String instanceId) {
+        this.instanceId = instanceId;
+        state = "not-exist";
+    }
 
     public CommonInstance(Object instance) {
         update(instance);
@@ -31,6 +36,7 @@ public class CommonInstance {
                     break;
                 }
             }
+            state = i.getState().getName();
         }
         this.instance = instance;
     }
@@ -53,6 +59,10 @@ public class CommonInstance {
 
     public String getPrivateIpAddress() {
         return privateIpAddress;
+    }
+
+    public String getState() {
+        return state;
     }
 
     @Override
