@@ -19,4 +19,6 @@ listen stats :1900
     stats auth garuda:garuda123:)
 EndOfStatConfig
 
+sudo sed -i 's/ENABLED\=0/ENABLED\=1/g' /etc/default/haproxy
+
 sudo haproxy -f /etc/haproxy/haproxy.cfg -p /var/run/haproxy.pid

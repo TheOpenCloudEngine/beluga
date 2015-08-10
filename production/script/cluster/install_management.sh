@@ -13,10 +13,12 @@ sudo usermod -aG docker ubuntu
 
 sudo docker run --name garuda-registry -d -p 5000:5000 registry
 
-echo 'start on runlevel [2345]' | sudo tee /etc/init/docker-registry.conf
-echo 'respawn' | sudo tee -a /etc/init/docker-registry.conf
-echo 'kill timeout 20' | sudo tee -a /etc/init/docker-registry.conf
-echo 'exec docker start garuda-registry' | sudo tee -a /etc/init/docker-registry.conf
+cat <<EOD | sudo tee /etc/init/docker-registry.conf
+start on runlevel [2345]
+respawn
+kill timeout 20
+exec docker start garuda-registry
+EOD
 
 echo "mysql-server-5.6 mysql-server/root_password password garuda123:)" | sudo debconf-set-selections
 echo "mysql-server-5.6 mysql-server/root_password_again password garuda123:)" | sudo debconf-set-selections
