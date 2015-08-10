@@ -15,6 +15,8 @@ import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.mesos.docker.DockerAPI;
+import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.mesos.marathon.message.GetApp;
 import org.opencloudengine.garuda.mesos.marathon.model.App;
 import org.opencloudengine.garuda.mesos.marathon.model.Container;
@@ -44,6 +46,9 @@ public class MesosService extends AbstractService {
     private static final String MARATHON_CONTAINER = "docker,mesos";
     private ClusterService clusterService;
 
+    private MarathonAPI marathonAPI;
+    private DockerAPI dockerAPI;
+
     public MesosService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
     }
@@ -51,17 +56,22 @@ public class MesosService extends AbstractService {
     @Override
     protected boolean doStart() throws ServiceException {
         clusterService = serviceManager.getService(ClusterService.class);
-        return false;
+
+        marathonAPI = new MarathonAPI();
+        dockerAPI = new DockerAPI(environment);
+
+        return true;
     }
 
     @Override
     protected boolean doStop() throws ServiceException {
-        return false;
+
+        return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
-        return false;
+        return true;
     }
 
     private int calculateQuorum(int size) {
@@ -210,116 +220,12 @@ public class MesosService extends AbstractService {
         }
     }
 
-    public int buildWebAppDockerImage(String imageName, String webAppType, String webAppFile) throws IOException {
-        String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
-        DefaultExecutor executor = new DefaultExecutor();
-        CommandLine cmdLine = CommandLine.parse(command);
-        // new image name
-        cmdLine.addArgument(imageName);
-        // war,zip file path
-        cmdLine.addArgument(webAppFile);
-
-//        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
-        InfoLogOutputStream outLog = new InfoLogOutputStream(logger);
-        ErrorLogOutputStream errLog = new ErrorLogOutputStream(logger);
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
-        executor.setStreamHandler(streamHandler);
-        executor.setExitValue(0);
-        int exitValue = executor.execute(cmdLine);
-        logger.info("Build docker images process exit with {}", exitValue);
-        return exitValue;
+    public MarathonAPI getMarathonAPI(){
+        return marathonAPI;
     }
 
-    private static final String DOCKER_EXEC = "docker";
-    private static final String DOCKER_PUSH_COMMAND = "push";
-
-    public int pushDockerImageToRegistry(String imageName) throws IOException {
-        DefaultExecutor executor = new DefaultExecutor();
-        CommandLine cmdLine = CommandLine.parse(DOCKER_EXEC);
-        cmdLine.addArgument(DOCKER_PUSH_COMMAND);
-        // new image name
-        cmdLine.addArgument(imageName);
-
-//        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
-        InfoLogOutputStream outLog = new InfoLogOutputStream(logger);
-        ErrorLogOutputStream errLog = new ErrorLogOutputStream(logger);
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
-        executor.setStreamHandler(streamHandler);
-        executor.setExitValue(0);
-        int exitValue = executor.execute(cmdLine);
-        logger.info("Push docker images process exit with {}", exitValue);
-        return exitValue;
+    public DockerAPI getDockerAPI() {
+        return dockerAPI;
     }
 
-    protected String chooseMarathonEndPoint(String clusterId) {
-        // 여러개중 장애없는 것을 가져온다.
-        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
-        List<String> list = topology.getMarathonEndPoints();
-        if(list == null) {
-            return null;
-        }
-        Client client = ClientBuilder.newClient();
-        for(String endPoint : list) {
-            String response = client.target(endPoint).path("/ping").request(MediaType.TEXT_PLAIN).get(String.class);
-            if("pong".equalsIgnoreCase(response.trim())) {
-                return endPoint;
-            }
-        }
-        return null;
-    }
-
-    private WebTarget getMarathonWebTarget(String clusterId, String path) {
-        Client client = ClientBuilder.newClient();
-        return client.target(chooseMarathonEndPoint(clusterId)).path(path);
-    }
-
-    public App deployDockerAppToMarathon(String clusterId, String appId, String imageName, Integer[] usedPorts, float cpus, float memory, int scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
-
-        WebTarget target = getMarathonWebTarget(clusterId, "/v2/apps");
-        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest), GetApp.class);
-        return getApp.getApp();
-    }
-
-    public App updateDockerAppToMarathon(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
-
-        WebTarget target = getMarathonWebTarget(clusterId, "/v2/apps");
-        GetApp getApp = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest), GetApp.class);
-        return getApp.getApp();
-    }
-
-    private App createDockerTypeApp(String imageId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
-        List<PortMapping> portMappings = null;
-        if(usedPorts != null) {
-            portMappings = new ArrayList<>();
-            for (int port : usedPorts) {
-                PortMapping portMapping = new PortMapping();
-                portMapping.setContainerPort(port);
-                //서비스 포트는 자동할당이다.
-                portMapping.setServicePort(0);
-                portMappings.add(portMapping);
-            }
-        }
-        Container container = null;
-        if(imageName != null) {
-            Docker docker = new Docker();
-            docker.setImage(imageName);
-            docker.setNetwork("BRIDGE");
-            docker.setPrivileged(true);
-            docker.setPortMappings(portMappings);
-            container = new Container();
-            container.setDocker(docker);
-            container.setType("DOCKER");
-        }
-
-        App createApp = new App();
-        createApp.setId(imageId);
-        createApp.setContainer(container);
-        createApp.setInstances(scale);
-        createApp.setCpus(cpus);
-        createApp.setMem(memory);
-
-        return createApp;
-    }
 }

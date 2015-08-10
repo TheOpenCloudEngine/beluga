@@ -12,11 +12,11 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private String appId;
     private String webAppFile;
     private String webAppType;
-    private float cpus;
-    private float memory;
-    private int scale;
+    private Float cpus;
+    private Float memory;
+    private Integer scale;
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, float cpus, float memory, int scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.webAppFile = webAppFile;
@@ -42,15 +42,15 @@ public class DeployWebAppActionRequest extends ActionRequest {
         return webAppType;
     }
 
-    public float getCpus() {
+    public Float getCpus() {
         return cpus;
     }
 
-    public float getMemory() {
+    public Float getMemory() {
         return memory;
     }
 
-    public int getScale() {
+    public Integer getScale() {
         return scale;
     }
 

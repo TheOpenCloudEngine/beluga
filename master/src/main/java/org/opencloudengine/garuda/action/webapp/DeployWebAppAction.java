@@ -15,6 +15,7 @@ import org.opencloudengine.garuda.env.DockerWebAppPorts;
 import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.MesosService;
+import org.opencloudengine.garuda.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.mesos.marathon.model.App;
 import org.opencloudengine.garuda.mesos.marathon.model.Container;
 import org.opencloudengine.garuda.mesos.marathon.model.Docker;
@@ -76,22 +77,21 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         * */
         //TODO 자동으로 버전이 올라가도록.. :tag 추가.
         String imageName = registryAddress + "/" + appId;
-
         status.walkStep();
-        int exitValue = mesosService.buildWebAppDockerImage(imageName, webAppType, webAppFile);
+        int exitValue = mesosService.getDockerAPI().buildWebAppDockerImage(imageName, webAppType, webAppFile);
 
         /*
          * 2 push image to registry
          * */
         status.walkStep();
-        exitValue = mesosService.pushDockerImageToRegistry(imageName);
+        exitValue = mesosService.getDockerAPI().pushDockerImageToRegistry(imageName);
 
         /*
         * 3. Deploy to Marathon
         * */
         status.walkStep();
         Integer[] usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
-        App appResponse = mesosService.deployDockerAppToMarathon(clusterId, appId, imageName, usedPort, cpus, memory, scale);
+        App appResponse = mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
 
     }
 }
