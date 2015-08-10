@@ -16,6 +16,8 @@ import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.utils.SshInfo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
 * Created by swsong on 2015. 7. 20..
@@ -28,9 +30,9 @@ public class ClusterService extends AbstractService {
 
     private static final String CLUSTERS_KEY = "clusters";
 
-    private Map<String, Queue<String>> clusterConfigQueueMap;
+    private Map<String, ProxyUpdateWorker> clusterProxyUpdateWorkerMap;
+    private Map<String, Queue<String>> clusterProxyUpdateQueueMap;
     private HAProxyAPI haProxyAPI;
-    private ProxyUpdateWorker proxyUpdateWorker;
 
     public ClusterService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
@@ -41,6 +43,8 @@ public class ClusterService extends AbstractService {
 
         clusterTopologyMap = new HashMap<>();
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
+        clusterProxyUpdateWorkerMap = new ConcurrentHashMap<>();
+        clusterProxyUpdateQueueMap = new ConcurrentHashMap<>();
 
         SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
@@ -48,18 +52,23 @@ public class ClusterService extends AbstractService {
         if(clusterList != null) {
             for (String clusterId : clusterList) {
                 try {
-                    ClusterTopology topology = loadCluster(clusterId);
-                    proxyUpdateWorker = loadProxyWorker(topology);
-                    proxyUpdateWorker.start();
+                    loadCluster(clusterId);
                 }catch(Throwable t) {
                     logger.error("error loading cluster topology.", t);
                 }
             }
         }
+
+        haProxyAPI = new HAProxyAPI(environment, clusterProxyUpdateQueueMap);
+
         return true;
     }
 
     private ProxyUpdateWorker loadProxyWorker(ClusterTopology topology) {
+        if(topology.getProxyList().size() == 0) {
+            return null;
+        }
+        String clusterId = topology.getClusterId();
         String definitionId = topology.getDefinitionId();
         String proxyIpAddress = topology.getProxyList().get(0).getPrivateIpAddress();
         ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
@@ -67,26 +76,43 @@ public class ClusterService extends AbstractService {
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
         final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-        haProxyAPI = new HAProxyAPI(environment, clusterConfigQueueMap);
-        return new ProxyUpdateWorker(sshInfo, clusterConfigQueueMap);
+        Queue<String> queue = new ConcurrentLinkedQueue<>();
+        ProxyUpdateWorker proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, queue);
+        proxyUpdateWorker.start();
+        clusterProxyUpdateQueueMap.put(clusterId, queue);
+        clusterProxyUpdateWorkerMap.put(clusterId, proxyUpdateWorker);
+        return proxyUpdateWorker;
+    }
+
+    private void unloadProxyWorker(String clusterId) {
+        ProxyUpdateWorker worker = clusterProxyUpdateWorkerMap.remove(clusterId);
+        if(worker != null) {
+            worker.interrupt();
+        }
+        Queue<String> queue = clusterProxyUpdateQueueMap.remove(clusterId);
+        if(queue != null) {
+            queue.clear();
+        }
     }
 
     @Override
     protected boolean doStop() throws ServiceException {
+        for(String clusterId : clusterTopologyMap.keySet()) {
+            unloadProxyWorker(clusterId);
+        }
         clusterTopologyMap.clear();
-        clusterConfigQueueMap.clear();
-        proxyUpdateWorker.interrupt();
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
         clusterTopologyMap = null;
-        clusterConfigQueueMap = null;
+        clusterProxyUpdateWorkerMap = null;
+        clusterProxyUpdateQueueMap = null;
         return true;
     }
 
-    public HAProxyAPI getHaProxyAPI(){
+    public HAProxyAPI getProxyAPI(){
         return haProxyAPI;
     }
 
@@ -149,6 +175,9 @@ public class ClusterService extends AbstractService {
         //토폴로지 설정파일을 저장한다.
         storeClusterTopology(clusterTopology);
         addClusterIdToSetting(clusterId);
+        //프록시 업데이트 감지를 시작한다.
+        loadProxyWorker(clusterTopology);
+
         return clusterTopology;
     }
 
@@ -178,9 +207,10 @@ public class ClusterService extends AbstractService {
                 iaas.close();
             }
         }
-        clusterTopologyMap.remove(clusterTopology.getClusterId());
 
         String clusterId = clusterTopology.getClusterId();
+        clusterTopologyMap.remove(clusterId);
+        unloadProxyWorker(clusterId);
         //clusterId 제거.
         removeClusterIdFromSetting(clusterId);
         //topology.cluster 설정파일 삭제.
@@ -199,13 +229,14 @@ public class ClusterService extends AbstractService {
 
     private void stopCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
 
-        String iaasProfile = clusterTopology.getIaasProfile();
+        String clusterId = clusterTopology.getClusterId();
+        unloadProxyWorker(clusterId);
 
+        String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         IaaS iaas = iaasProvider.getIaas();
-
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
             iaas.stopInstances(IaasUtils.getIdList(allNodeList));
@@ -249,6 +280,7 @@ public class ClusterService extends AbstractService {
         }
         // 상태 정보를 업데이트 한다.
         iaas.updateInstancesInfo(allNodeList);
+        loadProxyWorker(clusterTopology);
     }
 
     public void restartCluster(String clusterId) throws GarudaException {
@@ -262,13 +294,15 @@ public class ClusterService extends AbstractService {
     }
 
     private void restartCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
-        String iaasProfile = clusterTopology.getIaasProfile();
 
+        String clusterId = clusterTopology.getClusterId();
+        unloadProxyWorker(clusterId);
+
+        String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         IaaS iaas = iaasProvider.getIaas();
-
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
             iaas.rebootInstances(IaasUtils.getIdList(allNodeList));
@@ -280,6 +314,8 @@ public class ClusterService extends AbstractService {
         }
         // 상태 정보를 업데이트 한다.
         iaas.updateInstancesInfo(allNodeList);
+
+        loadProxyWorker(clusterTopology);
     }
 
     private void checkIfClusterExists(String clusterId) throws GarudaException {
@@ -345,6 +381,7 @@ public class ClusterService extends AbstractService {
             iaas.close();
         }
         clusterTopologyMap.put(clusterId, clusterTopology);
+        loadProxyWorker(clusterTopology);
         return clusterTopology;
     }
 

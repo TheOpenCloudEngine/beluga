@@ -18,6 +18,7 @@ import java.util.Map;
 public class ClustersAPI extends BaseAPI {
 
     private final ClusterService clusterService;
+
     public ClustersAPI() {
         super();
         clusterService = ServiceManager.getInstance().getService(ClusterService.class);
@@ -33,12 +34,12 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}")
     public Response changeClusterState(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
 
-        if(data == null) {
+        if (data == null) {
             return getErrorMessageOkResponse("No data transferred.");
         }
         String type = (String) data.get("type");
 
-        if(type == null) {
+        if (type == null) {
             return getErrorMessageOkResponse("Type must be set among 'create | start | stop | restart | destroy'");
         }
 
@@ -47,7 +48,7 @@ public class ClustersAPI extends BaseAPI {
             ActionRequest request = null;
             if (type.equalsIgnoreCase("create")) {
                 String definitionId = (String) data.get("definition");
-                if(definitionId == null) {
+                if (definitionId == null) {
                     return getErrorMessageOkResponse("Definition must be set when type is 'create'");
                 }
                 request = new CreateClusterActionRequest(clusterId, definitionId);
@@ -63,7 +64,7 @@ public class ClustersAPI extends BaseAPI {
                 return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'create | start | stop | restart | destroy'");
             }
             ActionStatus actionStatus = actionService().request(request);
-            if(await != null && await.booleanValue()) {
+            if (await != null && await.booleanValue()) {
                 actionStatus.waitForDone();
             }
 
@@ -97,7 +98,7 @@ public class ClustersAPI extends BaseAPI {
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
             ClusterTopology topology = clusterService.getClusterTopology(clusterId);
-            if(topology == null) {
+            if (topology == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(topology).build();
@@ -139,22 +140,37 @@ public class ClustersAPI extends BaseAPI {
     @GET
     @Path("/{id}/deployments")
     public Response getDeployments(@PathParam("id") String clusterId) throws Exception {
-        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
-        return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+        try {
+            MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 
     @DELETE
     @Path("/{id}/deployments/{deploymentsId}")
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
-        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
-        return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
+        try {
+            MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+            return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 
     @POST
     @Path("/{id}/proxy")
     public Response getProxyConfig(@PathParam("id") String clusterId) throws Exception {
-        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
-        return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+        try {
+            String configString = clusterService.getProxyAPI().onChangeCluster(clusterId);
+            return Response.ok(configString).build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 }

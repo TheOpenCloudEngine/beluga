@@ -40,14 +40,16 @@ public class HAProxyAPI {
 
     private String templateFilePath;
     private Map<String, Queue<String>> clusterConfigQueueMap;
-    private Object lock = new Object();
 
     public HAProxyAPI(Environment environment, Map<String, Queue<String>> queueMap) {
         templateFilePath = environment.filePaths().configPath().path(CONFIG_TEMPLATE_NAME).file().getAbsolutePath();
         this.clusterConfigQueueMap = queueMap;
     }
 
-    public void onChangeCluster(String clusterId) {
+    public String onChangeCluster(String clusterId) {
+        if(!clusterConfigQueueMap.containsKey(clusterId)) {
+            return null;
+        }
         VelocityContext context = new VelocityContext();
         ClusterService clusterService = ServiceManager.getInstance().getService(ClusterService.class);
 
@@ -75,8 +77,11 @@ public class HAProxyAPI {
             backendList.add(backend);
         }
 
-
         //TODO 2. marathon을 통해 app별 listening 상태를 받아와서
+
+
+
+
         VelocityEngine engine = new VelocityEngine();
         engine.init();
 
@@ -85,16 +90,10 @@ public class HAProxyAPI {
 
         template.merge(context, stringWriter);
         String configString = stringWriter.toString();
-        Queue<String> configQueue = null;
-        synchronized (lock) {
-            configQueue = clusterConfigQueueMap.get(clusterId);
-            if (configQueue == null) {
-                configQueue = new LinkedBlockingQueue<>();
-                clusterConfigQueueMap.put(clusterId, configQueue);
-            }
-        }
 
+        Queue<String> configQueue = clusterConfigQueueMap.get(clusterId);
         configQueue.offer(configString);
+        return configString;
     }
 
     private void restartProxy(String clusterId) {
