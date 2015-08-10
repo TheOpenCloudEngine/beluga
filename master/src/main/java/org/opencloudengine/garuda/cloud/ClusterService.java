@@ -70,7 +70,7 @@ public class ClusterService extends AbstractService {
         }
         String clusterId = topology.getClusterId();
         String definitionId = topology.getDefinitionId();
-        String proxyIpAddress = topology.getProxyList().get(0).getPrivateIpAddress();
+        String proxyIpAddress = topology.getProxyList().get(0).getPublicIpAddress();
         ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();

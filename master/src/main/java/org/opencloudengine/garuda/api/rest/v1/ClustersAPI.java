@@ -25,8 +25,44 @@ public class ClustersAPI extends BaseAPI {
     }
 
     /**
+     * Create cluster
+     * definition       : definition id.
+     * await (optional) : boolean. wait until action task is completed.
+     */
+    @POST
+    @Path("/")
+    public Response createCluster(Map<String, Object> data) throws Exception {
+
+        if (data == null) {
+            return getErrorMessageOkResponse("No data transferred.");
+        }
+
+        String clusterId = (String) data.get("id");
+        if(clusterId == null) {
+            return getErrorMessageOkResponse("ID must be set.");
+        }
+        String definitionId = (String) data.get("definition");
+        if (definitionId == null) {
+            return getErrorMessageOkResponse("Definition must be set.");
+        }
+        Boolean await = (Boolean) data.get("await");
+        try {
+            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionStatus actionStatus = actionService().request(request);
+            if (await != null && await.booleanValue()) {
+                actionStatus.waitForDone();
+            }
+
+            return Response.ok(actionStatus).build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
+    /**
      * Change clusters state
-     * type             : create | start | stop | restart | destroy
+     * type             : start | stop | restart | destroy
      * definition       : definition id. Only needed when a type is 'create'.
      * await (optional) : boolean. wait until action task is completed.
      */
@@ -40,19 +76,13 @@ public class ClustersAPI extends BaseAPI {
         String type = (String) data.get("type");
 
         if (type == null) {
-            return getErrorMessageOkResponse("Type must be set among 'create | start | stop | restart | destroy'");
+            return getErrorMessageOkResponse("Type must be set among 'start | stop | restart | destroy'");
         }
 
         Boolean await = (Boolean) data.get("await");
         try {
             ActionRequest request = null;
-            if (type.equalsIgnoreCase("create")) {
-                String definitionId = (String) data.get("definition");
-                if (definitionId == null) {
-                    return getErrorMessageOkResponse("Definition must be set when type is 'create'");
-                }
-                request = new CreateClusterActionRequest(clusterId, definitionId);
-            } else if (type.equalsIgnoreCase("start")) {
+            if (type.equalsIgnoreCase("start")) {
                 request = new StartClusterActionRequest(clusterId);
             } else if (type.equalsIgnoreCase("stop")) {
                 request = new StopClusterActionRequest(clusterId);
@@ -61,7 +91,7 @@ public class ClustersAPI extends BaseAPI {
             } else if (type.equalsIgnoreCase("destroy")) {
                 request = new DestroyClusterActionRequest(clusterId);
             } else {
-                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'create | start | stop | restart | destroy'");
+                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'start | stop | restart | destroy'");
             }
             ActionStatus actionStatus = actionService().request(request);
             if (await != null && await.booleanValue()) {

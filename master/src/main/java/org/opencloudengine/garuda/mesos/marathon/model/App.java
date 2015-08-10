@@ -54,8 +54,6 @@ public class App {
 	private List<String> dependencies;
 	private UpgradeStrategy upgradeStrategy;
 	private String version;
-	@JsonIgnore
-	private Map<String, Object> additionalProperties;
 
 	public App() {}
 
@@ -412,16 +410,6 @@ public class App {
 	@JsonProperty("version")
 	public void setVersion(String version) {
 		this.version = version;
-	}
-
-	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-
-	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
 	}
 
 }

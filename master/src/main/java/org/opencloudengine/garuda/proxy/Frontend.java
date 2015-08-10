@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,8 +67,11 @@ public class Frontend {
         return aclList;
     }
 
-    public Frontend withAclList(List<ACL> aclList) {
-        this.aclList = aclList;
+    public Frontend withAcl(ACL acl) {
+        if(aclList == null) {
+            aclList = new ArrayList<>();
+        }
+        aclList.add(acl);
         return this;
     }
 

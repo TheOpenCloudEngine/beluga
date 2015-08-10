@@ -56,21 +56,21 @@ public class MarathonAPI {
         return client.target(chooseMarathonEndPoint(clusterId)).path(path);
     }
 
-    public Response deployDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response deployDockerApp(String clusterId, String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
         WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
-    public Response updateDockerApp(String clusterId, String appId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response updateDockerApp(String clusterId, String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
         WebTarget target = getWebTarget(clusterId, API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
 
-    private App createDockerTypeApp(String imageId, String imageName, Integer[] usedPorts, Float cpus, Float memory, Integer scale) {
+    private App createDockerTypeApp(String imageId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         List<PortMapping> portMappings = null;
         if(usedPorts != null) {
             portMappings = new ArrayList<>();
@@ -100,7 +100,37 @@ public class MarathonAPI {
         app.setInstances(scale);
         app.setCpus(cpus);
         app.setMem(memory);
+        app.setUpgradeStrategy(getDefaultUpgradeStrategy());
+        return app;
+    }
 
+    public Response deployCommandApp(String clusterId, String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
+
+        WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
+    }
+
+    public Response updateCommandApp(String clusterId, String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
+
+        WebTarget target = getWebTarget(clusterId, API_PATH_APPS + SLASH + appId);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
+    }
+
+    private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+        App app = new App();
+        app.setId(imageId);
+        app.setCmd(command);
+        app.setInstances(scale);
+        app.setCpus(cpus);
+        app.setMem(memory);
+        app.setPorts(usedPorts);
+        app.setUpgradeStrategy(getDefaultUpgradeStrategy());
+        return app;
+    }
+
+    private UpgradeStrategy getDefaultUpgradeStrategy() {
         // 업그레이드 방식 설정
         // minimumHealthCapacity=0.5, maximumOverCapacity=0.2
         // 즉, 새로운 앱으로 재시작될때, 최소 1/2은 살아있는 상태를 유지. Rolling 과정에서 총갯수의 0.2정도는 초과해서 컨테이너가 생길수 있다.
@@ -108,10 +138,8 @@ public class MarathonAPI {
         UpgradeStrategy upgradeStrategy = new UpgradeStrategy();
         upgradeStrategy.setMinimumHealthCapacity(0.5f);
         upgradeStrategy.setMaximumOverCapacity(0.2f);
-        app.setUpgradeStrategy(upgradeStrategy);
-        return app;
+        return upgradeStrategy;
     }
-
     /*
     * Marathon 의 GET API를 직접호출한다.
     * */

@@ -34,16 +34,11 @@ public class RestAPIService extends AbstractService {
 	@Override
 	protected boolean doStart() throws ServiceException {
 
-
 		int servicePort = environment.settingManager().getSystemSettings().getInt("service.port");
 		jettyServer = new Server(servicePort);
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
-//		jettyServer.setHandler(context);
-
-//		ServletHolder jerseyServlet = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
-//		jerseyServlet.setInitOrder(0);
 
 		ResourceConfig resourceConfig = new ResourceConfig();
 		resourceConfig.packages(true, garuda_rest_api_package);
@@ -53,11 +48,6 @@ public class RestAPIService extends AbstractService {
 
 		context.addServlet(sh, "/*");
 		jettyServer.setHandler(context);
-
-
-		// Tells the Jersey Servlet which REST service/class to load.
-//		jerseyServlet.setInitParameter(jersey_provider_class, HumanAPI.class.getCanonicalName());
-//		jerseyServlet.setInitParameter(jersey_provider_class, SampleAPI.class.getCanonicalName());
 
 		try {
 			jettyServer.start();

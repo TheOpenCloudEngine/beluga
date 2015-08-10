@@ -4,6 +4,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
+import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.MesosService;
@@ -14,7 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -108,8 +111,13 @@ public class AppsAPI extends BaseAPI {
      * 전달된 설정대로 앱을 실행한다.
      */
     @POST
-    @Path("/{id}")
-    public Response deployApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
+    @Path("/")
+    public Response deployApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
+        String appId = (String) data.get("id");
+        String command = (String) data.get("cmd");
+        if (command != null) {
+            return runApp(clusterId, appId, data, false);
+        }
         return deployOrUpdateApp(clusterId, appId, data, false);
     }
 
@@ -122,11 +130,47 @@ public class AppsAPI extends BaseAPI {
     @PUT
     @Path("/{id}")
     public Response updateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
+        String command = (String) data.get("cmd");
+        if (command != null) {
+            return runApp(clusterId, appId, data, true);
+        }
         return deployOrUpdateApp(clusterId, appId, data, true);
+    }
+
+    private Response runApp(String clusterId, String appId, Map<String, Object> data, Boolean isUpdate) {
+        try {
+            String command = (String) data.get("cmd");
+            Integer port = (Integer) data.get("port");
+            Float cpus = null;
+            if (data.get("cpus") != null) {
+                cpus = Float.parseFloat(data.get("cpus").toString());
+            }
+            Float memory = null;
+            if (data.get("mem") != null) {
+                memory = Float.parseFloat(data.get("mem").toString());
+            }
+            Integer scale = (Integer) data.get("instances");
+            Response response = null;
+            List<Integer> ports = null;
+            if(port != null) {
+                ports = new ArrayList<>();
+                ports.add(port);
+            }
+            if (!isUpdate) {
+                return mesosService.getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+            } else {
+                return mesosService.getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+            }
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 
     private Response deployOrUpdateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
         try {
+            Integer port = (Integer) data.get("port");
+
             String webAppFile = (String) data.get("file");
             String webAppType = (String) data.get("type");
             Float cpus = null;
@@ -134,20 +178,19 @@ public class AppsAPI extends BaseAPI {
                 cpus = Float.parseFloat(data.get("cpus").toString());
             }
             Float memory = null;
-            if (data.get("memory") != null) {
-                memory = Float.parseFloat(data.get("memory").toString());
+            if (data.get("mem") != null) {
+                memory = Float.parseFloat(data.get("mem").toString());
             }
-            Integer scale = (Integer) data.get("scale");
+            Integer scale = (Integer) data.get("instances");
 
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, cpus, memory, scale, isUpdate);
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, port, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
-            //TODO deploy가 성공했다면 haproxy를 갱신한다.
-            //만약 update라면 포트가 바뀔수도...
-
-
-
+            //deploy가 성공했다면 haproxy를 갱신한다.
+            if (actionStatus.getError() != null) {
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId);
+            }
 
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
@@ -161,17 +204,25 @@ public class AppsAPI extends BaseAPI {
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
         //TODO 포트가 바뀔수도 있으므로, haproxy를 업데이트 한다.
-
-
-        return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
+        try {
+            return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
-        //TODO 삭제되었으면 haproxy에서 지워준다.
-        return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+        try {
+            //TODO 삭제되었으면 haproxy에서 지워준다.
+            return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
     }
 
 }

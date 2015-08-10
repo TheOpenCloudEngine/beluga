@@ -53,6 +53,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         //
         //for marathon
         //
+        Integer port = request.getPort();
         Float cpus = request.getCpus();
         Float memory = request.getMemory();
         Integer scale = request.getScale();
@@ -100,7 +101,13 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         * 3. Deploy to Marathon
         * */
         status.walkStep();
-        Integer[] usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
+        List<Integer> usedPort = null;
+        if(port == null) {
+            usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
+        } else {
+            usedPort = new ArrayList<>();
+            usedPort.add(port);
+        }
         Response response = null;
         if(isUpdate) {
             response = mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);

@@ -15,7 +15,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
     public CreateClusterAction(CreateClusterActionRequest request) {
         super(request);
         status.registerStep("Create instances.");
-        status.registerStep("Configure mesos-master1.");
+        status.registerStep("Configure mesos-master.");
         status.registerStep("Configure mesos-slave.");
     }
 

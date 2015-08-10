@@ -23,7 +23,7 @@ public class DeployWebAppActionTest extends BaseActionTest {
         float memory = 700; //최소 768이다. WAS가 512로 뜨기때문에.
         int scale = 1;
 
-        DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, cpus, memory, scale);
+        DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, null, cpus, memory, scale);
         DeployWebAppAction action = new DeployWebAppAction(request);
         ActionStatus status = action.getStatus();
         action.run();

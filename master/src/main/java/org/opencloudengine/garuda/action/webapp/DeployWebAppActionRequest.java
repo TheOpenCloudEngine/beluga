@@ -12,28 +12,31 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private String appId;
     private String webAppFile;
     private String webAppType;
+    private Integer port;
     private Float cpus;
     private Float memory;
     private Integer scale;
     private Boolean isUpdate;
 
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.webAppFile = webAppFile;
         this.webAppType = webAppType;
+        this.port = port;
         this.cpus = cpus;
         this.memory = memory;
         this.scale = scale;
         isUpdate = false;
     }
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
+    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.webAppFile = webAppFile;
         this.webAppType = webAppType;
+        this.port = port;
         this.cpus = cpus;
         this.memory = memory;
         this.scale = scale;
@@ -54,6 +57,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     public String getWebAppType() {
         return webAppType;
+    }
+
+    public Integer getPort() {
+        return port;
     }
 
     public Float getCpus() {
