@@ -61,9 +61,9 @@ public class AppsAPI extends BaseAPI {
     public Response uploadFile(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
                                @FormDataParam("file") InputStream uploadedInputStream,
                                @FormDataParam("file") FormDataContentDisposition fileDetail) throws GarudaException {
-        String uploadDir = SettingManager.getInstance().getSystemSettings().getString("upload.dir.path");
-        org.opencloudengine.garuda.env.Path appUploadPath = SettingManager.getInstance().getEnvironment().filePaths().path(uploadDir);
-        File fileHome = appUploadPath.path(clusterId, appId).file();
+        String tempDir = SettingManager.getInstance().getSystemSettings().getString("temp.dir.path");
+        org.opencloudengine.garuda.env.Path uploadPath = SettingManager.getInstance().getEnvironment().filePaths().path(tempDir);
+        File fileHome = uploadPath.path(clusterId, appId).file();
         if (!fileHome.exists()) {
             fileHome.mkdirs();
         }
