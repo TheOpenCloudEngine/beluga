@@ -151,4 +151,10 @@ public class ClustersAPI extends BaseAPI {
         return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
     }
 
+    @POST
+    @Path("/{id}/proxy")
+    public Response getProxyConfig(@PathParam("id") String clusterId) throws Exception {
+        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+        return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+    }
 }

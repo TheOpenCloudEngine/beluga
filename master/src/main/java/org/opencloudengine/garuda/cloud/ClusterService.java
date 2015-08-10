@@ -6,11 +6,14 @@ import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
+import org.opencloudengine.garuda.proxy.HAProxyAPI;
+import org.opencloudengine.garuda.proxy.ProxyUpdateWorker;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
+import org.opencloudengine.garuda.utils.SshInfo;
 
 import java.util.*;
 
@@ -24,6 +27,10 @@ public class ClusterService extends AbstractService {
     private IaasProviderConfig iaasProviderConfig;
 
     private static final String CLUSTERS_KEY = "clusters";
+
+    private Map<String, Queue<String>> clusterConfigQueueMap;
+    private HAProxyAPI haProxyAPI;
+    private ProxyUpdateWorker proxyUpdateWorker;
 
     public ClusterService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
@@ -41,26 +48,46 @@ public class ClusterService extends AbstractService {
         if(clusterList != null) {
             for (String clusterId : clusterList) {
                 try {
-                    loadCluster(clusterId);
+                    ClusterTopology topology = loadCluster(clusterId);
+                    proxyUpdateWorker = loadProxyWorker(topology);
+                    proxyUpdateWorker.start();
                 }catch(Throwable t) {
                     logger.error("error loading cluster topology.", t);
                 }
             }
         }
-
         return true;
+    }
+
+    private ProxyUpdateWorker loadProxyWorker(ClusterTopology topology) {
+        String definitionId = topology.getDefinitionId();
+        String proxyIpAddress = topology.getProxyList().get(0).getPrivateIpAddress();
+        ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
+        String userId = clusterDefinition.getUserId();
+        String keyPairFile = clusterDefinition.getKeyPairFile();
+        int timeout = clusterDefinition.getTimeout();
+        final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
+        haProxyAPI = new HAProxyAPI(environment, clusterConfigQueueMap);
+        return new ProxyUpdateWorker(sshInfo, clusterConfigQueueMap);
     }
 
     @Override
     protected boolean doStop() throws ServiceException {
         clusterTopologyMap.clear();
+        clusterConfigQueueMap.clear();
+        proxyUpdateWorker.interrupt();
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
         clusterTopologyMap = null;
+        clusterConfigQueueMap = null;
         return true;
+    }
+
+    public HAProxyAPI getHaProxyAPI(){
+        return haProxyAPI;
     }
 
     public ClusterTopology createCluster(String clusterId, String definitionId) throws GarudaException, ClusterExistException {
@@ -77,7 +104,7 @@ public class ClusterService extends AbstractService {
         String iaasProfile = clusterDefinition.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
-        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasProfile);
+        ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
 
         String keyPair = clusterDefinition.getKeyPair();
 
@@ -289,11 +316,15 @@ public class ClusterService extends AbstractService {
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
     }
-    public void loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
+    public ClusterTopology loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
         logger.info("Load cluster {}..", clusterId);
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
         if(settings == null) {
             throw new GarudaException("Cluster topology config not found : " + clusterId);
+        }
+        String definitionId = settings.getString(ClusterTopology.DEFINITION_ID_KEY);
+        if(definitionId == null) {
+            throw new UnknownIaasProviderException("definition is null.");
         }
         String iaasProfile = settings.getString(ClusterTopology.IAAS_PROFILE_KEY);
         if(iaasProfile == null) {
@@ -302,7 +333,7 @@ public class ClusterService extends AbstractService {
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
         IaaS iaas = iaasProvider.getIaas();
 
-        ClusterTopology clusterTopology = new ClusterTopology(clusterId, iaasProfile);
+        ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
         try {
             loadRole(ClusterTopology.GARUDA_MASTER_ROLE, settings, iaas, clusterTopology);
             loadRole(ClusterTopology.PROXY_ROLE, settings, iaas, clusterTopology);
@@ -314,6 +345,7 @@ public class ClusterService extends AbstractService {
             iaas.close();
         }
         clusterTopologyMap.put(clusterId, clusterTopology);
+        return clusterTopology;
     }
 
     private void storeClusterTopology(ClusterTopology clusterTopology){

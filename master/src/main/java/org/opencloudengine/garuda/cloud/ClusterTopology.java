@@ -20,6 +20,7 @@ public class ClusterTopology {
     private static final String MARATHON_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.MARATHON_PORT;
 
     public static final String IAAS_PROFILE_KEY = "iaasProfile";
+    public static final String DEFINITION_ID_KEY = "definitionId";
     public static final String CLUSTER_ID_KEY = "clusterId";
 
     public static final String GARUDA_MASTER_ROLE = "garuda-master";
@@ -30,6 +31,7 @@ public class ClusterTopology {
     public static final String SERVICE_NODES_ROLE = "service-db";
 
     private String clusterId;
+    private String definitionId;
     private String iaasProfile;
 
     private List<CommonInstance> garudaMasterList;
@@ -41,8 +43,9 @@ public class ClusterTopology {
     private List<CommonInstance> noRoleNodeList;
 
 
-    public ClusterTopology(String clusterId, String iaasProfile) {
+    public ClusterTopology(String clusterId, String definitionId, String iaasProfile) {
         this.clusterId = clusterId;
+        this.definitionId = definitionId;
         this.iaasProfile = iaasProfile;
 
         garudaMasterList = new ArrayList<>();
@@ -56,6 +59,10 @@ public class ClusterTopology {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getDefinitionId() {
+        return definitionId;
     }
 
     public String getIaasProfile() {
@@ -134,6 +141,7 @@ public class ClusterTopology {
     public Properties getProperties() {
         Properties props = new Properties();
         props.setProperty(CLUSTER_ID_KEY, clusterId);
+        props.setProperty(DEFINITION_ID_KEY, definitionId);
         props.setProperty(IAAS_PROFILE_KEY, iaasProfile);
         putProps(props, GARUDA_MASTER_ROLE, garudaMasterList);
         putProps(props, PROXY_ROLE, proxyList);
@@ -176,7 +184,6 @@ public class ClusterTopology {
     public List<String> getMarathonEndPoints() {
         List<String> list = new ArrayList<>();
         for(CommonInstance i : mesosMasterList) {
-            //무조건 1개로 처리.
             list.add(String.format(MARATHON_ENDPOINT_FORMAT, i.getPublicIpAddress()));
         }
         return list;
