@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.cloud;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 
@@ -12,6 +13,7 @@ import java.util.Properties;
 * 현재 생성되어 운영중인 클러스터의 형상을 담고있다.
 * Created by swsong on 2015. 7. 20..
 */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClusterTopology {
     private static final String REGISTRY_ADDRESS_PORT_FORMAT = "%s:" + ClusterPorts.REGISTRY_PORT;
     private static final String REGISTRY_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.REGISTRY_PORT;

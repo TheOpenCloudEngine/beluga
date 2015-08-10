@@ -3,9 +3,13 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.*;
+import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -18,8 +22,10 @@ import java.util.Map;
 @Path("/v1/clusters")
 public class ClustersAPI extends BaseAPI {
 
+    private final ClusterService clusterService;
     public ClustersAPI() {
         super();
+        clusterService = ServiceManager.getInstance().getService(ClusterService.class);
     }
 
     /**
@@ -97,10 +103,8 @@ public class ClustersAPI extends BaseAPI {
     @Path("/")
     public Response getClusters() throws Exception {
         try {
-            GetClustersActionRequest request = new GetClustersActionRequest();
-            ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitForDone();
-            return Response.ok(actionStatus).build();
+            Collection<ClusterTopology> set = clusterService.getAllClusterTopology();
+            return Response.ok(set).build();
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -114,13 +118,11 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}")
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
-            GetClusterActionRequest request = new GetClusterActionRequest(clusterId);
-            ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitForDone();
-            if(actionStatus.getResult() == null) {
+            ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+            if(topology == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            return Response.ok(actionStatus).build();
+            return Response.ok(topology).build();
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
