@@ -239,7 +239,7 @@ public class AppsAPIBak {
 	* */
 	private File getTempDir() {
         Settings settings = SettingManager.getInstance().getSystemSettings();
-        String rootPath = settings.getString("upload.dir.path");
+        String rootPath = settings.getString("temp.dir.path");
 
 		File tempRootDirFile = new File(rootPath);
 		if (!tempRootDirFile.exists()) {
