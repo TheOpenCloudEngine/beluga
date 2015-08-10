@@ -2,7 +2,6 @@
 package org.opencloudengine.garuda.mesos.marathon.model;
 
 import com.fasterxml.jackson.annotation.*;
-import org.opencloudengine.garuda.mesos.bak.marathon.model.apps.getapps.res.App;
 
 import javax.annotation.Generated;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
 	"apps",
 	"dependencies",
