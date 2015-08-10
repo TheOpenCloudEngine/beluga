@@ -9,6 +9,7 @@ sudo apt-get -y update
 sudo apt-get install haproxy
 
 cat <<EndOfStatConfig | sudo tee -a /etc/haproxy/haproxy.cfg
+
 listen stats :1900
     mode http
     stats enable

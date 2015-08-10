@@ -25,8 +25,7 @@ sudo usermod -aG docker ubuntu
 sudo docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --detach=true --name=cadvisor   google/cadvisor:latest
 
 # cadvisor 자동시작을 등록한다.
-sudo touch /etc/init/cadvisor.conf
-cat << CAdvisorConfig | sudo tee -a /etc/init/cadvisor.conf
+cat << CAdvisorConfig | sudo tee /etc/init/cadvisor.conf
 start on runlevel [2345]
 respawn
 kill timeout 20
