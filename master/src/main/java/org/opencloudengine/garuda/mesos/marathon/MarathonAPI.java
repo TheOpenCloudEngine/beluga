@@ -15,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class MarathonAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(MarathonAPI.class);
 
+    private static final String API_PATH_VERSION = "/v2";
     private static final String API_PATH_APPS = "/v2/apps";
     private static final String SLASH = "/";
 
@@ -124,5 +126,21 @@ public class MarathonAPI {
         upgradeStrategy.setMaximumOverCapacity(0.2f);
         app.setUpgradeStrategy(upgradeStrategy);
         return app;
+    }
+
+    /*
+    * Marathon 의 GET API를 직접호출한다.
+    * */
+    public Response requestGetAPI(String clusterId, String path) {
+        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).get();
+    }
+
+    /*
+    * Marathon 의 DELETE API를 직접호출한다.
+    * */
+    public Response requestDeleteAPI(String clusterId, String path) {
+        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).delete();
     }
 }

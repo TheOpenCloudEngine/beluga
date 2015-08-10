@@ -5,6 +5,7 @@ import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.*;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import javax.ws.rs.*;
@@ -12,13 +13,7 @@ import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * 1. 클러스터 생성
- * uri : clusters
- * method : post
- * param : clusterId 클러스터명
- * param : definitionId 클러스터정의 설정아이디
- */
+
 @Path("/v1/clusters")
 public class ClustersAPI extends BaseAPI {
 
@@ -80,23 +75,6 @@ public class ClustersAPI extends BaseAPI {
     }
 
     /**
-     * Destroy cluster.
-     */
-    @DELETE
-    @Path("/{id}")
-    public Response destroyCluster(@PathParam("id") String clusterId) throws Exception {
-        try {
-            DestroyClusterActionRequest request = new DestroyClusterActionRequest(clusterId);
-            ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitForDone();
-            return Response.ok(actionStatus).build();
-        } catch (Throwable t) {
-            logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
-        }
-    }
-
-    /**
      * Get all clusters info.
      */
     @GET
@@ -128,4 +106,34 @@ public class ClustersAPI extends BaseAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
+
+    /**
+     * Destroy cluster.
+     */
+    @DELETE
+    @Path("/{id}")
+    public Response destroyCluster(@PathParam("id") String clusterId) throws Exception {
+        try {
+            DestroyClusterActionRequest request = new DestroyClusterActionRequest(clusterId);
+            ActionStatus actionStatus = actionService().request(request);
+            actionStatus.waitForDone();
+            return Response.ok(actionStatus).build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}/marathonInfo")
+    public Response getMarathonInfo(@PathParam("id") String clusterId) throws Exception {
+        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+        try {
+            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/info");
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
 }

@@ -17,6 +17,18 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Integer scale;
     private Boolean isUpdate;
 
+
+    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale) {
+        this.clusterId = clusterId;
+        this.appId = appId;
+        this.webAppFile = webAppFile;
+        this.webAppType = webAppType;
+        this.cpus = cpus;
+        this.memory = memory;
+        this.scale = scale;
+        isUpdate = false;
+    }
+
     public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;

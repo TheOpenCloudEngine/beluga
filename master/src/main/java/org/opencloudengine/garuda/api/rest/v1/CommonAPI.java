@@ -7,7 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-@Path("/v1/actions")
+@Path("/v1")
 public class CommonAPI extends BaseAPI {
 
     public CommonAPI() {
@@ -18,10 +18,10 @@ public class CommonAPI extends BaseAPI {
      * Get Action Status
      */
     @GET
-    @Path("/{id}")
-    public Response checkStatus(@PathParam("id") String actionId) throws Exception {
+    @Path("/actions/{id}")
+    public Response getActionStatus(@PathParam("id") String actionId) throws Exception {
         ActionStatus actionStatus = actionService().getStatus(actionId);
-        if(actionStatus == null) {
+        if (actionStatus == null) {
             return getErrorMessageOkResponse("Cannot find the action id : " + actionId);
         }
         return Response.ok(actionStatus).build();

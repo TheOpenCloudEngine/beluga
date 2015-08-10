@@ -102,7 +102,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         status.walkStep();
         Integer[] usedPort = DockerWebAppPorts.getPortsByStackId(webAppType);
         App appResponse = null;
-        if(!isUpdate) {
+        if(isUpdate) {
             mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
         } else {
             mesosService.getMarathonAPI().updateDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
