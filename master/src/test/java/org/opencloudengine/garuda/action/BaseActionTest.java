@@ -17,7 +17,7 @@ public class BaseActionTest {
     protected Environment environment;
     protected ServiceManager serviceManager;
     protected ClusterService clusterService;
-    String home = "production";
+    String home = "/Users/swsong/Projects/garuda/production";
 
     @Before
     public void setUp() throws GarudaException {

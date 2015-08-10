@@ -118,7 +118,9 @@ public class ActionService extends AbstractService {
                     // RejectedExecutionException을 던지게 되어있다.
                     action.getStatus().setError("처리허용량을 초과하여 작업이 거부되었습니다.", e);
                 } catch (Throwable e) {
-                    action.getStatus().setError(e);
+                    if(action != null) {
+                        action.getStatus().setError(e);
+                    }
                 }
             }
 
