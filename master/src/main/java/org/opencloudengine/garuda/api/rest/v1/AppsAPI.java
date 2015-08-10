@@ -3,14 +3,10 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
-import org.opencloudengine.garuda.action.webapp.DeployWebAppAction;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
-import org.opencloudengine.garuda.cloud.ClusterTopology;
-import org.opencloudengine.garuda.env.DockerWebAppPorts;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.MesosService;
-import org.opencloudengine.garuda.mesos.marathon.model.App;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import javax.ws.rs.*;
@@ -18,10 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLDecoder;
-import java.nio.channels.FileLock;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,9 +139,16 @@ public class AppsAPI extends BaseAPI {
             }
             Integer scale = (Integer) data.get("scale");
 
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, cpus, memory, scale, true);
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
+
+            //TODO deploy가 성공했다면 haproxy를 갱신한다.
+            //만약 update라면 포트가 바뀔수도...
+
+
+
+
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -159,12 +159,18 @@ public class AppsAPI extends BaseAPI {
     @POST
     @Path("/{id}/restart")
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
+
+        //TODO 포트가 바뀔수도 있으므로, haproxy를 업데이트 한다.
+
+
         return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
+
+        //TODO 삭제되었으면 haproxy에서 지워준다.
         return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
     }
 

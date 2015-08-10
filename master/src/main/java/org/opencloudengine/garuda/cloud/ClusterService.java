@@ -53,16 +53,13 @@ public class ClusterService extends AbstractService {
 
     @Override
     protected boolean doStop() throws ServiceException {
-
-        //TODO
-
+        clusterTopologyMap.clear();
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
-        //TODO
-
+        clusterTopologyMap = null;
         return true;
     }
 
@@ -320,12 +317,6 @@ public class ClusterService extends AbstractService {
     }
 
     private void storeClusterTopology(ClusterTopology clusterTopology){
-        String clusterId = clusterTopology.getClusterId();
-        Properties props = clusterTopology.getProperties();
-        environment.settingManager().storeClusterTopology(clusterId, props);
-    }
-
-    private void removeClusterTopology(ClusterTopology clusterTopology){
         String clusterId = clusterTopology.getClusterId();
         Properties props = clusterTopology.getProperties();
         environment.settingManager().storeClusterTopology(clusterId, props);
