@@ -149,6 +149,14 @@ public class MarathonAPI {
     }
 
     /*
+    * Marathon 의 GET API를 직접호출한다.
+    * */
+    public String requestGetAPIasString(String clusterId, String path) {
+        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+    }
+
+    /*
     * Marathon 의 POST API를 직접호출한다.
     * */
     public Response requestPostAPI(String clusterId, String path, Map<String, Object> data) {

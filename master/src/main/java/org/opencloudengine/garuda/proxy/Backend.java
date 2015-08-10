@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,8 +54,11 @@ public class Backend {
         return serverList;
     }
 
-    public Backend withServerList(List<Server> serverList) {
-        this.serverList = serverList;
+    public Backend withServer(Server server) {
+        if(serverList == null) {
+            serverList = new ArrayList<>();
+        }
+        serverList.add(server);
         return this;
     }
 

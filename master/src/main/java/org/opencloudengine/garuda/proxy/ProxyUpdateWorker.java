@@ -39,7 +39,6 @@ public class ProxyUpdateWorker extends Thread {
                 for (int i = 0; i < sizeToRemove; i++) {
                     configString = configQueue.poll();
                 }
-
                 if (configString != null) {
                     //0. save to file
                     File fileHome = tempDirPath.path(clusterId).file();
@@ -54,9 +53,10 @@ public class ProxyUpdateWorker extends Thread {
                         sshClient.connect(sshInfo);
 
                         //1. Send config to proxy server
-                        sshClient.sendFile(configFile.getAbsolutePath(), HAProxyAPI.CONFIG_FILE, false);
-
-                        //2. Restart proxy
+                        sshClient.sendFile(configFile.getAbsolutePath(), HAProxyAPI.TMP_CONFIG_FILE, false);
+                        //2. Copy config to tmp dir
+                        sshClient.runCommand("proxy config copy", HAProxyAPI.COPY_CONFIG_COMMAND);
+                        //3. Restart proxy
                         sshClient.runCommand("proxy update worker", HAProxyAPI.RESTART_COMMAND);
                     } finally {
                         if (sshClient != null) {

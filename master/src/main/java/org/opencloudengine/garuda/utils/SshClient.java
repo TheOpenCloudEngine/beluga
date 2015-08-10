@@ -36,7 +36,7 @@ public class SshClient {
             timeout = sshInfo.getTimeoutInMillis();
             session.setTimeout(timeout);
             tryConnect(session);
-        }catch(Throwable t) {
+        } catch (Throwable t) {
             throw new RuntimeException(t);
         }
         return this;
@@ -46,15 +46,15 @@ public class SshClient {
         for (int i = 0; i < MAX_TRIES; i++) {
             try {
                 logger.debug("Try connect {} times : {}", i + 1, obj);
-                if(obj instanceof Channel) {
+                if (obj instanceof Channel) {
                     ((Channel) obj).connect(timeout);
-                } else if(obj instanceof Session) {
+                } else if (obj instanceof Session) {
                     ((Session) obj).connect(timeout);
                 }
                 logger.debug("Connect Success : {}", obj);
                 break;
             } catch (Exception e) {
-                if(i == MAX_TRIES - 1) {
+                if (i == MAX_TRIES - 1) {
                     throw e;
                 }
                 logger.error("connection fail : {}", e.getMessage());
@@ -66,8 +66,9 @@ public class SshClient {
             }
         }
     }
+
     public void close() {
-        if(session != null) {
+        if (session != null) {
             session.disconnect();
         }
     }
@@ -75,6 +76,7 @@ public class SshClient {
     public int runCommand(String label, File scriptFile) throws IOException {
         return runCommand(label, scriptFile, null);
     }
+
     public int runCommand(String label, File scriptFile, String... args) throws IOException {
         String destFile = DEFAULT_WORKING_PATH + scriptFile.getName();
         sendFile(scriptFile.getAbsolutePath(), destFile, true);
@@ -89,19 +91,21 @@ public class SshClient {
     public int runCommand(String label, String command, String... args) {
 
         try {
-            ChannelExec channel = (ChannelExec) session.openChannel("exec");
+            final ChannelExec channel = (ChannelExec) session.openChannel("exec");
             try {
 
-                if(args != null) {
+                if (args != null) {
                     command = makeCommandLine(command, DEFAULT_ARG_BRACE, args);
                 }
                 logger.debug("[{}] Send command {}", sshInfo.getHost(), command);
                 channel.setCommand(command);
                 tryConnect(channel);
-
-                InputStream stdIn = channel.getInputStream();
-                InputStream errIn = channel.getErrStream();
-                return consumeOutputStream(label, channel, stdIn, errIn);
+//                channel.setErrStream(System.err);
+//                channel.setOutputStream(System.out);
+//                InputStream stdIn = channel.getInputStream();
+//                InputStream errIn = channel.getErrStream();
+//                return consumeOutputStream(label, channel, stdIn, errIn);
+                return 0;
 
             } finally {
                 if (channel != null) {
@@ -113,10 +117,10 @@ public class SshClient {
         }
     }
 
-    private String makeCommandLine(String command, String brace,String... args) {
+    private String makeCommandLine(String command, String brace, String... args) {
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(command);
-        if(args != null) {
+        if (args != null) {
             commandBuilder.append(" ");
             for (String arg : args) {
                 commandBuilder.append(brace).append(arg).append(brace);
@@ -138,14 +142,14 @@ public class SshClient {
                         //EOF
                         break;
                     }
-                    if(strLog != null) {
+                    if (strLog != null) {
                         if (label != null) {
                             logger.info("[{}] {}", label, strLog);
                         } else {
                             logger.info(strLog);
                         }
                     }
-                    if(errLog != null) {
+                    if (errLog != null) {
                         if (label != null) {
                             logger.error("[{}] {}", label, errLog);
                         } else {
@@ -153,7 +157,7 @@ public class SshClient {
                         }
                     }
                 } catch (Exception ex) {
-                    if(label != null) {
+                    if (label != null) {
                         logger.error("[{}] {}", label, ex);
                     } else {
                         logger.error("{}", ex.toString());
@@ -163,7 +167,7 @@ public class SshClient {
             }
             if (channel.isClosed()) {
                 int exitStatus = channel.getExitStatus();
-                if(label != null) {
+                if (label != null) {
                     logger.info("[{}] Exit code {}", label, exitStatus);
                 } else {
                     logger.info("Exit code {}", exitStatus);
@@ -179,12 +183,12 @@ public class SshClient {
 
     public void sendFile(String source, String dest, boolean executable) {
         try {
-            ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
+            ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
             try {
                 tryConnect(channel);
                 logger.debug("[{}] Send file {} to {}", sshInfo.getHost(), source, dest);
                 channel.put(source, dest);
-                if(executable) {
+                if (executable) {
                     channel.chmod(Integer.parseInt("755", 8), dest);
                 }
             } finally {

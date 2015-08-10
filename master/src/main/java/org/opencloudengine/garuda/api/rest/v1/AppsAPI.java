@@ -55,6 +55,17 @@ public class AppsAPI extends BaseAPI {
         }
     }
 
+    @GET
+    @Path("/{id}/tasks")
+    public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
+        try {
+            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId + "/tasks");
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
     /**
      * 앱 파일을 업로드한다.
      */
