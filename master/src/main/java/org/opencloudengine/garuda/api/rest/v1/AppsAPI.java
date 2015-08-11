@@ -161,22 +161,29 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("mem").toString());
             }
             Integer scale = (Integer) data.get("instances");
-            Response response = null;
             List<Integer> ports = null;
             if(port != null) {
                 ports = new ArrayList<>();
                 ports.add(port);
             }
+            Response response = null;
             if (!isUpdate) {
-                return mesosService.getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = mesosService.getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
             } else {
-                return mesosService.getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = mesosService.getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
             }
+            String deploymentsId = getDeploymentId(response);
+            if(deploymentsId != null) {
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+            }
+            return response;
+
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
     }
+
 
     private Response deployOrUpdateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
         try {
@@ -198,11 +205,18 @@ public class AppsAPI extends BaseAPI {
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
+            Response response = (Response) actionStatus.getResult();
+            String deploymentsId = getDeploymentId(response);
+            if(deploymentsId != null) {
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+            }
             //deploy가 성공했다면 haproxy를 갱신한다.
             if (actionStatus.getError() != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
             }
-
+            if(actionStatus.getResult() instanceof Response) {
+                return (Response) actionStatus.getResult();
+            }
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -214,9 +228,15 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}/restart")
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
-        //TODO 포트가 바뀔수도 있으므로, haproxy를 업데이트 한다.
+        // 포트가 바뀌므로, haproxy를 업데이트 한다.
+        Response response = null;
         try {
-            return mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "restart", null);
+            response = mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "/restart", null);
+            String deploymentsId = getDeploymentId(response);
+            if(deploymentsId != null) {
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+            }
+            return response;
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -227,13 +247,31 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
+        Response response = null;
         try {
-            //TODO 삭제되었으면 haproxy에서 지워준다.
-            return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+            // 삭제되었으면 haproxy에서 지워준다.
+            response = mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+            String deploymentsId = getDeploymentId(response);
+            if(deploymentsId != null) {
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                //unload haproxy worker
+            }
+            return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
+    }
+
+    private String getDeploymentId(Response response){
+        if(response == null) {
+            return null;
+        }
+        Map map = response.readEntity(Map.class);
+        if(map == null) {
+            return null;
+        }
+        return (String) map.get("deploymentId");
     }
 
 }

@@ -22,7 +22,8 @@ public class HAProxyAPITest extends BaseActionTest {
         Map<String, Queue<String>> clusterConfigQueueMap = new HashMap<>();
         clusterConfigQueueMap.put(clusterId, new LinkedBlockingQueue<String>());
         HAProxyAPI api = new HAProxyAPI(environment, clusterConfigQueueMap);
-        String configString = api.onChangeCluster(clusterId);
+        String dep = "";
+        String configString = api.onChangeCluster(clusterId, dep);
         System.out.println(configString);
     }
 }

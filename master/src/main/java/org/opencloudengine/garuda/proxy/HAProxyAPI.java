@@ -39,12 +39,13 @@ public class HAProxyAPI {
     private String templateFilePath;
     private Map<String, Queue<String>> clusterConfigQueueMap;
 
+    private List<String> deployList = new ArrayList<>();
     public HAProxyAPI(Environment environment, Map<String, Queue<String>> queueMap) {
         templateFilePath = environment.filePaths().configPath().file().getAbsolutePath();
         this.clusterConfigQueueMap = queueMap;
     }
 
-    public String onChangeCluster(String clusterId) {
+    public String onChangeCluster(String clusterId, String deploymentsId) {
         logger.debug("Proxy onChangeCluster : {}", clusterId);
         if(!clusterConfigQueueMap.containsKey(clusterId)) {
             return null;
