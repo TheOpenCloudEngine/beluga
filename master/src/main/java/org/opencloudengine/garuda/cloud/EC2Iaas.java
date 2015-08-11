@@ -12,9 +12,9 @@ import java.util.*;
 /**
  * Created by swsong on 2015. 8. 3..
  */
-public class EC2IaaS implements IaaS {
+public class EC2Iaas implements Iaas {
 
-    private static final Logger logger = LoggerFactory.getLogger(EC2IaaS.class);
+    private static final Logger logger = LoggerFactory.getLogger(EC2Iaas.class);
 
     private final AmazonEC2Client client;
     private final static String DEVICE_NAME = "/dev/sda1";
@@ -26,7 +26,7 @@ public class EC2IaaS implements IaaS {
     private final static int STOPPING_STATE = 64;
     private final static int STOPPED_STATE = 80;
 
-    public EC2IaaS(String endPoint, String accessKey, String secretKey, Properties overrides) {
+    public EC2Iaas(String endPoint, String accessKey, String secretKey, Properties overrides) {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         client = new AmazonEC2Client(credentials);
         client.setEndpoint(endPoint);

@@ -134,7 +134,7 @@ public class ClusterService extends AbstractService {
 
         String keyPair = clusterDefinition.getKeyPair();
 
-        IaaS iaas = null;
+        Iaas iaas = null;
         try {
             iaas = iaasProvider.getIaas();
             List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
@@ -198,7 +198,7 @@ public class ClusterService extends AbstractService {
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
 
         try {
             iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
@@ -236,7 +236,7 @@ public class ClusterService extends AbstractService {
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
             iaas.stopInstances(IaasUtils.getIdList(allNodeList));
@@ -267,7 +267,7 @@ public class ClusterService extends AbstractService {
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
 
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
@@ -302,7 +302,7 @@ public class ClusterService extends AbstractService {
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
             iaas.rebootInstances(IaasUtils.getIdList(allNodeList));
@@ -367,7 +367,7 @@ public class ClusterService extends AbstractService {
             throw new UnknownIaasProviderException("provider is null.");
         }
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
 
         ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
         try {
@@ -391,7 +391,7 @@ public class ClusterService extends AbstractService {
         environment.settingManager().storeClusterTopology(clusterId, props);
     }
 
-    private void loadRole(String role, Settings settings, IaaS iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
+    private void loadRole(String role, Settings settings, Iaas iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
         String value = settings.getValue(role);
         if(value != null && value.trim().length() > 0) {
             String[] idArray = settings.getStringArray(role);
@@ -419,7 +419,7 @@ public class ClusterService extends AbstractService {
 
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
-        IaaS iaas = iaasProvider.getIaas();
+        Iaas iaas = iaasProvider.getIaas();
         try {
             iaas.rebootInstances(IaasUtils.getIdList(instanceList));
             sleep(5);

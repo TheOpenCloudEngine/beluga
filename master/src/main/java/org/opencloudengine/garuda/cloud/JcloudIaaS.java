@@ -22,12 +22,12 @@ import java.util.Set;
 /**
 * Created by swsong on 2015. 7. 15..
 */
-public abstract class JcloudIaaS implements IaaS {
-    private static final Logger logger = LoggerFactory.getLogger(JcloudIaaS.class);
+public abstract class JcloudIaas implements Iaas {
+    private static final Logger logger = LoggerFactory.getLogger(JcloudIaas.class);
     private ComputeServiceContext context;
     private ComputeService computeService;
 
-    public JcloudIaaS(String providerType, String accessKey, String secretKey, Properties overrides) {
+    public JcloudIaas(String providerType, String accessKey, String secretKey, Properties overrides) {
 
         context = ContextBuilder.newBuilder(providerType)
                 .credentials(accessKey, secretKey)

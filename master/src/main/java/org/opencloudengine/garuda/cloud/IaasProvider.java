@@ -78,11 +78,11 @@ public class IaasProvider {
         this.overrides = overrides;
     }
 
-    public IaaS getIaas() throws UnknownIaasProviderException {
+    public Iaas getIaas() throws UnknownIaasProviderException {
         if(type.equalsIgnoreCase(EC2_TYPE)) {
-            return new EC2IaaS(endPoint, identity, credential, overrides);
+            return new EC2Iaas(endPoint, identity, credential, overrides);
         } else if(type.equalsIgnoreCase(OPENSTACK_TYPE)) {
-                return new OpenstackIaaS(endPoint, identity, credential, overrides);
+                return new OpenstackIaas(endPoint, identity, credential, overrides);
         } else {
             throw new UnknownIaasProviderException("iaas provider type : " + type);
         }

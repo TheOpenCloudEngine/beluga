@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by swsong on 2015. 8. 3..
  */
-public interface IaaS {
+public interface Iaas {
 
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale);
 

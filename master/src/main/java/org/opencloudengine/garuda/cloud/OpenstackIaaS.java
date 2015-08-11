@@ -9,8 +9,8 @@ import java.util.Properties;
 /**
  * Created by swsong on 2015. 8. 4..
  */
-public class OpenstackIaaS extends JcloudIaaS {
-    public OpenstackIaaS(String providerType, String accessKey, String secretKey, Properties overrides) {
+public class OpenstackIaas extends JcloudIaas {
+    public OpenstackIaas(String providerType, String accessKey, String secretKey, Properties overrides) {
         super(providerType, accessKey, secretKey, overrides);
     }
 

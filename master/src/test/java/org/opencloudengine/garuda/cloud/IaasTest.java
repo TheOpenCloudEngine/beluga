@@ -14,9 +14,9 @@ import java.util.Properties;
 /**
  * Created by swsong on 2015. 7. 22..
  */
-public class IaaSTest {
+public class IaasTest {
 
-    private static Logger logger = LoggerFactory.getLogger(IaaSTest.class);
+    private static Logger logger = LoggerFactory.getLogger(IaasTest.class);
     String accessKey;
     String secretKey;
 
@@ -37,7 +37,7 @@ public class IaaSTest {
     @Test
     public void testEC2Launch() {
         InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
-        EC2IaaS iaas = new EC2IaaS(endPoint, accessKey, secretKey, null);
+        EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
@@ -54,7 +54,7 @@ public class IaaSTest {
         String imageId = "ami-ba1fa3ba";
         int volumeSize = 10;
         InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
-        EC2IaaS iaas = new EC2IaaS(endPoint, accessKey, secretKey, null);
+        EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "slave", 1);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
@@ -69,7 +69,7 @@ public class IaaSTest {
     @Test
     public void testEC2LaunchDescribeTerminate() {
         InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
-        EC2IaaS iaas = new EC2IaaS(endPoint, accessKey, secretKey, null);
+        EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
