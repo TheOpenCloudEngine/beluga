@@ -18,9 +18,8 @@ public class HAProxyAPITest extends BaseActionTest {
         String clusterId = "test-cluster";
         Environment environment = new Environment(homePath);
         Queue<String> configQueue= new LinkedBlockingQueue<String>();
-        HAProxyAPI api = new HAProxyAPI(clusterId, environment, configQueue);
+        HAProxyAPI api = new HAProxyAPI(clusterId, environment);
         String deploymentId = "asdfghjkl";
-        String configString = api.notifyServiceChanged( deploymentId);
-        System.out.println(configString);
+        api.notifyServiceChanged(deploymentId);
     }
 }

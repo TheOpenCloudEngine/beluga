@@ -67,9 +67,9 @@ public class HAProxyAPI {
     /**
      * 클러스터 토폴로지에 변화가 생기겼을 경우 즉시 업데이트 한다.
      * */
-    public void notifyTopologyChanged() {
+    public String notifyTopologyChanged() {
         logger.debug("Proxy notified Topology Changed : {}", clusterId);
-        updateProxyConfig();
+        return updateProxyConfig();
     }
     /**
      * 서비스가 추가/변경 되었을때 호출된다.

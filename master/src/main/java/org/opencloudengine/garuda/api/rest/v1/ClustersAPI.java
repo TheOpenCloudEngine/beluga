@@ -175,7 +175,7 @@ public class ClustersAPI extends BaseAPI {
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
         try {
-            return marathonAPI(clusterId).requestDeleteAPI("/deployments");
+            return marathonAPI(clusterId).requestDeleteAPI("/deployments/"+deploymentsId);
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -186,7 +186,7 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}/proxy")
     public Response applyProxyConfig(@PathParam("id") String clusterId) throws Exception {
         try {
-            String configString = clusterService(clusterId).getProxyAPI().notifyServiceChanged(null);
+            String configString = clusterService(clusterId).getProxyAPI().notifyTopologyChanged();
             return Response.ok(configString).build();
         } catch (Throwable t) {
             logger.error("", t);
