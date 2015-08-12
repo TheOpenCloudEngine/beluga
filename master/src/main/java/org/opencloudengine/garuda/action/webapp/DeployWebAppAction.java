@@ -6,6 +6,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.log.AppLoggerFactory;
 import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
@@ -60,7 +61,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         Boolean isUpdate = request.getIsUpdate();
 
         // clusterId를 통해 인스턴스 주소를 받아온다.
-        ClusterService clusterService = serviceManager.getService(ClusterService.class);
+        ClusterService clusterService = serviceManager.getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
         ClusterTopology topology = clusterService.getClusterTopology(clusterId);
         if(topology == null) {
             // 그런 클러스터가 없다.
@@ -72,7 +73,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             throw new GarudaException("No registry instance in " + clusterId);
         }
 
-        MesosService mesosService = serviceManager.getService(MesosService.class);
+        MesosService mesosService = serviceManager.getService(ClustersService.class).getCluster(clusterId).getService(MesosService.class);
         boolean needImageBuild = webAppFile != null && webAppFile != null;
         /*
         * 1. Build Image

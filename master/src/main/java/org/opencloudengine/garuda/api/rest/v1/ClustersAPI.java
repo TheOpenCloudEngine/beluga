@@ -5,6 +5,7 @@ import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.*;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 
@@ -16,13 +17,6 @@ import java.util.Map;
 
 @Path("/v1/clusters")
 public class ClustersAPI extends BaseAPI {
-
-    private final ClusterService clusterService;
-
-    public ClustersAPI() {
-        super();
-        clusterService = ServiceManager.getInstance().getService(ClusterService.class);
-    }
 
     /**
      * Create cluster
@@ -112,7 +106,8 @@ public class ClustersAPI extends BaseAPI {
     @Path("/")
     public Response getClusters() throws Exception {
         try {
-            Collection<ClusterTopology> set = clusterService.getAllClusterTopology();
+            ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
+            Collection<ClusterTopology> set = clustersService.getAllClusterTopology();
             return Response.ok(set).build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -127,7 +122,7 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}")
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
-            ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+            ClusterTopology topology = clusterService(clusterId).getClusterTopology(clusterId);
             if (topology == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -158,9 +153,8 @@ public class ClustersAPI extends BaseAPI {
     @GET
     @Path("/{id}/info")
     public Response getMarathonInfo(@PathParam("id") String clusterId) throws Exception {
-        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
         try {
-            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/info");
+            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/info");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -171,8 +165,7 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}/deployments")
     public Response getDeployments(@PathParam("id") String clusterId) throws Exception {
         try {
-            MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
-            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/deployments");
+            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/deployments");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -184,8 +177,7 @@ public class ClustersAPI extends BaseAPI {
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
         try {
-            MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
-            return mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
+            return mesosService(clusterId).getMarathonAPI().requestDeleteAPI(clusterId, "/deployments");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -196,7 +188,7 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}/proxy")
     public Response applyProxyConfig(@PathParam("id") String clusterId) throws Exception {
         try {
-            String configString = clusterService.getProxyAPI().notifyServiceChanged(clusterId, null);
+            String configString = clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, null);
             return Response.ok(configString).build();
         } catch (Throwable t) {
             logger.error("", t);

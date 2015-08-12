@@ -7,6 +7,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.ClusterPorts;
@@ -37,8 +38,9 @@ public class HAProxyAPI {
     private static final String FRONTEND_LIST = "frontendList";
     private static final String BACKEND_LIST = "backendList";
 
+    private String clusterId;
     private String templateFilePath;
-    private Map<String, Queue<String>> clusterConfigQueueMap;
+    private Queue<String> proxyUpdateQueue;
     /*
      * 디플로이가 진행중일때까지 유지하는 Q.
      * 디플로이가 서비스중으로 변경까지는 시간이 걸리기 때문에, 서비스로 변경되면 Q에서 지워주고, proxy 설정을 업데이트 한다.
@@ -46,54 +48,56 @@ public class HAProxyAPI {
     private Map<String, Set<String>> clusterDeploymentSet;
 
     private List<String> deploymentsList = new ArrayList<>();
-    public HAProxyAPI(Environment environment, Map<String, Queue<String>> queueMap) {
+
+
+
+
+
+    public HAProxyAPI(String clusterId, Environment environment, Queue<String> proxyUpdateQueue) {
+        this.clusterId = clusterId;
         templateFilePath = environment.filePaths().configPath().file().getAbsolutePath();
-        this.clusterConfigQueueMap = queueMap;
+        this.proxyUpdateQueue = proxyUpdateQueue;
         clusterDeploymentSet = new ConcurrentHashMap<>();
     }
 
-    public String notifyTopologyChanged(String clusterId) {
+    public String notifyTopologyChanged() {
 
-        return updateProxyConfig(clusterId);
+        return updateProxyConfig();
     }
 
     /**
      * 클러스터 토폴로지에 변화가 생기거나, 서비스가 추가/변경 되었을때 호출된다.
      *
      * */
-    public String notifyServiceChanged(String clusterId, String deploymentsId) {
+    public String notifyServiceChanged(String deploymentsId) {
         Set<String> deploymentSet = clusterDeploymentSet.get(clusterId);
         deploymentSet.add(deploymentsId);
-        return updateProxyConfig(clusterId);
+        return updateProxyConfig();
     }
-    public String updateProxyConfig(String clusterId) {
+    public String updateProxyConfig() {
         logger.debug("Proxy notifyServiceChanged : {}", clusterId);
-        if (!clusterConfigQueueMap.containsKey(clusterId)) {
-            return null;
-        }
 
         VelocityContext context = new VelocityContext();
         List<Frontend> frontendList = new ArrayList<>();
         List<Backend> backendList = new ArrayList<>();
 
         //1. topology구성도로 context에 값을 넣어준다.
-        fillTopologyToContext(frontendList, backendList, clusterId);
+        fillTopologyToContext(frontendList, backendList);
 
         //2. marathon을 통해 app별 listening 상태를 받아와서 context에 넣어준다.
-        fillServiceToContext(frontendList, backendList, clusterId);
+        fillServiceToContext(frontendList, backendList);
 
         context.put(FRONTEND_LIST, frontendList);
         context.put(BACKEND_LIST, backendList);
 
         String configString = makeConfigString(context);
-        Queue<String> configQueue = clusterConfigQueueMap.get(clusterId);
-        configQueue.offer(configString);
+        proxyUpdateQueue.offer(configString);
         return configString;
     }
 
-    protected void fillTopologyToContext(List<Frontend> frontendList, List<Backend> backendList, String clusterId) {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClusterService.class);
-        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+    protected void fillTopologyToContext(List<Frontend> frontendList, List<Backend> backendList) {
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
+        ClusterTopology topology = clusterService.getClusterTopology();
 
         if (topology.getMesosMasterList().size() > 0) {
             Frontend adminFrontend = new Frontend("admin").withIp("*").withPort(ClusterPorts.PROXY_ADMIN_PORT).withMode("http");
@@ -142,8 +146,8 @@ public class HAProxyAPI {
         }
     }
 
-    protected void fillServiceToContext(List<Frontend> frontendList, List<Backend> backendList, String clusterId) {
-        MesosService mesosService = ServiceManager.getInstance().getService(MesosService.class);
+    protected void fillServiceToContext(List<Frontend> frontendList, List<Backend> backendList) {
+        MesosService mesosService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(MesosService.class);
         String appsString = mesosService.getMarathonAPI().requestGetAPIasString(clusterId, "/tasks");
 
         JsonNode taskList = JsonUtils.toJsonNode(appsString).get("tasks");
@@ -218,7 +222,9 @@ public class HAProxyAPI {
         public void run() {
             for(Map.Entry<String, Set<String>> entry : clusterDeploymentSet.entrySet()){
                 String clusterId = entry.getKey();
-                Set<String> deploymentSet = entry.getValue();
+
+                //TODO
+
 
             }
         }

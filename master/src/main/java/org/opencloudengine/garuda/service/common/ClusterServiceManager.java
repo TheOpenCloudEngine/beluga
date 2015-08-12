@@ -3,6 +3,7 @@ package org.opencloudengine.garuda.service.common;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.service.AbstractClusterService;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.slf4j.Logger;
@@ -13,41 +14,32 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 내부 서비스들을 시작하고 관리를 담당한다.
+ * Cluster별 내부 서비스들을 시작하고 관리를 담당한다.
  *
  * @author Sang Wook, Song
  *
  */
-public class ServiceManager {
-	private final Logger logger = LoggerFactory.getLogger(ServiceManager.class);
-	
-	private static ServiceManager instance;
-	private Environment environment;
-	private Map<Class<?>, AbstractService> serviceMap;
-    private Map<Class<? extends AbstractService>, String> serviceIdMap;
+public class ClusterServiceManager {
+	private final Logger logger = LoggerFactory.getLogger(ClusterServiceManager.class);
 
-	public static ServiceManager getInstance(){
-		return instance;
-	}
-	
-	public void asSingleton(){
-		instance = this;
-	}
-	
-	public ServiceManager(Environment environment){
+	private Environment environment;
+	private Map<Class<?>, AbstractClusterService> serviceMap;
+    private Map<Class<? extends AbstractClusterService>, String> serviceIdMap;
+
+	public ClusterServiceManager(Environment environment){
 		this.environment = environment;
-		serviceMap = new ConcurrentHashMap<Class<?>, AbstractService>();
+		serviceMap = new ConcurrentHashMap<>();
         serviceIdMap = new ConcurrentHashMap<>();
 	}
 
-    public Class<? extends AbstractService> registerService(String serviceId, Class<? extends AbstractService> serviceClass){
+    public Class<? extends AbstractClusterService> registerService(String serviceId, Class<? extends AbstractClusterService> serviceClass){
         serviceIdMap.put(serviceClass, serviceId);
         return serviceClass;
     }
 
-	private <T extends AbstractService> T createService(String serviceId, Class<T> serviceClass) throws ServiceException {
+	private <T extends AbstractClusterService> T createService(String serviceId, Class<T> serviceClass) throws ServiceException {
 		try {
-			Constructor<T> construct = serviceClass.getConstructor(Environment.class, Settings.class, ServiceManager.class);
+			Constructor<T> construct = serviceClass.getConstructor(String.class, Environment.class, Settings.class, ClusterServiceManager.class);
 			T t = construct.newInstance(environment, environment.settingManager().getSystemSettings().getSubSettings(serviceId), this);
 			serviceMap.put(serviceClass, t);
 			return t;
@@ -56,7 +48,7 @@ public class ServiceManager {
 		}
 	}
 
-	public <T extends AbstractService> T getService(Class<T> serviceClass) {
+	public <T extends AbstractClusterService> T getService(Class<T> serviceClass) {
 
 		T t = (T) serviceMap.get(serviceClass);
         if(t == null) {
@@ -73,7 +65,7 @@ public class ServiceManager {
         return t;
 	}
 	
-	public <T extends AbstractService> boolean stopService(Class<T> serviceClass) {
+	public <T extends AbstractClusterService> boolean stopService(Class<T> serviceClass) {
 		T service = (T) serviceMap.get(serviceClass);
 		if(service != null){
 			return service.stop();
@@ -82,7 +74,7 @@ public class ServiceManager {
 		}
 	}
 	
-	public <T extends AbstractService> boolean closeService(Class<T> serviceClass) {
+	public <T extends AbstractClusterService> boolean closeService(Class<T> serviceClass) {
 		T service = (T) serviceMap.get(serviceClass);
 		if(service != null){
 			return service.close();

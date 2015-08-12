@@ -3,10 +3,10 @@ package org.opencloudengine.garuda.server;
 import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.api.RestAPIService;
 import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.common.util.VersionConfigurer;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.exception.GarudaException;
-import org.opencloudengine.garuda.mesos.MesosService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,9 +148,8 @@ public class GarudaServer {
 		serviceManager.asSingleton();
 
 		serviceManager.registerService("rest", RestAPIService.class);
-        serviceManager.registerService("cluster", ClusterService.class);
+        serviceManager.registerService("controller", ClustersService.class);
         serviceManager.registerService("action", ActionService.class);
-        serviceManager.registerService("mesos", MesosService.class);
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 
@@ -159,11 +158,7 @@ public class GarudaServer {
 		* */
 
 
-        serviceManager.loadServices();
-//		startService(restService);
-//        startService(clusterService);
-//        startService(actionService);
-
+        serviceManager.startServices();
 
  		if (shutdownHook == null) {
 			shutdownHook = new ServerShutdownHook();
@@ -179,19 +174,6 @@ public class GarudaServer {
 			setKeepAlive();
 		}
 	}
-
-//	private void startService(AbstractService service) {
-//		if (service != null) {
-//			try {
-//				service.start();
-//			} catch (Throwable e) {
-//				logger.error("", e);
-//			}
-//		}else{
-//			logger.error("Service is null {}", service.getClass().getSimpleName());
-//
-//		}
-//	}
 
 	private void setKeepAlive() {
 		// keepAliveLatch 가 null일때만 실행되면, restart의 경우 이미 keep alive이므로 재실행하지 않는다.
@@ -234,9 +216,7 @@ public class GarudaServer {
 		/*
 		* Stop services
 		* */
-		serviceManager.stopService(RestAPIService.class);
-        serviceManager.stopService(ClusterService.class);
-        serviceManager.stopService(ActionService.class);
+		serviceManager.stopServices();
 
 		logger.info("GarudaServer shutdown!");
 		isRunning = false;
@@ -247,7 +227,9 @@ public class GarudaServer {
 		/*
 		* Close services
 		* */
-		serviceManager.closeService(RestAPIService.class);
+		serviceManager.closeServices();
+        logger.info("GarudaServer close!");
+        isRunning = false;
 
 		if (fileLock != null) {
 			try {
@@ -278,7 +260,7 @@ public class GarudaServer {
 		@Override
 		public void run() {
 			try {
-				logger.info("Server Shutdown Requested!");
+				logger.info("GarudaServer Shutdown Requested!");
 				GarudaServer.this.stop();
 				GarudaServer.this.close();
 				if (keepAliveLatch != null) {
@@ -287,7 +269,7 @@ public class GarudaServer {
 			} catch (Throwable ex) {
 				logger.error("GarudaServer.shutdownHookFail", ex);
 			} finally {
-				logger.info("Server Shutdown Complete!");
+				logger.info("GarudaServer Shutdown Complete!");
 			}
 		}
 	}

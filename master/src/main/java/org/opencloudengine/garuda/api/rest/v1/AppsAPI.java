@@ -5,6 +5,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.MesosService;
@@ -26,18 +27,11 @@ import java.util.Map;
 @Path("/v1/clusters/{clusterId}/apps")
 public class AppsAPI extends BaseAPI {
 
-    private MesosService mesosService;
-
-    public AppsAPI() {
-        super();
-        mesosService = ServiceManager.getInstance().getService(MesosService.class);
-    }
-
     @GET
     @Path("/")
     public Response getApps(@PathParam("clusterId") String clusterId) throws Exception {
         try {
-            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps");
+            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -48,7 +42,7 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}")
     public Response getApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
-            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId);
+            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId);
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -59,7 +53,7 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}/tasks")
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
-            return mesosService.getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId + "/tasks");
+            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId + "/tasks");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -168,13 +162,13 @@ public class AppsAPI extends BaseAPI {
             }
             Response response = null;
             if (!isUpdate) {
-                response = mesosService.getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = mesosService(clusterId).getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
             } else {
-                response = mesosService.getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = mesosService(clusterId).getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
             }
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             return response;
 
@@ -208,11 +202,11 @@ public class AppsAPI extends BaseAPI {
             Response response = (Response) actionStatus.getResult();
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             //deploy가 성공했다면 haproxy를 갱신한다.
             if (actionStatus.getError() != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             if(actionStatus.getResult() instanceof Response) {
                 return (Response) actionStatus.getResult();
@@ -231,10 +225,10 @@ public class AppsAPI extends BaseAPI {
         // 포트가 바뀌므로, haproxy를 업데이트 한다.
         Response response = null;
         try {
-            response = mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "/restart", null);
+            response = mesosService(clusterId).getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "/restart", null);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             return response;
         } catch (Throwable t) {
@@ -250,10 +244,10 @@ public class AppsAPI extends BaseAPI {
         Response response = null;
         try {
             // 삭제되었으면 haproxy에서 지워준다.
-            response = mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+            response = mesosService(clusterId).getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
                 //unload haproxy worker
             }
             return Response.ok().build();

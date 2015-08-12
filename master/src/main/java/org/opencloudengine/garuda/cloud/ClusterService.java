@@ -8,8 +8,10 @@ import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.proxy.HAProxyAPI;
 import org.opencloudengine.garuda.proxy.ProxyUpdateWorker;
+import org.opencloudengine.garuda.service.AbstractClusterService;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
+import org.opencloudengine.garuda.service.common.ClusterServiceManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
@@ -22,93 +24,58 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
 * Created by swsong on 2015. 7. 20..
 */
-public class ClusterService extends AbstractService {
+public class ClusterService extends AbstractClusterService {
 
-    private Map<String, ClusterTopology> clusterTopologyMap;
+    private ClusterTopology clusterTopology;
 
     private IaasProviderConfig iaasProviderConfig;
 
-    private static final String CLUSTERS_KEY = "clusters";
-
-    private Map<String, ProxyUpdateWorker> clusterProxyUpdateWorkerMap;
-    private Map<String, Queue<String>> clusterProxyUpdateQueueMap;
+    private ProxyUpdateWorker proxyUpdateWorker;
+    private Queue<String> proxyUpdateQueue;
     private HAProxyAPI haProxyAPI;
 
-    public ClusterService(Environment environment, Settings settings, ServiceManager serviceManager) {
-        super(environment, settings, serviceManager);
+    public ClusterService(String clusterId, Environment environment, Settings settings, ClusterServiceManager serviceManager) {
+        super(clusterId, environment, settings, serviceManager);
     }
 
     @Override
     protected boolean doStart() throws ServiceException {
-
-        clusterTopologyMap = new HashMap<>();
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
-        clusterProxyUpdateWorkerMap = new ConcurrentHashMap<>();
-        clusterProxyUpdateQueueMap = new ConcurrentHashMap<>();
-
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        String[] clusterList = settings.getStringArray(CLUSTERS_KEY);
-        if(clusterList != null) {
-            for (String clusterId : clusterList) {
-                try {
-                    loadCluster(clusterId);
-                }catch(Throwable t) {
-                    logger.error("error loading cluster topology.", t);
-                }
-            }
-        }
-
-        haProxyAPI = new HAProxyAPI(environment, clusterProxyUpdateQueueMap);
-
+        haProxyAPI = new HAProxyAPI(clusterId, environment, proxyUpdateQueue);
         return true;
     }
 
-    private ProxyUpdateWorker loadProxyWorker(ClusterTopology topology) {
-        if(topology.getProxyList().size() == 0) {
+    private ProxyUpdateWorker loadProxyWorker() {
+        if(clusterTopology.getProxyList().size() == 0) {
             return null;
         }
-        String clusterId = topology.getClusterId();
-        String definitionId = topology.getDefinitionId();
-        String proxyIpAddress = topology.getProxyList().get(0).getPublicIpAddress();
+        String clusterId = clusterTopology.getClusterId();
+        String definitionId = clusterTopology.getDefinitionId();
+        String proxyIpAddress = clusterTopology.getProxyList().get(0).getPublicIpAddress();
         ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
         final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-        Queue<String> queue = new ConcurrentLinkedQueue<>();
-        ProxyUpdateWorker proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, queue);
+        proxyUpdateQueue = new ConcurrentLinkedQueue<>();
+        proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, proxyUpdateQueue);
         proxyUpdateWorker.start();
-        clusterProxyUpdateQueueMap.put(clusterId, queue);
-        clusterProxyUpdateWorkerMap.put(clusterId, proxyUpdateWorker);
         return proxyUpdateWorker;
-    }
-
-    private void unloadProxyWorker(String clusterId) {
-        ProxyUpdateWorker worker = clusterProxyUpdateWorkerMap.remove(clusterId);
-        if(worker != null) {
-            worker.interrupt();
-        }
-        Queue<String> queue = clusterProxyUpdateQueueMap.remove(clusterId);
-        if(queue != null) {
-            queue.clear();
-        }
     }
 
     @Override
     protected boolean doStop() throws ServiceException {
-        for(String clusterId : clusterTopologyMap.keySet()) {
-            unloadProxyWorker(clusterId);
+        if(proxyUpdateWorker != null) {
+            proxyUpdateWorker.interrupt();
         }
-        clusterTopologyMap.clear();
+        if(proxyUpdateQueue != null) {
+            proxyUpdateQueue.clear();
+        }
         return true;
     }
 
     @Override
     protected boolean doClose() throws ServiceException {
-        clusterTopologyMap = null;
-        clusterProxyUpdateWorkerMap = null;
-        clusterProxyUpdateQueueMap = null;
         return true;
     }
 
@@ -121,10 +88,6 @@ public class ClusterService extends AbstractService {
     }
 
     public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
-
-        if(clusterTopologyMap.containsKey(clusterId) || isClusterIdExistInSetting(clusterId)) {
-            throw new ClusterExistException(String.format("Cluster %s is already exists.", clusterId));
-        }
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String iaasProfile = clusterDefinition.getIaasProfile();
@@ -171,12 +134,12 @@ public class ClusterService extends AbstractService {
         }
 
         //runtime 토폴로지에 넣어준다.
-        clusterTopologyMap.put(clusterId, clusterTopology);
-        //토폴로지 설정파일을 저장한다.
-        storeClusterTopology(clusterTopology);
-        addClusterIdToSetting(clusterId);
-        //프록시 업데이트 감지를 시작한다.
-        loadProxyWorker(clusterTopology);
+//        clusterTopologyMap.put(clusterId, clusterTopology);
+//        //토폴로지 설정파일을 저장한다.
+//        storeClusterTopology(clusterTopology);
+//        addClusterIdToSetting(clusterId);
+//        //프록시 업데이트 감지를 시작한다.
+//        loadProxyWorker(clusterTopology);
 
         return clusterTopology;
     }
@@ -318,41 +281,7 @@ public class ClusterService extends AbstractService {
         loadProxyWorker(clusterTopology);
     }
 
-    private void checkIfClusterExists(String clusterId) throws GarudaException {
-        if(! clusterTopologyMap.containsKey(clusterId)) {
-            throw new GarudaException("Cluster not found : " + clusterId);
-        }
-    }
-
-    private boolean isClusterIdExistInSetting(String clusterId) {
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        String[] list = settings.getStringArray(CLUSTERS_KEY);
-        if(list != null) {
-            for(String id : list) {
-                if(clusterId.equalsIgnoreCase(id)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void addClusterIdToSetting(String clusterId) {
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        settings.addStringToArray(CLUSTERS_KEY, clusterId);
-        //clusters 설정파일을 저장한다.
-        settingManager.storeClustersConfig(settings);
-    }
-    public void removeClusterIdFromSetting(String clusterId) {
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        settings.removeStringFromArray(CLUSTERS_KEY, clusterId);
-        //clusters 설정파일을 저장한다.
-        settingManager.storeClustersConfig(settings);
-    }
-    public ClusterTopology loadCluster(String clusterId) throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
+    public ClusterTopology loadCluster() throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
         logger.info("Load cluster {}..", clusterId);
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
         if(settings == null) {
@@ -380,8 +309,8 @@ public class ClusterService extends AbstractService {
         } finally {
             iaas.close();
         }
-        clusterTopologyMap.put(clusterId, clusterTopology);
-        loadProxyWorker(clusterTopology);
+        this.clusterTopology = clusterTopology;
+        loadProxyWorker();
         return clusterTopology;
     }
 
@@ -406,15 +335,11 @@ public class ClusterService extends AbstractService {
         }
     }
 
-    public Collection<ClusterTopology> getAllClusterTopology() {
-        return clusterTopologyMap.values();
+    public ClusterTopology getClusterTopology() {
+        return clusterTopology;
     }
 
-    public ClusterTopology getClusterTopology(String clusterId) {
-        return clusterTopologyMap.get(clusterId);
-    }
-
-    public void rebootInstances(ClusterTopology clusterTopology, List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
+    public void rebootInstances(List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
 
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);

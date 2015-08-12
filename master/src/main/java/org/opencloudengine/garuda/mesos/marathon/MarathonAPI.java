@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.mesos.marathon;
 
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.mesos.marathon.model.*;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
@@ -28,15 +29,17 @@ public class MarathonAPI {
     private static final String API_PATH_APPS = "/v2/apps";
     private static final String SLASH = "/";
 
+    private String clusterId;
     private ClusterService clusterService;
 
-    public MarathonAPI() {
-        this.clusterService = ServiceManager.getInstance().getService(ClusterService.class);
+    public MarathonAPI(String clusterId) {
+        this.clusterId = clusterId;
+        this.clusterService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
     }
 
     protected String chooseMarathonEndPoint(String clusterId) {
         // 여러개중 장애없는 것을 가져온다.
-        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+        ClusterTopology topology = clusterService.getClusterTopology();
         List<String> list = topology.getMarathonEndPoints();
         if(list == null) {
             return null;
@@ -51,22 +54,22 @@ public class MarathonAPI {
         return null;
     }
 
-    private WebTarget getWebTarget(String clusterId, String path) {
+    private WebTarget getWebTarget(String path) {
         Client client = ClientBuilder.newClient();
         return client.target(chooseMarathonEndPoint(clusterId)).path(path);
     }
 
-    public Response deployDockerApp(String clusterId, String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
+        WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
-    public Response updateDockerApp(String clusterId, String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS + SLASH + appId);
+        WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
 
@@ -104,17 +107,17 @@ public class MarathonAPI {
         return app;
     }
 
-    public Response deployCommandApp(String clusterId, String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response deployCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS);
+        WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
-    public Response updateCommandApp(String clusterId, String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
 
-        WebTarget target = getWebTarget(clusterId, API_PATH_APPS + SLASH + appId);
+        WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
 
@@ -143,32 +146,32 @@ public class MarathonAPI {
     /*
     * Marathon 의 GET API를 직접호출한다.
     * */
-    public Response requestGetAPI(String clusterId, String path) {
-        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+    public Response requestGetAPI(String path) {
+        WebTarget target = getWebTarget(API_PATH_VERSION + path);
         return target.request(MediaType.APPLICATION_JSON_TYPE).get();
     }
 
     /*
     * Marathon 의 GET API를 직접호출한다.
     * */
-    public String requestGetAPIasString(String clusterId, String path) {
-        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+    public String requestGetAPIasString(String path) {
+        WebTarget target = getWebTarget(API_PATH_VERSION + path);
         return target.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
     }
 
     /*
     * Marathon 의 POST API를 직접호출한다.
     * */
-    public Response requestPostAPI(String clusterId, String path, Map<String, Object> data) {
-        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+    public Response requestPostAPI(String path, Map<String, Object> data) {
+        WebTarget target = getWebTarget(API_PATH_VERSION + path);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(data));
     }
 
     /*
     * Marathon 의 DELETE API를 직접호출한다.
     * */
-    public Response requestDeleteAPI(String clusterId, String path) {
-        WebTarget target = getWebTarget(clusterId, API_PATH_VERSION + path);
+    public Response requestDeleteAPI(String path) {
+        WebTarget target = getWebTarget(API_PATH_VERSION + path);
         return target.request(MediaType.APPLICATION_JSON_TYPE).delete();
     }
 }
