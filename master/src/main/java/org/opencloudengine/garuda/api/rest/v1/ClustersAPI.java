@@ -194,9 +194,9 @@ public class ClustersAPI extends BaseAPI {
 
     @POST
     @Path("/{id}/proxy")
-    public Response getProxyConfig(@PathParam("id") String clusterId) throws Exception {
+    public Response applyProxyConfig(@PathParam("id") String clusterId) throws Exception {
         try {
-            String configString = clusterService.getProxyAPI().onChangeCluster(clusterId, null);
+            String configString = clusterService.getProxyAPI().notifyServiceChanged(clusterId, null);
             return Response.ok(configString).build();
         } catch (Throwable t) {
             logger.error("", t);

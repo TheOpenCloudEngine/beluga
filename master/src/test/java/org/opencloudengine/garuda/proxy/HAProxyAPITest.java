@@ -1,12 +1,10 @@
 package org.opencloudengine.garuda.proxy;
 
-import org.apache.velocity.VelocityContext;
 import org.junit.Test;
 import org.opencloudengine.garuda.action.BaseActionTest;
 import org.opencloudengine.garuda.env.Environment;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -22,8 +20,8 @@ public class HAProxyAPITest extends BaseActionTest {
         Map<String, Queue<String>> clusterConfigQueueMap = new HashMap<>();
         clusterConfigQueueMap.put(clusterId, new LinkedBlockingQueue<String>());
         HAProxyAPI api = new HAProxyAPI(environment, clusterConfigQueueMap);
-        String dep = "";
-        String configString = api.onChangeCluster(clusterId, dep);
+        String deploymentId = "asdfghjkl";
+        String configString = api.notifyServiceChanged(clusterId, deploymentId);
         System.out.println(configString);
     }
 }

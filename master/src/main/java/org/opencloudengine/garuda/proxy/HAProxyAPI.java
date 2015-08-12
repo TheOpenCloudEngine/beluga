@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by swsong on 2015. 8. 10..
@@ -38,18 +39,39 @@ public class HAProxyAPI {
 
     private String templateFilePath;
     private Map<String, Queue<String>> clusterConfigQueueMap;
+    /*
+     * 디플로이가 진행중일때까지 유지하는 Q.
+     * 디플로이가 서비스중으로 변경까지는 시간이 걸리기 때문에, 서비스로 변경되면 Q에서 지워주고, proxy 설정을 업데이트 한다.
+     */
+    private Map<String, Set<String>> clusterDeploymentSet;
 
-    private List<String> deployList = new ArrayList<>();
+    private List<String> deploymentsList = new ArrayList<>();
     public HAProxyAPI(Environment environment, Map<String, Queue<String>> queueMap) {
         templateFilePath = environment.filePaths().configPath().file().getAbsolutePath();
         this.clusterConfigQueueMap = queueMap;
+        clusterDeploymentSet = new ConcurrentHashMap<>();
     }
 
-    public String onChangeCluster(String clusterId, String deploymentsId) {
-        logger.debug("Proxy onChangeCluster : {}", clusterId);
-        if(!clusterConfigQueueMap.containsKey(clusterId)) {
+    public String notifyTopologyChanged(String clusterId) {
+
+        return updateProxyConfig(clusterId);
+    }
+
+    /**
+     * 클러스터 토폴로지에 변화가 생기거나, 서비스가 추가/변경 되었을때 호출된다.
+     *
+     * */
+    public String notifyServiceChanged(String clusterId, String deploymentsId) {
+        Set<String> deploymentSet = clusterDeploymentSet.get(clusterId);
+        deploymentSet.add(deploymentsId);
+        return updateProxyConfig(clusterId);
+    }
+    public String updateProxyConfig(String clusterId) {
+        logger.debug("Proxy notifyServiceChanged : {}", clusterId);
+        if (!clusterConfigQueueMap.containsKey(clusterId)) {
             return null;
         }
+
         VelocityContext context = new VelocityContext();
         List<Frontend> frontendList = new ArrayList<>();
         List<Backend> backendList = new ArrayList<>();
@@ -188,5 +210,18 @@ public class HAProxyAPI {
         public int getPort() {
             return port;
         }
+    }
+
+    class DeployCheckWorker extends Thread {
+
+        @Override
+        public void run() {
+            for(Map.Entry<String, Set<String>> entry : clusterDeploymentSet.entrySet()){
+                String clusterId = entry.getKey();
+                Set<String> deploymentSet = entry.getValue();
+
+            }
+        }
+
     }
 }

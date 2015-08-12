@@ -174,7 +174,7 @@ public class AppsAPI extends BaseAPI {
             }
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             return response;
 
@@ -208,11 +208,11 @@ public class AppsAPI extends BaseAPI {
             Response response = (Response) actionStatus.getResult();
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             //deploy가 성공했다면 haproxy를 갱신한다.
             if (actionStatus.getError() != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             if(actionStatus.getResult() instanceof Response) {
                 return (Response) actionStatus.getResult();
@@ -234,7 +234,7 @@ public class AppsAPI extends BaseAPI {
             response = mesosService.getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "/restart", null);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
             }
             return response;
         } catch (Throwable t) {
@@ -253,7 +253,7 @@ public class AppsAPI extends BaseAPI {
             response = mesosService.getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().onChangeCluster(clusterId, deploymentsId);
+                ServiceManager.getInstance().getService(ClusterService.class).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
                 //unload haproxy worker
             }
             return Response.ok().build();
