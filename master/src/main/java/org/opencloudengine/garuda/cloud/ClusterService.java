@@ -26,6 +26,7 @@ import java.util.Properties;
 * Created by swsong on 2015. 7. 20..
 */
 public class ClusterService extends AbstractClusterService {
+    private static final long CHECK_PERIOD = 5000;
     private IaasProviderConfig iaasProviderConfig;
     private ClusterTopology clusterTopology;
 
@@ -44,13 +45,35 @@ public class ClusterService extends AbstractClusterService {
         dockerAPI = new DockerAPI(environment);
     }
 
+
+
+    // TODO
+    // 클러스터 생성시에 만들어진 ip는 재시작하면 ip가 바뀌어서 다시 ip설정을 하고, mesos process를 재시작해야한다.
+    // 일단 restart는 없애자.
+    // 서비스 자체의 start,stop과
+    // instance의 start,stop은 달리 처리되야 한다.
+
+
+
+
     @Override
     protected boolean doStart() throws ServiceException {
 
         try {
             logger.info("Starting cluster {}..", clusterId);
             loadClusterTopology();
-            startInstances();
+            updateInstances();
+
+            //TODO 기존의 topology와 받아온 IP가 다르면 configure를 다시한다.
+
+            //configure Mesos with new IP
+            String definitionId = clusterTopology.getDefinitionId();
+            mesosAPI.configureMesosMasterInstances(definitionId);
+            mesosAPI.configureMesosSlaveInstances(definitionId);
+
+            //TODO 다시 store to topology...
+
+
             loadProxyWorker();
             loadDeploymentsCheckWorker();
         } catch (Exception e) {
@@ -62,7 +85,18 @@ public class ClusterService extends AbstractClusterService {
 
     @Override
     protected boolean doStop() throws ServiceException {
-        logger.info("Stopping cluster {}..", clusterId);
+        unloadProxyWorker();
+        unloadDeploymentsCheckWorker();
+        return true;
+    }
+
+    @Override
+    protected boolean doClose() throws ServiceException {
+        return true;
+    }
+
+    public boolean shutdownCluster() {
+        logger.info("Shutdown cluster {}..", clusterId);
 
         unloadProxyWorker();
         unloadDeploymentsCheckWorker();
@@ -74,16 +108,15 @@ public class ClusterService extends AbstractClusterService {
         }
         return true;
     }
-
-    @Override
-    protected boolean doClose() throws ServiceException {
-        return true;
-    }
-
-    protected boolean destroyCluster() throws UnknownIaasProviderException {
+    protected boolean destroyCluster() {
         logger.info("Destroying cluster {}..", clusterId);
         unloadProxyWorker();
-        terminateInstances();
+        try {
+            terminateInstances();
+        } catch (Exception e) {
+            logger.error("error while stopping cluster service : " + clusterId, e);
+            return false;
+        }
         //topology.cluster 설정파일 삭제.
         deleteClusterTopologyConfig();
         return true;
@@ -140,8 +173,6 @@ public class ClusterService extends AbstractClusterService {
     private void startInstances() throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
-
-        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         Iaas iaas = iaasProvider.getIaas();
 
         List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
@@ -153,6 +184,15 @@ public class ClusterService extends AbstractClusterService {
                 iaas.close();
             }
         }
+        // 상태 정보를 업데이트 한다.
+        iaas.updateInstancesInfo(allNodeList);
+    }
+
+    public void updateInstances() throws UnknownIaasProviderException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = iaasProvider.getIaas();
+        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         // 상태 정보를 업데이트 한다.
         iaas.updateInstancesInfo(allNodeList);
     }
@@ -243,10 +283,10 @@ public class ClusterService extends AbstractClusterService {
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
+        haProxyAPI = new HAProxyAPI(clusterId, environment);
         final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
         proxyUpdateWorker = new ProxyUpdateWorker(sshInfo);
         proxyUpdateWorker.start();
-        haProxyAPI = new HAProxyAPI(clusterId, environment);
         return true;
     }
 
@@ -342,7 +382,7 @@ public class ClusterService extends AbstractClusterService {
                     logger.error("", e);
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(CHECK_PERIOD);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -359,7 +399,7 @@ public class ClusterService extends AbstractClusterService {
                     logger.error("", e);
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(CHECK_PERIOD);
                 } catch (InterruptedException ignore) {
                 }
             }

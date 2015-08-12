@@ -242,7 +242,7 @@ public class HAProxyAPI {
 
         Set<String> removed = null;
         //marathon에 던져봐서 존재하는지 확인한다.
-        MarathonAPI marathonAPI = null;
+        MarathonAPI marathonAPI = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
         String deployString = marathonAPI.requestGetAPIasString("/deployments");
         JsonNode deployList = JsonUtils.toJsonNode(deployString);
         Set<String> runningSet = new HashSet<>();

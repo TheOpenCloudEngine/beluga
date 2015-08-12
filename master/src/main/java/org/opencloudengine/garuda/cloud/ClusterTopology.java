@@ -199,10 +199,11 @@ public class ClusterTopology {
         StringBuffer addressList = new StringBuffer();
         for(CommonInstance d : nodeList) {
             String id = d.getInstanceId();
+            String ip = d.getPublicIpAddress();
             if(addressList.length() > 0) {
                 addressList.append(",");
             }
-            addressList.append(id);
+            addressList.append(id).append(":").append(ip);
         }
         props.put(roleName, addressList.toString());
     }

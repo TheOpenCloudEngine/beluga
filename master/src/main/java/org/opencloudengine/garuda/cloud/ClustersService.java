@@ -101,11 +101,7 @@ public class ClustersService extends AbstractService {
     public void destroyCluster(String clusterId) throws GarudaException {
         checkIfClusterExists(clusterId);
         ClusterService clusterService = clusterMap.get(clusterId);
-        try {
-            clusterService.destroyCluster();
-        } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
-        }
+        clusterService.destroyCluster();
         //
         // 설정관련 수정. cluster리스트에서 제거한다.
         //
