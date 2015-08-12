@@ -3,7 +3,8 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClustersService;
-import org.opencloudengine.garuda.mesos.MesosService;
+import org.opencloudengine.garuda.mesos.MesosAPI;
+import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.utils.StringMap;
 import org.slf4j.Logger;
@@ -34,11 +35,15 @@ public abstract class BaseAPI {
         return Response.ok().entity(entity).build();
     }
 
-    public MesosService mesosService(String clusterId) {
-        return ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(MesosService.class);
+    public MesosAPI mesosAPI(String clusterId) {
+        return ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMesosAPI();
+    }
+
+    public MarathonAPI marathonAPI(String clusterId) {
+        return ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
     }
 
     public ClusterService clusterService(String clusterId) {
-        return ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
+        return ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
     }
 }

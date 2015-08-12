@@ -5,6 +5,7 @@ import org.opencloudengine.garuda.action.task.TaskResult;
 import org.opencloudengine.garuda.action.task.Todo;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.ScriptFileNames;
@@ -13,64 +14,45 @@ import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.service.AbstractClusterService;
-import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ClusterServiceManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
+import org.opencloudengine.garuda.settings.AccessInfo;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.utils.SshClient;
 import org.opencloudengine.garuda.utils.SshInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 /**
  * Created by swsong on 2015. 8. 9..
  */
-public class MesosService extends AbstractClusterService {
+public class MesosAPI {
+    protected static Logger logger = LoggerFactory.getLogger(MesosAPI.class);
     private static final String MARATHON_CONTAINER = "docker,mesos";
-    private ClusterService clusterService;
 
-    private MarathonAPI marathonAPI;
-    private DockerAPI dockerAPI;
+    private String clusterId;
+    private Environment environment;
 
-    public MesosService(String clusterId, Environment environment, Settings settings, ClusterServiceManager serviceManager) {
-        super(clusterId, environment, settings, serviceManager);
+    public MesosAPI(String clusterId, Environment environment) {
+        this.clusterId = clusterId;
+        this.environment = environment;
     }
-
-    @Override
-    protected boolean doStart() throws ServiceException {
-        clusterService = serviceManager.getService(ClusterService.class);
-
-        marathonAPI = new MarathonAPI(clusterId);
-        dockerAPI = new DockerAPI(environment);
-
-        return true;
-    }
-
-    @Override
-    protected boolean doStop() throws ServiceException {
-
-        return true;
-    }
-
-    @Override
-    protected boolean doClose() throws ServiceException {
-        return true;
-    }
-
     private int calculateQuorum(int size) {
         return size / 2 + 1; //과반수.
     }
 
-    public void configureMesosMasterInstances(String clusterId, String definitionId) throws GarudaException {
-
+    public void configureMesosMasterInstances(String definitionId) throws GarudaException {
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             if (topology.getMesosMasterList().size() > 0) {
-                ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
-                String userId = clusterDefinition.getUserId();
-                String keyPairFile = clusterDefinition.getKeyPairFile();
-                int timeout = clusterDefinition.getTimeout();
+                AccessInfo accessInfo = environment.settingManager().getClusterDefinition(definitionId).getAccessInfo();
+                String userId = accessInfo.getUserId();
+                String keyPairFile = accessInfo.getKeyPairFile();
+                int timeout = accessInfo.getTimeout();
 
                 if (topology.getMesosMasterList().size() > 0) {
                     final MesosMasterConfiguration conf = new MesosMasterConfiguration();
@@ -125,7 +107,7 @@ public class MesosService extends AbstractClusterService {
                     // TODO 향후에는 각 데몬을 재시작하는 것으로 수정한다.
                     //
                     logger.debug("Reboot mesos-master : {}", topology.getMesosMasterList());
-                    clusterService.rebootInstances(topology.getMesosMasterList(), true);
+                    clusterService.rebootInstances(ClusterTopology.MESOS_MASTER_ROLE, true);
                     logger.debug("Reboot mesos-master Done.");
                 }
             }
@@ -135,7 +117,7 @@ public class MesosService extends AbstractClusterService {
     }
 
     public void configureMesosSlaveInstances(String definitionId) throws GarudaException {
-
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             //
@@ -145,10 +127,10 @@ public class MesosService extends AbstractClusterService {
             final String managementAddress = managementInstance.getPublicIpAddress();
 
             if (topology.getMesosSlaveList().size() > 0) {
-                ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
-                String userId = clusterDefinition.getUserId();
-                String keyPairFile = clusterDefinition.getKeyPairFile();
-                int timeout = clusterDefinition.getTimeout();
+                AccessInfo accessInfo = environment.settingManager().getClusterDefinition(definitionId).getAccessInfo();
+                String userId = accessInfo.getUserId();
+                String keyPairFile = accessInfo.getKeyPairFile();
+                int timeout = accessInfo.getTimeout();
                 final MesosSlaveConfiguration slaveConf = new MesosSlaveConfiguration();
                 for (CommonInstance i : topology.getMesosMasterList()) {
                     slaveConf.withZookeeperAddress(i.getPublicIpAddress());
@@ -195,7 +177,7 @@ public class MesosService extends AbstractClusterService {
                 // TODO 향후에는 각 데몬을 재시작하는 것으로 수정한다.
                 //
                 logger.debug("Reboot mesos-slave : {}", topology.getMesosSlaveList());
-                clusterService.rebootInstances(topology.getMesosSlaveList(), true);
+                clusterService.rebootInstances(ClusterTopology.MESOS_SLAVE_ROLE, true);
                 logger.debug("Reboot mesos-slave Done.");
 
             }
@@ -203,13 +185,4 @@ public class MesosService extends AbstractClusterService {
             throw new GarudaException("error while configure mesos slave.", e);
         }
     }
-
-    public MarathonAPI getMarathonAPI(){
-        return marathonAPI;
-    }
-
-    public DockerAPI getDockerAPI() {
-        return dockerAPI;
-    }
-
 }

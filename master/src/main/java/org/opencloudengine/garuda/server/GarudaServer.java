@@ -148,7 +148,7 @@ public class GarudaServer {
 		serviceManager.asSingleton();
 
 		serviceManager.registerService("rest", RestAPIService.class);
-        serviceManager.registerService("controller", ClustersService.class);
+        serviceManager.registerService("cluster", ClustersService.class);
         serviceManager.registerService("action", ActionService.class);
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());

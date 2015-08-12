@@ -28,7 +28,6 @@ public class DockerAPI {
         this.environment = environment;
     }
 
-
     public int buildWebAppDockerImage(String imageName, String webAppType, String webAppFile) throws IOException {
         String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
         DefaultExecutor executor = new DefaultExecutor();

@@ -17,11 +17,10 @@ public class HAProxyAPITest extends BaseActionTest {
         String homePath = "/Users/swsong/Projects/garuda/production";
         String clusterId = "test-cluster";
         Environment environment = new Environment(homePath);
-        Map<String, Queue<String>> clusterConfigQueueMap = new HashMap<>();
-        clusterConfigQueueMap.put(clusterId, new LinkedBlockingQueue<String>());
-        HAProxyAPI api = new HAProxyAPI(environment, clusterConfigQueueMap);
+        Queue<String> configQueue= new LinkedBlockingQueue<String>();
+        HAProxyAPI api = new HAProxyAPI(clusterId, environment, configQueue);
         String deploymentId = "asdfghjkl";
-        String configString = api.notifyServiceChanged(clusterId, deploymentId);
+        String configString = api.notifyServiceChanged( deploymentId);
         System.out.println(configString);
     }
 }

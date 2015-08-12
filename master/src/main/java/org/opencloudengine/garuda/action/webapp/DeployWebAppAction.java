@@ -1,33 +1,15 @@
 package org.opencloudengine.garuda.action.webapp;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.ClustersService;
-import org.opencloudengine.garuda.cloud.CommonInstance;
-import org.opencloudengine.garuda.common.log.AppLoggerFactory;
-import org.opencloudengine.garuda.common.log.ErrorLogOutputStream;
-import org.opencloudengine.garuda.common.log.InfoLogOutputStream;
-import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.env.DockerWebAppPorts;
-import org.opencloudengine.garuda.env.ScriptFileNames;
 import org.opencloudengine.garuda.exception.GarudaException;
-import org.opencloudengine.garuda.mesos.MesosService;
+import org.opencloudengine.garuda.mesos.MesosAPI;
 import org.opencloudengine.garuda.mesos.docker.DockerAPI;
-import org.opencloudengine.garuda.mesos.marathon.model.App;
-import org.opencloudengine.garuda.mesos.marathon.model.Container;
-import org.opencloudengine.garuda.mesos.marathon.model.Docker;
-import org.opencloudengine.garuda.mesos.marathon.model.PortMapping;
-import org.slf4j.Logger;
+import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +43,8 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         Boolean isUpdate = request.getIsUpdate();
 
         // clusterId를 통해 인스턴스 주소를 받아온다.
-        ClusterService clusterService = serviceManager.getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
-        ClusterTopology topology = clusterService.getClusterTopology(clusterId);
+        ClusterService clusterService = serviceManager.getService(ClustersService.class).getClusterService(clusterId);
+        ClusterTopology topology = clusterService.getClusterTopology();
         if(topology == null) {
             // 그런 클러스터가 없다.
             throw new GarudaException("No such cluster: "+ clusterId);
@@ -73,7 +55,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             throw new GarudaException("No registry instance in " + clusterId);
         }
 
-        MesosService mesosService = serviceManager.getService(ClustersService.class).getCluster(clusterId).getService(MesosService.class);
+        DockerAPI dockerAPI = serviceManager.getService(ClustersService.class).getClusterService(clusterId).getDockerAPI();
         boolean needImageBuild = webAppFile != null && webAppFile != null;
         /*
         * 1. Build Image
@@ -81,7 +63,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         String imageName = registryAddress + "/" + appId;
         status.walkStep();
         if(needImageBuild) {
-            int exitValue = mesosService.getDockerAPI().buildWebAppDockerImage(imageName, webAppType, webAppFile);
+            int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFile);
             if(exitValue != 0) {
                 throw new GarudaException(String.format("Error while build docker image : %s, %s, %s", imageName, webAppType, webAppFile));
             }
@@ -92,7 +74,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
          * */
         status.walkStep();
         if(needImageBuild) {
-            int exitValue = mesosService.getDockerAPI().pushDockerImageToRegistry(imageName);
+            int exitValue = dockerAPI.pushDockerImageToRegistry(imageName);
             if(exitValue != 0) {
                 throw new GarudaException(String.format("Error while push docker image : %s", imageName));
             }
@@ -109,11 +91,12 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             usedPort = new ArrayList<>();
             usedPort.add(port);
         }
+        MarathonAPI marathonAPI = serviceManager.getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
         Response response = null;
         if(isUpdate) {
-            response = mesosService.getMarathonAPI().deployDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
+            response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale);
         } else {
-            response = mesosService.getMarathonAPI().updateDockerApp(clusterId, appId, imageName, usedPort, cpus, memory, scale);
+            response = marathonAPI.updateDockerApp(appId, imageName, usedPort, cpus, memory, scale);
         }
         setResult(response);
     }

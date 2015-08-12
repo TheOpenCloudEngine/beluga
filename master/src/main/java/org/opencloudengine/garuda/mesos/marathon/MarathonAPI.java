@@ -3,6 +3,7 @@ package org.opencloudengine.garuda.mesos.marathon;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.ClustersService;
+import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.mesos.marathon.model.*;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
@@ -30,14 +31,15 @@ public class MarathonAPI {
     private static final String SLASH = "/";
 
     private String clusterId;
-    private ClusterService clusterService;
+    private Environment environment;
 
-    public MarathonAPI(String clusterId) {
+    public MarathonAPI(String clusterId, Environment environment) {
         this.clusterId = clusterId;
-        this.clusterService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
+        this.environment = environment;
     }
 
     protected String chooseMarathonEndPoint(String clusterId) {
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         // 여러개중 장애없는 것을 가져온다.
         ClusterTopology topology = clusterService.getClusterTopology();
         List<String> list = topology.getMarathonEndPoints();

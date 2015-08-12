@@ -6,19 +6,18 @@ import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
+import org.opencloudengine.garuda.mesos.MesosAPI;
+import org.opencloudengine.garuda.mesos.docker.DockerAPI;
+import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.proxy.HAProxyAPI;
 import org.opencloudengine.garuda.proxy.ProxyUpdateWorker;
 import org.opencloudengine.garuda.service.AbstractClusterService;
-import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
-import org.opencloudengine.garuda.service.common.ClusterServiceManager;
-import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.utils.SshInfo;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -26,50 +25,53 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 */
 public class ClusterService extends AbstractClusterService {
 
-    private ClusterTopology clusterTopology;
-
     private IaasProviderConfig iaasProviderConfig;
+    private ClusterTopology clusterTopology;
 
     private ProxyUpdateWorker proxyUpdateWorker;
     private Queue<String> proxyUpdateQueue;
     private HAProxyAPI haProxyAPI;
+    private MesosAPI mesosAPI;
+    private MarathonAPI marathonAPI;
+    private DockerAPI dockerAPI;
 
-    public ClusterService(String clusterId, Environment environment, Settings settings, ClusterServiceManager serviceManager) {
-        super(clusterId, environment, settings, serviceManager);
+    public ClusterService(String clusterId, Environment environment, Settings settings) {
+        super(clusterId, environment, settings);
+        iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
+        mesosAPI = new MesosAPI(clusterId, environment);
+        marathonAPI = new MarathonAPI(clusterId, environment);
+        dockerAPI = new DockerAPI(environment);
     }
 
     @Override
     protected boolean doStart() throws ServiceException {
-        iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
-        haProxyAPI = new HAProxyAPI(clusterId, environment, proxyUpdateQueue);
-        return true;
-    }
 
-    private ProxyUpdateWorker loadProxyWorker() {
-        if(clusterTopology.getProxyList().size() == 0) {
-            return null;
+        try {
+            logger.info("Starting cluster {}..", clusterId);
+            loadClusterTopology();
+            startInstances();
+        } catch (Exception e) {
+            logger.error("error while starting cluster service : " + clusterId, e);
+            return false;
         }
-        String clusterId = clusterTopology.getClusterId();
-        String definitionId = clusterTopology.getDefinitionId();
-        String proxyIpAddress = clusterTopology.getProxyList().get(0).getPublicIpAddress();
-        ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
-        String userId = clusterDefinition.getUserId();
-        String keyPairFile = clusterDefinition.getKeyPairFile();
-        int timeout = clusterDefinition.getTimeout();
-        final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-        proxyUpdateQueue = new ConcurrentLinkedQueue<>();
-        proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, proxyUpdateQueue);
-        proxyUpdateWorker.start();
-        return proxyUpdateWorker;
+
+        if(loadProxyWorker()){
+            haProxyAPI = new HAProxyAPI(clusterId, environment, proxyUpdateQueue);
+        }
+        return true;
     }
 
     @Override
     protected boolean doStop() throws ServiceException {
-        if(proxyUpdateWorker != null) {
-            proxyUpdateWorker.interrupt();
-        }
-        if(proxyUpdateQueue != null) {
-            proxyUpdateQueue.clear();
+        logger.info("Stopping cluster {}..", clusterId);
+
+        unloadProxyWorker();
+
+        try {
+            stopInstances();
+        } catch (Exception e) {
+            logger.error("error while stopping cluster service : " + clusterId, e);
+            return false;
         }
         return true;
     }
@@ -79,24 +81,29 @@ public class ClusterService extends AbstractClusterService {
         return true;
     }
 
-    public HAProxyAPI getProxyAPI(){
-        return haProxyAPI;
+    protected boolean destroyCluster() throws UnknownIaasProviderException {
+        logger.info("Destroying cluster {}..", clusterId);
+        unloadProxyWorker();
+        terminateInstances();
+        //topology.cluster 설정파일 삭제.
+        deleteClusterTopologyConfig();
+        return true;
     }
 
-    public ClusterTopology createCluster(String clusterId, String definitionId) throws GarudaException, ClusterExistException {
-        return createCluster(clusterId, definitionId, false);
-    }
-
-    public ClusterTopology createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
+    protected ClusterService createCluster(String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, UnknownIaasProviderException {
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String iaasProfile = clusterDefinition.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
+        createInstances(clusterTopology, clusterDefinition, iaasProvider, waitUntilInstanceAvailable);
+        storeClusterTopologyConfig();
+        return this;
+    }
 
+    private void createInstances(ClusterTopology clusterTopology, ClusterDefinition clusterDefinition, IaasProvider iaasProvider, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, GarudaException {
         String keyPair = clusterDefinition.getKeyPair();
-
         Iaas iaas = null;
         try {
             iaas = iaasProvider.getIaas();
@@ -115,11 +122,7 @@ public class ClusterService extends AbstractClusterService {
                 }
             }
         } catch (Exception e) {
-            try {
-                destroyCluster(clusterTopology);
-            } catch (UnknownIaasProviderException e1) {
-                throw new GarudaException(e);
-            }
+            terminateInstances();
             throw new GarudaException(e);
         } finally {
             iaas.close();
@@ -132,69 +135,30 @@ public class ClusterService extends AbstractClusterService {
             //Fetch latest instance information
             iaas.updateInstancesInfo(list);
         }
-
-        //runtime 토폴로지에 넣어준다.
-//        clusterTopologyMap.put(clusterId, clusterTopology);
-//        //토폴로지 설정파일을 저장한다.
-//        storeClusterTopology(clusterTopology);
-//        addClusterIdToSetting(clusterId);
-//        //프록시 업데이트 감지를 시작한다.
-//        loadProxyWorker(clusterTopology);
-
-        return clusterTopology;
+        this.clusterTopology = clusterTopology;
     }
 
-    public void destroyCluster(String clusterId) throws GarudaException {
-        checkIfClusterExists(clusterId);
-        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
-        try {
-            destroyCluster(clusterTopology);
-        } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
-        }
-    }
-
-    private void destroyCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
-
+    private void startInstances() throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
-
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
         //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         Iaas iaas = iaasProvider.getIaas();
 
+        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
-            iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
+            iaas.startInstances(IaasUtils.getIdList(allNodeList));
+            iaas.waitUntilInstancesRunning(allNodeList);
         } finally {
             if(iaas != null) {
                 iaas.close();
             }
         }
-
-        String clusterId = clusterTopology.getClusterId();
-        clusterTopologyMap.remove(clusterId);
-        unloadProxyWorker(clusterId);
-        //clusterId 제거.
-        removeClusterIdFromSetting(clusterId);
-        //topology.cluster 설정파일 삭제.
-        environment.settingManager().deleteClusterTopology(clusterId);
+        // 상태 정보를 업데이트 한다.
+        iaas.updateInstancesInfo(allNodeList);
     }
 
-    public void stopCluster(String clusterId) throws GarudaException {
-        checkIfClusterExists(clusterId);
-        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
-        try {
-            stopCluster(clusterTopology);
-        } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
-        }
-    }
-
-    private void stopCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
-
-        String clusterId = clusterTopology.getClusterId();
-        unloadProxyWorker(clusterId);
-
+    private void stopInstances() throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
@@ -213,76 +177,91 @@ public class ClusterService extends AbstractClusterService {
         // 상태 정보를 업데이트 한다.
         iaas.updateInstancesInfo(clusterTopology.getAllNodeList());
     }
-
-    public void startCluster(String clusterId) throws GarudaException {
-        checkIfClusterExists(clusterId);
-        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
-        try {
-            startCluster(clusterTopology);
-        } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
-        }
-    }
-
-    private void startCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+    public void rebootInstances(boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
-
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
-
-        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
         Iaas iaas = iaasProvider.getIaas();
-
-        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
         try {
-            iaas.startInstances(IaasUtils.getIdList(allNodeList));
-            iaas.waitUntilInstancesRunning(allNodeList);
+            List<CommonInstance> instanceList = clusterTopology.getAllNodeList();
+            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+            sleep(5);
+            if(waitUntilInstanceAvailable) {
+                //Wait until available
+                iaas.waitUntilInstancesRunning(instanceList);
+                //Fetch latest instance information
+                iaas.updateInstancesInfo(instanceList);
+            }
         } finally {
             if(iaas != null) {
                 iaas.close();
             }
         }
-        // 상태 정보를 업데이트 한다.
-        iaas.updateInstancesInfo(allNodeList);
-        loadProxyWorker(clusterTopology);
     }
-
-    public void restartCluster(String clusterId) throws GarudaException {
-        checkIfClusterExists(clusterId);
-        ClusterTopology clusterTopology = clusterTopologyMap.get(clusterId);
+    public void rebootInstances(String role, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, InvalidRoleException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = iaasProvider.getIaas();
         try {
-            restartCluster(clusterTopology);
-        } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
+            List<CommonInstance> instanceList = clusterTopology.getInstancesByRole(role);
+            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+            sleep(5);
+            if(waitUntilInstanceAvailable) {
+                //Wait until available
+                iaas.waitUntilInstancesRunning(instanceList);
+                //Fetch latest instance information
+                iaas.updateInstancesInfo(instanceList);
+            }
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
         }
     }
 
-    private void restartCluster(ClusterTopology clusterTopology) throws UnknownIaasProviderException {
+    protected void terminateInstances() throws UnknownIaasProviderException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        Iaas iaas = iaasProvider.getIaas();
+        try {
+            iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
+
+    private boolean loadProxyWorker() {
+        if(clusterTopology.getProxyList().size() == 0) {
+            return false;
+        }
         String clusterId = clusterTopology.getClusterId();
-        unloadProxyWorker(clusterId);
-
-        String iaasProfile = clusterTopology.getIaasProfile();
-        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
-
-        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
-        Iaas iaas = iaasProvider.getIaas();
-        List<CommonInstance> allNodeList = clusterTopology.getAllNodeList();
-        try {
-            iaas.rebootInstances(IaasUtils.getIdList(allNodeList));
-            iaas.waitUntilInstancesRunning(allNodeList);
-        } finally {
-            if(iaas != null) {
-                iaas.close();
-            }
-        }
-        // 상태 정보를 업데이트 한다.
-        iaas.updateInstancesInfo(allNodeList);
-
-        loadProxyWorker(clusterTopology);
+        String definitionId = clusterTopology.getDefinitionId();
+        String proxyIpAddress = clusterTopology.getProxyList().get(0).getPublicIpAddress();
+        ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
+        String userId = clusterDefinition.getUserId();
+        String keyPairFile = clusterDefinition.getKeyPairFile();
+        int timeout = clusterDefinition.getTimeout();
+        final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
+        proxyUpdateQueue = new ConcurrentLinkedQueue<>();
+        proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, proxyUpdateQueue);
+        proxyUpdateWorker.start();
+        return true;
     }
 
-    public ClusterTopology loadCluster() throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
-        logger.info("Load cluster {}..", clusterId);
+    private boolean unloadProxyWorker() {
+        if(proxyUpdateWorker != null) {
+            proxyUpdateWorker.interrupt();
+        }
+        if(proxyUpdateQueue != null) {
+            proxyUpdateQueue.clear();
+        }
+        return true;
+    }
+
+    public void loadClusterTopology() throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
         if(settings == null) {
             throw new GarudaException("Cluster topology config not found : " + clusterId);
@@ -300,24 +279,11 @@ public class ClusterService extends AbstractClusterService {
 
         ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
         try {
-            loadRole(ClusterTopology.GARUDA_MASTER_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.PROXY_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.MESOS_MASTER_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.MESOS_SLAVE_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.MANAGEMENT_DB_REGISTRY_ROLE, settings, iaas, clusterTopology);
-            loadRole(ClusterTopology.SERVICE_NODES_ROLE, settings, iaas, clusterTopology);
+            clusterTopology.loadRoles(settings, iaas);
         } finally {
             iaas.close();
         }
         this.clusterTopology = clusterTopology;
-        loadProxyWorker();
-        return clusterTopology;
-    }
-
-    private void storeClusterTopology(ClusterTopology clusterTopology){
-        String clusterId = clusterTopology.getClusterId();
-        Properties props = clusterTopology.getProperties();
-        environment.settingManager().storeClusterTopology(clusterId, props);
     }
 
     private void loadRole(String role, Settings settings, Iaas iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
@@ -335,36 +301,41 @@ public class ClusterService extends AbstractClusterService {
         }
     }
 
-    public ClusterTopology getClusterTopology() {
-        return clusterTopology;
-    }
 
-    public void rebootInstances(List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException {
-        String iaasProfile = clusterTopology.getIaasProfile();
-
-        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
-
-        Iaas iaas = iaasProvider.getIaas();
-        try {
-            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
-            sleep(5);
-            if(waitUntilInstanceAvailable) {
-                //Wait until available
-                iaas.waitUntilInstancesRunning(instanceList);
-                //Fetch latest instance information
-                iaas.updateInstancesInfo(instanceList);
-            }
-        } finally {
-            if(iaas != null) {
-                iaas.close();
-            }
-        }
-    }
 
     private void sleep(int seconds) {
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException ignore) {
         }
+    }
+
+    private void storeClusterTopologyConfig(){
+        Properties props = clusterTopology.getProperties();
+        environment.settingManager().storeClusterTopology(clusterId, props);
+    }
+    private void deleteClusterTopologyConfig() {
+        //topology.cluster 설정파일 삭제.
+        environment.settingManager().deleteClusterTopology(clusterId);
+    }
+
+    public ClusterTopology getClusterTopology() {
+        return clusterTopology;
+    }
+
+    public HAProxyAPI getProxyAPI(){
+        return haProxyAPI;
+    }
+
+    public MesosAPI getMesosAPI() {
+        return mesosAPI;
+    }
+
+    public MarathonAPI getMarathonAPI() {
+        return marathonAPI;
+    }
+
+    public DockerAPI getDockerAPI() {
+        return dockerAPI;
     }
 }

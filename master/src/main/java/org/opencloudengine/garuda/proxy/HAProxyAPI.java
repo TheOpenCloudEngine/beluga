@@ -12,7 +12,8 @@ import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.env.Environment;
-import org.opencloudengine.garuda.mesos.MesosService;
+import org.opencloudengine.garuda.mesos.MesosAPI;
+import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,6 @@ public class HAProxyAPI {
     private Map<String, Set<String>> clusterDeploymentSet;
 
     private List<String> deploymentsList = new ArrayList<>();
-
-
-
-
 
     public HAProxyAPI(String clusterId, Environment environment, Queue<String> proxyUpdateQueue) {
         this.clusterId = clusterId;
@@ -96,7 +93,7 @@ public class HAProxyAPI {
     }
 
     protected void fillTopologyToContext(List<Frontend> frontendList, List<Backend> backendList) {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(ClusterService.class);
+        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         ClusterTopology topology = clusterService.getClusterTopology();
 
         if (topology.getMesosMasterList().size() > 0) {
@@ -147,8 +144,8 @@ public class HAProxyAPI {
     }
 
     protected void fillServiceToContext(List<Frontend> frontendList, List<Backend> backendList) {
-        MesosService mesosService = ServiceManager.getInstance().getService(ClustersService.class).getCluster(clusterId).getService(MesosService.class);
-        String appsString = mesosService.getMarathonAPI().requestGetAPIasString(clusterId, "/tasks");
+        MarathonAPI marathonAPI = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
+        String appsString = marathonAPI.requestGetAPIasString("/tasks");
 
         JsonNode taskList = JsonUtils.toJsonNode(appsString).get("tasks");
         if (taskList != null) {

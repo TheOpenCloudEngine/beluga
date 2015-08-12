@@ -26,20 +26,20 @@ public class ClusterServiceTest {
         serviceManager = new ServiceManager(environment);
         serviceManager.asSingleton();
 
-        serviceManager.registerService("cluster", ClusterService.class);
-        clusterService = serviceManager.getService(ClusterService.class);
+        serviceManager.registerService("cluster", ClustersService.class);
+        clusterService = serviceManager.getService(ClustersService.class).getClusterService(clusterId);
         System.out.println("Before finished.");
     }
 
     @Test
     public void testLaunch() throws GarudaException, UnknownIaasProviderException, ClusterExistException {
         String definitionId = "ec2-real";
-        clusterService.createCluster(clusterId, definitionId);
+        clusterService.createCluster(definitionId, true);
     }
 
     @Test
     public void testLoad() {
-        ClusterTopology clusterTopology = clusterService.getClusterTopology(clusterId);
+        ClusterTopology clusterTopology = clusterService.getClusterTopology();
         if(clusterTopology == null) {
             System.out.println(String.format("cluster %s is null", clusterId));
         } else {
@@ -49,7 +49,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testDestroy() throws GarudaException {
-        clusterService.destroyCluster(clusterId);
+    public void testDestroy() throws UnknownIaasProviderException {
+        clusterService.destroyCluster();
     }
 }

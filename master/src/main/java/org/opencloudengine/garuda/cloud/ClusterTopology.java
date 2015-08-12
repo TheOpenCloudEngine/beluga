@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.cloud;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.opencloudengine.garuda.env.ClusterPorts;
+import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -106,6 +107,25 @@ public class ClusterTopology {
         return serviceNodeList;
     }
 
+    public List<CommonInstance> getInstancesByRole(String role) throws InvalidRoleException {
+        switch (role) {
+            case GARUDA_MASTER_ROLE:
+                return garudaMasterList;
+            case PROXY_ROLE:
+                return proxyList;
+            case MESOS_MASTER_ROLE:
+                return mesosMasterList;
+            case MESOS_SLAVE_ROLE:
+                return mesosSlaveList;
+            case MANAGEMENT_DB_REGISTRY_ROLE:
+                return managementList;
+            case SERVICE_NODES_ROLE:
+                return serviceNodeList;
+            default:
+                throw new InvalidRoleException("no such role : " + role);
+        }
+    }
+
     public void addNode(String role, CommonInstance commonInstance) throws InvalidRoleException {
         switch (role) {
             case GARUDA_MASTER_ROLE:
@@ -129,6 +149,29 @@ public class ClusterTopology {
             default:
                 noRoleNodeList.add(commonInstance);
                 throw new InvalidRoleException("no such role : " + role);
+        }
+    }
+
+    public void loadRoles(Settings settings, Iaas iaas) throws InvalidRoleException {
+        loadRole(ClusterTopology.GARUDA_MASTER_ROLE, settings, iaas);
+        loadRole(ClusterTopology.PROXY_ROLE, settings, iaas);
+        loadRole(ClusterTopology.MESOS_MASTER_ROLE, settings, iaas);
+        loadRole(ClusterTopology.MESOS_SLAVE_ROLE, settings, iaas);
+        loadRole(ClusterTopology.MANAGEMENT_DB_REGISTRY_ROLE, settings, iaas);
+        loadRole(ClusterTopology.SERVICE_NODES_ROLE, settings, iaas);
+    }
+    private void loadRole(String role, Settings settings, Iaas iaas) throws InvalidRoleException {
+        String value = settings.getValue(role);
+        if(value != null && value.trim().length() > 0) {
+            String[] idArray = settings.getStringArray(role);
+            List<String> idList = new ArrayList<String>();
+            for(String id : idArray) {
+                idList.add(id);
+            }
+            List<CommonInstance> list = iaas.getInstances(idList);
+            for(CommonInstance instance : list) {
+                addNode(role, instance);
+            }
         }
     }
 

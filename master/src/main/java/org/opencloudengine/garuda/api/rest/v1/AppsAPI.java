@@ -4,12 +4,8 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
-import org.opencloudengine.garuda.cloud.ClusterService;
-import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
-import org.opencloudengine.garuda.mesos.MesosService;
-import org.opencloudengine.garuda.service.common.ServiceManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,7 +27,7 @@ public class AppsAPI extends BaseAPI {
     @Path("/")
     public Response getApps(@PathParam("clusterId") String clusterId) throws Exception {
         try {
-            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps");
+            return marathonAPI(clusterId).requestGetAPI("/apps");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -42,7 +38,7 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}")
     public Response getApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
-            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId);
+            return marathonAPI(clusterId).requestGetAPI("/apps/" + appId);
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -53,7 +49,7 @@ public class AppsAPI extends BaseAPI {
     @Path("/{id}/tasks")
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
-            return mesosService(clusterId).getMarathonAPI().requestGetAPI(clusterId, "/apps/" + appId + "/tasks");
+            return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "/tasks");
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -162,13 +158,13 @@ public class AppsAPI extends BaseAPI {
             }
             Response response = null;
             if (!isUpdate) {
-                response = mesosService(clusterId).getMarathonAPI().deployCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = marathonAPI(clusterId).deployCommandApp(appId, command, ports, cpus, memory, scale);
             } else {
-                response = mesosService(clusterId).getMarathonAPI().updateCommandApp(clusterId, appId, command, ports, cpus, memory, scale);
+                response = marathonAPI(clusterId).updateCommandApp(appId, command, ports, cpus, memory, scale);
             }
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
             }
             return response;
 
@@ -202,11 +198,11 @@ public class AppsAPI extends BaseAPI {
             Response response = (Response) actionStatus.getResult();
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
             }
             //deploy가 성공했다면 haproxy를 갱신한다.
             if (actionStatus.getError() != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
             }
             if(actionStatus.getResult() instanceof Response) {
                 return (Response) actionStatus.getResult();
@@ -225,10 +221,10 @@ public class AppsAPI extends BaseAPI {
         // 포트가 바뀌므로, haproxy를 업데이트 한다.
         Response response = null;
         try {
-            response = mesosService(clusterId).getMarathonAPI().requestPostAPI(clusterId, "/apps/" + appId + "/restart", null);
+            response = marathonAPI(clusterId).requestPostAPI("/apps/" + appId + "/restart", null);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
             }
             return response;
         } catch (Throwable t) {
@@ -244,10 +240,10 @@ public class AppsAPI extends BaseAPI {
         Response response = null;
         try {
             // 삭제되었으면 haproxy에서 지워준다.
-            response = mesosService(clusterId).getMarathonAPI().requestDeleteAPI(clusterId, "/apps/" + appId);
+            response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId);
             String deploymentsId = getDeploymentId(response);
             if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(clusterId, deploymentsId);
+                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
                 //unload haproxy worker
             }
             return Response.ok().build();

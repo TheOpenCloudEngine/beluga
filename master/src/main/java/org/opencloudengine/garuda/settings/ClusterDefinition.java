@@ -26,6 +26,10 @@ public class ClusterDefinition extends PropertyConfig {
         super(p);
     }
 
+    public AccessInfo getAccessInfo() {
+        return new AccessInfo(userId, keyPairFile, timeout);
+    }
+
     public String getIaasProfile() {
         return iaasProfile;
     }
@@ -57,6 +61,7 @@ public class ClusterDefinition extends PropertyConfig {
     public int getTimeout() {
         return timeout;
     }
+
 
     @Override
     protected void init(Properties p) {

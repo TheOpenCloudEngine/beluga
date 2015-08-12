@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.action.cluster;
 
 import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClustersService;
 
 /**
  * 클러스터를 삭제한다.
@@ -17,8 +18,8 @@ public class DestroyClusterAction extends RunnableAction<DestroyClusterActionReq
     @Override
     protected void doAction() throws Exception {
         String clusterId = getActionRequest().getClusterId();
-        ClusterService clusterService = serviceManager.getService(ClusterService.class);
+        ClustersService clustersService = serviceManager.getService(ClustersService.class);
         status.walkStep();
-        clusterService.destroyCluster(clusterId);
+        clustersService.destroyCluster(clusterId);
     }
 }

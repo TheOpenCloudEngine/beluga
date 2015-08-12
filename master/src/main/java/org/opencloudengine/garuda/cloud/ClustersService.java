@@ -5,10 +5,9 @@ import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.exception.InvalidRoleException;
-import org.opencloudengine.garuda.mesos.MesosService;
+import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
-import org.opencloudengine.garuda.service.common.ClusterServiceManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
@@ -26,8 +25,7 @@ public class ClustersService extends AbstractService {
 
     private static final String CLUSTERS_KEY = "clusters";
 
-    private Map<String, Cluster> clusterMap;
-
+    private Map<String, ClusterService> clusterMap;
 
     public ClustersService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
@@ -45,7 +43,7 @@ public class ClustersService extends AbstractService {
         if(clusterList != null) {
             for (String clusterId : clusterList) {
                 try {
-                    Cluster cluster = new Cluster(clusterId, environment);
+                    ClusterService cluster = new ClusterService(clusterId, environment, settings);
                     cluster.start();
                     clusterMap.put(clusterId, cluster);
                 }catch(Throwable t) {
@@ -59,8 +57,8 @@ public class ClustersService extends AbstractService {
 
     @Override
     protected boolean doStop() throws ServiceException {
-        for(Cluster cluster : clusterMap.values()) {
-            cluster.stop();
+        for(ClusterService clusterService : clusterMap.values()) {
+            clusterService.stop();
         }
         clusterMap.clear();
         return true;
@@ -72,7 +70,7 @@ public class ClustersService extends AbstractService {
         return true;
     }
 
-    public Cluster getCluster(String clusterId) {
+    public ClusterService getClusterService(String clusterId) {
         return clusterMap.get(clusterId);
     }
 
@@ -80,31 +78,38 @@ public class ClustersService extends AbstractService {
         createCluster(clusterId, definitionId, false);
     }
 
-    public void createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
+    public ClusterService createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
 
         if(clusterMap.containsKey(clusterId) || isClusterIdExistInSetting(clusterId)) {
             throw new ClusterExistException(String.format("Cluster %s is already exists.", clusterId));
         }
 
-        SettingManager settingManager = environment.settingManager();
-        ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
-        String iaasProfile = clusterDefinition.getIaasProfile();
-        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        ClusterService clusterService = null;
+        try {
+            clusterService = new ClusterService(clusterId, environment, settings).createCluster(definitionId, waitUntilInstanceAvailable);
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
+        if (clusterService.start()) {
+            addClusterIdToSetting(clusterId);
+        }
+        clusterMap.put(clusterId, clusterService);
 
-        Cluster cluster = Cluster.createCluster(iaasProvider, clusterDefinition);
-        clusterMap.put(clusterId, cluster);
-
-        addClusterIdToSetting(clusterId);
-
+        return clusterService;
     }
 
     public void destroyCluster(String clusterId) throws GarudaException {
         checkIfClusterExists(clusterId);
-        Cluster cluster = clusterMap.remove(clusterId);
-        cluster.close();
+        ClusterService clusterService = clusterMap.get(clusterId);
+        try {
+            clusterService.destroyCluster();
+        } catch (UnknownIaasProviderException e) {
+            throw new GarudaException(e);
+        }
         //
         // 설정관련 수정. cluster리스트에서 제거한다.
         //
+        clusterMap.remove(clusterId);
         removeClusterIdFromSetting(clusterId);
     }
 
@@ -150,35 +155,11 @@ public class ClustersService extends AbstractService {
         environment.settingManager().storeClusterTopology(clusterId, props);
     }
 
-    private void loadRole(String role, Settings settings, Iaas iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
-        String value = settings.getValue(role);
-        if(value != null && value.trim().length() > 0) {
-            String[] idArray = settings.getStringArray(role);
-            List<String> idList = new ArrayList<String>();
-            for(String id : idArray) {
-                idList.add(id);
-            }
-            List<CommonInstance> list = iaas.getInstances(idList);
-            for(CommonInstance instance : list) {
-                clusterTopology.addNode(role, instance);
-            }
-        }
-    }
-
     public Collection<ClusterTopology> getAllClusterTopology() {
         Collection<ClusterTopology> topologies = new HashSet<>();
-        for(Cluster cluster : clusterMap.values()) {
-            topologies.add(cluster.services().getService(ClusterService.class).getClusterTopology());
+        for(ClusterService clusterService : clusterMap.values()) {
+            topologies.add(clusterService.getClusterTopology());
         }
         return topologies;
     }
-
-//    public Collection<ClusterTopology> getAllClusterTopology() {
-//        return clusterTopologyMap.values();
-//    }
-//
-//    public ClusterTopology getClusterTopology(String clusterId) {
-//        return clusterTopologyMap.get(clusterId);
-//    }
-
 }
