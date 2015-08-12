@@ -17,7 +17,6 @@ public class HAProxyAPITest extends BaseActionTest {
         String homePath = "/Users/swsong/Projects/garuda/production";
         String clusterId = "test-cluster";
         Environment environment = new Environment(homePath);
-        Queue<String> configQueue= new LinkedBlockingQueue<String>();
         HAProxyAPI api = new HAProxyAPI(clusterId, environment);
         String deploymentId = "asdfghjkl";
         api.notifyServiceChanged(deploymentId);
