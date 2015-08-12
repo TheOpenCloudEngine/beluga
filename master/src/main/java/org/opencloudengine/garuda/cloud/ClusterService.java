@@ -10,30 +10,31 @@ import org.opencloudengine.garuda.mesos.MesosAPI;
 import org.opencloudengine.garuda.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.proxy.HAProxyAPI;
-import org.opencloudengine.garuda.proxy.ProxyUpdateWorker;
 import org.opencloudengine.garuda.service.AbstractClusterService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.utils.SshInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
 * Created by swsong on 2015. 7. 20..
 */
 public class ClusterService extends AbstractClusterService {
-
     private IaasProviderConfig iaasProviderConfig;
     private ClusterTopology clusterTopology;
 
-    private ProxyUpdateWorker proxyUpdateWorker;
-    private Queue<String> proxyUpdateQueue;
-    private HAProxyAPI haProxyAPI;
     private MesosAPI mesosAPI;
     private MarathonAPI marathonAPI;
     private DockerAPI dockerAPI;
+    private HAProxyAPI haProxyAPI;
+    private ProxyUpdateWorker proxyUpdateWorker;
+    private DeploymentsCheckWorker deploymentsCheckWorker;
 
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
@@ -50,13 +51,11 @@ public class ClusterService extends AbstractClusterService {
             logger.info("Starting cluster {}..", clusterId);
             loadClusterTopology();
             startInstances();
+            loadProxyWorker();
+            loadDeploymentsCheckWorker();
         } catch (Exception e) {
             logger.error("error while starting cluster service : " + clusterId, e);
             return false;
-        }
-
-        if(loadProxyWorker()){
-            haProxyAPI = new HAProxyAPI(clusterId, environment, proxyUpdateQueue);
         }
         return true;
     }
@@ -66,7 +65,7 @@ public class ClusterService extends AbstractClusterService {
         logger.info("Stopping cluster {}..", clusterId);
 
         unloadProxyWorker();
-
+        unloadDeploymentsCheckWorker();
         try {
             stopInstances();
         } catch (Exception e) {
@@ -245,9 +244,9 @@ public class ClusterService extends AbstractClusterService {
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
         final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
-        proxyUpdateQueue = new ConcurrentLinkedQueue<>();
-        proxyUpdateWorker = new ProxyUpdateWorker(clusterId, sshInfo, proxyUpdateQueue);
+        proxyUpdateWorker = new ProxyUpdateWorker(sshInfo);
         proxyUpdateWorker.start();
+        haProxyAPI = new HAProxyAPI(clusterId, environment);
         return true;
     }
 
@@ -255,10 +254,17 @@ public class ClusterService extends AbstractClusterService {
         if(proxyUpdateWorker != null) {
             proxyUpdateWorker.interrupt();
         }
-        if(proxyUpdateQueue != null) {
-            proxyUpdateQueue.clear();
-        }
         return true;
+    }
+
+    private void loadDeploymentsCheckWorker() {
+        deploymentsCheckWorker = new DeploymentsCheckWorker();
+        deploymentsCheckWorker.start();
+    }
+    private void unloadDeploymentsCheckWorker() {
+        if(deploymentsCheckWorker != null) {
+            deploymentsCheckWorker.interrupt();
+        }
     }
 
     public void loadClusterTopology() throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
@@ -285,23 +291,6 @@ public class ClusterService extends AbstractClusterService {
         }
         this.clusterTopology = clusterTopology;
     }
-
-    private void loadRole(String role, Settings settings, Iaas iaas, ClusterTopology clusterTopology) throws InvalidRoleException {
-        String value = settings.getValue(role);
-        if(value != null && value.trim().length() > 0) {
-            String[] idArray = settings.getStringArray(role);
-            List<String> idList = new ArrayList<String>();
-            for(String id : idArray) {
-                idList.add(id);
-            }
-            List<CommonInstance> list = iaas.getInstances(idList);
-            for(CommonInstance instance : list) {
-                clusterTopology.addNode(role, instance);
-            }
-        }
-    }
-
-
 
     private void sleep(int seconds) {
         try {
@@ -337,5 +326,43 @@ public class ClusterService extends AbstractClusterService {
 
     public DockerAPI getDockerAPI() {
         return dockerAPI;
+    }
+
+    class ProxyUpdateWorker extends Thread {
+        private SshInfo sshInfo;
+        public ProxyUpdateWorker(SshInfo sshInfo) {
+            this.sshInfo = sshInfo;
+        }
+        @Override
+        public void run() {
+            while (!this.isInterrupted()) {
+                try {
+                    haProxyAPI.applyProxyConfig(sshInfo);
+                } catch (IOException e) {
+                    logger.error("", e);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        }
+    }
+
+    class DeploymentsCheckWorker extends Thread {
+        @Override
+        public void run() {
+            while (!this.isInterrupted()) {
+                try {
+                    haProxyAPI.checkDeploymentsAndApply();
+                } catch (Exception e) {
+                    logger.error("", e);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        }
     }
 }

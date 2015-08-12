@@ -1,10 +1,12 @@
 package org.opencloudengine.garuda.proxy;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.ClustersService;
@@ -12,15 +14,22 @@ import org.opencloudengine.garuda.cloud.CommonInstance;
 import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.ClusterPorts;
 import org.opencloudengine.garuda.env.Environment;
+import org.opencloudengine.garuda.env.Path;
+import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.mesos.MesosAPI;
 import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.service.common.ServiceManager;
+import org.opencloudengine.garuda.utils.SshClient;
+import org.opencloudengine.garuda.utils.SshInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by swsong on 2015. 8. 10..
@@ -46,34 +55,32 @@ public class HAProxyAPI {
      * 디플로이가 진행중일때까지 유지하는 Q.
      * 디플로이가 서비스중으로 변경까지는 시간이 걸리기 때문에, 서비스로 변경되면 Q에서 지워주고, proxy 설정을 업데이트 한다.
      */
-    private Map<String, Set<String>> clusterDeploymentSet;
+    private Set<String> deploymentSet;
 
-    private List<String> deploymentsList = new ArrayList<>();
-
-    public HAProxyAPI(String clusterId, Environment environment, Queue<String> proxyUpdateQueue) {
+    public HAProxyAPI(String clusterId, Environment environment) {
         this.clusterId = clusterId;
         templateFilePath = environment.filePaths().configPath().file().getAbsolutePath();
-        this.proxyUpdateQueue = proxyUpdateQueue;
-        clusterDeploymentSet = new ConcurrentHashMap<>();
-    }
-
-    public String notifyTopologyChanged() {
-
-        return updateProxyConfig();
+        this.proxyUpdateQueue = new ConcurrentLinkedQueue<>();
+        this.deploymentSet = new ConcurrentHashSet<>();
     }
 
     /**
-     * 클러스터 토폴로지에 변화가 생기거나, 서비스가 추가/변경 되었을때 호출된다.
-     *
+     * 클러스터 토폴로지에 변화가 생기겼을 경우 즉시 업데이트 한다.
      * */
-    public String notifyServiceChanged(String deploymentsId) {
-        Set<String> deploymentSet = clusterDeploymentSet.get(clusterId);
-        deploymentSet.add(deploymentsId);
-        return updateProxyConfig();
+    public void notifyTopologyChanged() {
+        logger.debug("Proxy notified Topology Changed : {}", clusterId);
+        updateProxyConfig();
     }
-    public String updateProxyConfig() {
-        logger.debug("Proxy notifyServiceChanged : {}", clusterId);
+    /**
+     * 서비스가 추가/변경 되었을때 호출된다.
+     * Deploy 과정을 거치므로, 즉시 업데이트 하지 않고 deploymentSet 에 넣어둔뒤, 사라지는지 확인한다.
+     * */
+    public void notifyServiceChanged(String deploymentsId) {
+        logger.debug("Proxy notified Service Changed : {}", clusterId);
+        deploymentSet.add(deploymentsId);
+    }
 
+    public String updateProxyConfig() {
         VelocityContext context = new VelocityContext();
         List<Frontend> frontendList = new ArrayList<>();
         List<Backend> backendList = new ArrayList<>();
@@ -196,6 +203,69 @@ public class HAProxyAPI {
         return stringWriter.toString();
     }
 
+    public void applyProxyConfig(SshInfo sshInfo) throws IOException {
+        String tempDir = SettingManager.getInstance().getSystemSettings().getString("temp.dir.path");
+        Path tempDirPath = SettingManager.getInstance().getEnvironment().filePaths().path(tempDir);
+
+        int sizeToRemove = proxyUpdateQueue.size();
+        String configString = null;
+        for (int i = 0; i < sizeToRemove; i++) {
+            configString = proxyUpdateQueue.poll();
+        }
+        if (configString != null) {
+            //0. save to file
+            File fileHome = tempDirPath.path(clusterId).file();
+            if (!fileHome.exists()) {
+                fileHome.mkdirs();
+            }
+            File configFile = new File(fileHome, HAProxyAPI.CONFIG_NAME);
+            FileUtils.write(configFile, configString, HAProxyAPI.ENCODING);
+
+            SshClient sshClient = new SshClient();
+            try {
+                sshClient.connect(sshInfo);
+
+                //1. Send config to proxy server
+                sshClient.sendFile(configFile.getAbsolutePath(), HAProxyAPI.TMP_CONFIG_FILE, false);
+                //2. Copy config to tmp dir
+                sshClient.runCommand("proxy config copy", HAProxyAPI.COPY_CONFIG_COMMAND);
+                //3. Restart proxy
+                sshClient.runCommand("proxy update worker", HAProxyAPI.RESTART_COMMAND);
+            } finally {
+                if (sshClient != null) {
+                    sshClient.close();
+                }
+            }
+        }
+    }
+    public void checkDeploymentsAndApply() {
+
+        Set<String> removed = null;
+        //marathon에 던져봐서 존재하는지 확인한다.
+        MarathonAPI marathonAPI = null;
+        String deployString = marathonAPI.requestGetAPIasString("/deployments");
+        JsonNode deployList = JsonUtils.toJsonNode(deployString);
+        Set<String> runningSet = new HashSet<>();
+        for(JsonNode deployments : deployList) {
+            runningSet.add(deployments.get("id").asText());
+        }
+        Iterator<String> iter = deploymentSet.iterator();
+        int removeCount = 0;
+        while(iter.hasNext()) {
+            String key = iter.next();
+            if(!runningSet.contains(key)) {
+                iter.remove();
+                logger.debug("## Deployments {} is now running.", key);
+                removeCount++;
+            }
+        }
+        // 없어지면 proxy 를 업데이트 한다.
+        if(removeCount > 0) {
+            updateProxyConfig();
+        }
+    }
+
+
     class HostPort {
         private String host;
         private int port;
@@ -211,20 +281,5 @@ public class HAProxyAPI {
         public int getPort() {
             return port;
         }
-    }
-
-    class DeployCheckWorker extends Thread {
-
-        @Override
-        public void run() {
-            for(Map.Entry<String, Set<String>> entry : clusterDeploymentSet.entrySet()){
-                String clusterId = entry.getKey();
-
-                //TODO
-
-
-            }
-        }
-
     }
 }
