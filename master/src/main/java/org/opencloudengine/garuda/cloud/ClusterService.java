@@ -15,8 +15,6 @@ import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.utils.SshInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -68,8 +66,8 @@ public class ClusterService extends AbstractClusterService {
 
             //configure Mesos with new IP
             String definitionId = clusterTopology.getDefinitionId();
-            mesosAPI.configureMesosMasterInstances(definitionId);
-            mesosAPI.configureMesosSlaveInstances(definitionId);
+//            mesosAPI.configureMesosMasterInstances(definitionId);
+//            mesosAPI.configureMesosSlaveInstances(definitionId);
 
             //TODO 다시 store to topology...
 
