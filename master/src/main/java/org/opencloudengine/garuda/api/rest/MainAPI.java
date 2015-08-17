@@ -12,13 +12,15 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 8. 13..
  */
 @Path("/")
 public class MainAPI extends BaseAPI {
-        @GET
+
+    @GET
     @Path("/ping")
     public Response ping() {
         return Response.ok("pong").build();
@@ -47,5 +49,13 @@ public class MainAPI extends BaseAPI {
             logger.error("", e);
             throw e;
         }
+    }
+
+    @POST
+    @Path("/api/login")
+    public Response loginAPI(Map<String, Object> data) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        String userId = (String) data.get("id");
+        String password = (String) data.get("password");
+        return login(userId, password);
     }
 }
