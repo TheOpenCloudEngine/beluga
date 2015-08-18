@@ -4,6 +4,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
+import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
 
@@ -175,7 +176,7 @@ public class AppsAPI extends BaseAPI {
     }
 
 
-    private Response deployOrUpdateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
+    private Response deployOrUpdateApp(String clusterId, String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
         try {
             Integer port = (Integer) data.get("port");
 
@@ -257,10 +258,11 @@ public class AppsAPI extends BaseAPI {
         if(response == null) {
             return null;
         }
-        Map map = response.readEntity(Map.class);
-        if(map == null) {
+        String entity = response.readEntity(String.class);
+        if(entity == null) {
             return null;
         }
+        Map<String, Object> map = JsonUtils.unmarshal(entity);
         return (String) map.get("deploymentId");
     }
 

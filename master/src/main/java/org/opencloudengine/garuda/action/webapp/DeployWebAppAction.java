@@ -63,7 +63,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         String imageName = registryAddress + "/" + appId;
         status.walkStep();
         if(needImageBuild) {
-            int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFile);
+            int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFile, memory);
             if(exitValue != 0) {
                 throw new GarudaException(String.format("Error while build docker image : %s, %s, %s", imageName, webAppType, webAppFile));
             }

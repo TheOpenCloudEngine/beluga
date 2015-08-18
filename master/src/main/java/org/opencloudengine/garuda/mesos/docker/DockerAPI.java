@@ -28,7 +28,7 @@ public class DockerAPI {
         this.environment = environment;
     }
 
-    public int buildWebAppDockerImage(String imageName, String webAppType, String webAppFile) throws IOException {
+    public int buildWebAppDockerImage(String imageName, String webAppType, String webAppFile, Float memory) throws IOException {
         String command = ScriptFileNames.getMergeWebAppImageScriptPath(environment, webAppType);
         DefaultExecutor executor = new DefaultExecutor();
         CommandLine cmdLine = CommandLine.parse(command);
@@ -36,6 +36,7 @@ public class DockerAPI {
         cmdLine.addArgument(imageName);
         // war,zip file path
         cmdLine.addArgument(webAppFile);
+        cmdLine.addArgument(String.valueOf(memory.intValue()));
 
 //        Logger appLogger = AppLoggerFactory.createLogger(environment, appId);
         InfoLogOutputStream outLog = new InfoLogOutputStream(logger);

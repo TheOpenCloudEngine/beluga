@@ -164,7 +164,7 @@ public class ClusterTopology {
         loadRole(ClusterTopology.SERVICE_NODES_ROLE, settings, iaas);
     }
     private void loadRole(String role, Settings settings, Iaas iaas) throws InvalidRoleException {
-        String value = settings.getValue(role);
+        String value = settings.getValue(role + ID_SUFFIX);
         if(value != null && value.trim().length() > 0) {
             String[] idArray = settings.getStringArray(role + ID_SUFFIX);
             List<String> idList = new ArrayList<String>();
