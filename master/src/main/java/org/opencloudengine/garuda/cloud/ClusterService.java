@@ -59,8 +59,10 @@ public class ClusterService extends AbstractClusterService {
 
         try {
             logger.info("Starting cluster {}..", clusterId);
-            loadClusterTopology();
-            updateInstances();
+            if(clusterTopology == null) {
+                loadClusterTopology();
+                updateInstances();
+            }
 
             //TODO 기존의 topology와 받아온 IP가 다르면 configure를 다시한다.
 
@@ -70,7 +72,6 @@ public class ClusterService extends AbstractClusterService {
 //            mesosAPI.configureMesosSlaveInstances(definitionId);
 
             //TODO 다시 store to topology...
-
 
             loadProxyWorker();
             loadDeploymentsCheckWorker();
@@ -83,6 +84,7 @@ public class ClusterService extends AbstractClusterService {
 
     @Override
     protected boolean doStop() throws ServiceException {
+        clusterTopology = null;
         unloadProxyWorker();
         unloadDeploymentsCheckWorker();
         return true;
@@ -152,6 +154,7 @@ public class ClusterService extends AbstractClusterService {
                 }
             }
         } catch (Exception e) {
+            logger.error("", e);
             terminateInstances();
             throw new GarudaException(e);
         } finally {
@@ -256,6 +259,9 @@ public class ClusterService extends AbstractClusterService {
     }
 
     protected void terminateInstances() throws UnknownIaasProviderException {
+        if(clusterTopology == null) {
+            return;
+        }
         String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
 

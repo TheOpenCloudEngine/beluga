@@ -182,6 +182,7 @@ public class MesosAPI {
 
             }
         } catch (Exception e) {
+            logger.error("", e);
             throw new GarudaException("error while configure mesos slave.", e);
         }
     }

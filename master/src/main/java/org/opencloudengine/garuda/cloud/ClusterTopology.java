@@ -31,6 +31,9 @@ public class ClusterTopology {
     public static final String MANAGEMENT_DB_REGISTRY_ROLE = "management";
     public static final String SERVICE_NODES_ROLE = "service-db";
 
+    public static final String ID_SUFFIX = ".id";
+    public static final String IP_SUFFIX = ".ip";
+
     private String clusterId;
     private String definitionId;
     private String iaasProfile;
@@ -163,7 +166,7 @@ public class ClusterTopology {
     private void loadRole(String role, Settings settings, Iaas iaas) throws InvalidRoleException {
         String value = settings.getValue(role);
         if(value != null && value.trim().length() > 0) {
-            String[] idArray = settings.getStringArray(role);
+            String[] idArray = settings.getStringArray(role + ID_SUFFIX);
             List<String> idList = new ArrayList<String>();
             for(String id : idArray) {
                 idList.add(id);
@@ -196,16 +199,22 @@ public class ClusterTopology {
     }
 
     private void putProps(Properties props, String roleName, List<CommonInstance> nodeList) {
-        StringBuffer addressList = new StringBuffer();
+        StringBuffer idList = new StringBuffer();
+        StringBuffer ipAddressList = new StringBuffer();
         for(CommonInstance d : nodeList) {
             String id = d.getInstanceId();
             String ip = d.getPublicIpAddress();
-            if(addressList.length() > 0) {
-                addressList.append(",");
+            if(idList.length() > 0) {
+                idList.append(",");
             }
-            addressList.append(id).append(":").append(ip);
+            if(ipAddressList.length() > 0) {
+                ipAddressList.append(",");
+            }
+            idList.append(id);
+            ipAddressList.append(ip);
         }
-        props.put(roleName, addressList.toString());
+        props.put(roleName + ID_SUFFIX, idList.toString());
+        props.put(roleName + IP_SUFFIX, ipAddressList.toString());
     }
 
     public String getRegistryAddressPort() {
