@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.api.rest.v1;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.opencloudengine.garuda.action.ActionException;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.common.util.JsonUtils;
@@ -210,6 +211,8 @@ public class AppsAPI extends BaseAPI {
                     }
                 }
                 return response;
+            } else if(result instanceof ActionException) {
+                throw (ActionException) result;
             }
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
