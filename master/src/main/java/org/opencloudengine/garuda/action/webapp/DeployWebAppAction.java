@@ -101,6 +101,8 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         }
         if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             setResult(response);
+        } else if(response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {
+            throw new ActionException("App is already running.");
         } else {
             throw new ActionException("error while deploy to marathon : [" + response.getStatus() + "] " + response.getStatusInfo());
         }
