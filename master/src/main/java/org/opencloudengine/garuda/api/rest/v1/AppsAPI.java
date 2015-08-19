@@ -196,17 +196,20 @@ public class AppsAPI extends BaseAPI {
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
-            Response response = (Response) actionStatus.getResult();
-            String deploymentsId = getDeploymentId(response);
-            if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-            }
-            //deploy가 성공했다면 haproxy를 갱신한다.
-            if (actionStatus.getError() != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-            }
-            if(actionStatus.getResult() instanceof Response) {
-                return (Response) actionStatus.getResult();
+            Object result = actionStatus.getResult();
+
+            if(result instanceof Response) {
+
+                Response response = (Response) result;
+                String deploymentsId = getDeploymentId(response);
+                if(deploymentsId != null) {
+                    clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
+                    //deploy가 성공했다면 haproxy를 갱신한다.
+                    if (actionStatus.getError() != null) {
+                        clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
+                    }
+                }
+                return response;
             }
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {

@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.action.webapp;
 
+import org.opencloudengine.garuda.action.ActionException;
 import org.opencloudengine.garuda.action.RunnableAction;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
@@ -94,10 +95,14 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         MarathonAPI marathonAPI = serviceManager.getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
         Response response = null;
         if(isUpdate) {
-            response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale);
-        } else {
             response = marathonAPI.updateDockerApp(appId, imageName, usedPort, cpus, memory, scale);
+        } else {
+            response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale);
         }
-        setResult(response);
+        if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            setResult(response);
+        } else {
+            throw new ActionException("error while deploy to marathon : [" + response.getStatus() + "] " + response.getStatusInfo());
+        }
     }
 }

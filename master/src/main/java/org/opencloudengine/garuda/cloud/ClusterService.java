@@ -84,7 +84,6 @@ public class ClusterService extends AbstractClusterService {
 
     @Override
     protected boolean doStop() throws ServiceException {
-        clusterTopology = null;
         unloadProxyWorker();
         unloadDeploymentsCheckWorker();
         return true;
