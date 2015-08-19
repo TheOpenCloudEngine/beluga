@@ -9,6 +9,7 @@ echo '++++++++++ Garuda Environment ++++++++++'
 heap_memory_size=768m
 java_path=
 daemon_account=garuda
+GARUDA_JAVA_OPTS="-Dgaruda.domain=fastcatsearch.com"
 
 current=$(pwd)
 
@@ -21,6 +22,8 @@ export heap_memory_size
 export server_home
 export java_path
 export daemon_account
+export GARUDA_JAVA_OPTS
 
 echo server_home = "$server_home"
+
 
