@@ -148,10 +148,10 @@ public class AppsAPI extends BaseAPI {
                 cpus = Float.parseFloat(data.get("cpus").toString());
             }
             Float memory = null;
-            if (data.get("mem") != null) {
-                memory = Float.parseFloat(data.get("mem").toString());
+            if (data.get("memory") != null) {
+                memory = Float.parseFloat(data.get("memory").toString());
             }
-            Integer scale = (Integer) data.get("instances");
+            Integer scale = (Integer) data.get("scale");
             List<Integer> ports = null;
             if(port != null) {
                 ports = new ArrayList<>();
@@ -187,10 +187,10 @@ public class AppsAPI extends BaseAPI {
                 cpus = Float.parseFloat(data.get("cpus").toString());
             }
             Float memory = null;
-            if (data.get("mem") != null) {
-                memory = Float.parseFloat(data.get("mem").toString());
+            if (data.get("memory") != null) {
+                memory = Float.parseFloat(data.get("memory").toString());
             }
-            Integer scale = (Integer) data.get("instances");
+            Integer scale = (Integer) data.get("scale");
 
             DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, port, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
