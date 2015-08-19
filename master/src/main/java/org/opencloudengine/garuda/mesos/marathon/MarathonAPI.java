@@ -31,15 +31,16 @@ public class MarathonAPI {
     private static final String SLASH = "/";
 
     private String clusterId;
+    private ClusterService clusterService;
     private Environment environment;
 
-    public MarathonAPI(String clusterId, Environment environment) {
-        this.clusterId = clusterId;
+    public MarathonAPI(ClusterService clusterService, Environment environment) {
+        this.clusterService = clusterService;
+        this.clusterId = clusterService.getClusterId();
         this.environment = environment;
     }
 
-    protected String chooseMarathonEndPoint(String clusterId) {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
+    protected String chooseMarathonEndPoint() {
         // 여러개중 장애없는 것을 가져온다.
         ClusterTopology topology = clusterService.getClusterTopology();
         List<String> list = topology.getMarathonEndPoints();
@@ -58,7 +59,7 @@ public class MarathonAPI {
 
     private WebTarget getWebTarget(String path) {
         Client client = ClientBuilder.newClient();
-        return client.target(chooseMarathonEndPoint(clusterId)).path(path);
+        return client.target(chooseMarathonEndPoint()).path(path);
     }
 
     public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {

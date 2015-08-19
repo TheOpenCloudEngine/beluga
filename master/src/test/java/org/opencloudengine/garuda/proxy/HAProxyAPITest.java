@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.proxy;
 
 import org.junit.Test;
 import org.opencloudengine.garuda.action.BaseActionTest;
+import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.env.Environment;
 
 import java.util.*;
@@ -17,7 +18,8 @@ public class HAProxyAPITest extends BaseActionTest {
         String homePath = "/Users/swsong/Projects/garuda/production";
         String clusterId = "test-cluster";
         Environment environment = new Environment(homePath);
-        HAProxyAPI api = new HAProxyAPI(clusterId, environment);
+        ClusterService clusterService = new ClusterService(clusterId, environment, environment.settingManager().getSystemSettings().getSubSettings("cluster"));
+        HAProxyAPI api = new HAProxyAPI(clusterService, environment);
         String deploymentId = "asdfghjkl";
         api.notifyServiceChanged(deploymentId);
     }

@@ -34,10 +34,12 @@ public class MesosAPI {
     private static final String MARATHON_CONTAINER = "docker,mesos";
 
     private String clusterId;
+    private ClusterService clusterService;
     private Environment environment;
 
-    public MesosAPI(String clusterId, Environment environment) {
-        this.clusterId = clusterId;
+    public MesosAPI(ClusterService clusterService, Environment environment) {
+        this.clusterService = clusterService;
+        this.clusterId = clusterService.getClusterId();
         this.environment = environment;
     }
     private int calculateQuorum(int size) {
@@ -45,7 +47,6 @@ public class MesosAPI {
     }
 
     public void configureMesosMasterInstances(String definitionId) throws GarudaException {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             if (topology.getMesosMasterList().size() > 0) {
@@ -117,7 +118,6 @@ public class MesosAPI {
     }
 
     public void configureMesosSlaveInstances(String definitionId) throws GarudaException {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             //

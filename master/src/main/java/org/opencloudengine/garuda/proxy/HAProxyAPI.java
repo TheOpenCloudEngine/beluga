@@ -57,8 +57,11 @@ public class HAProxyAPI {
      */
     private Set<String> deploymentSet;
 
-    public HAProxyAPI(String clusterId, Environment environment) {
-        this.clusterId = clusterId;
+    private ClusterService clusterService;
+
+    public HAProxyAPI(ClusterService clusterService, Environment environment) {
+        this.clusterId = clusterService.getClusterId();
+        this.clusterService = clusterService;
         templateFilePath = environment.filePaths().configPath().file().getAbsolutePath();
         this.proxyUpdateQueue = new ConcurrentLinkedQueue<>();
         this.deploymentSet = new ConcurrentHashSet<>();
@@ -100,7 +103,6 @@ public class HAProxyAPI {
     }
 
     protected void fillTopologyToContext(List<Frontend> frontendList, List<Backend> backendList) {
-        ClusterService clusterService = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId);
         ClusterTopology topology = clusterService.getClusterTopology();
 
         if (topology.getMesosMasterList().size() > 0) {
@@ -151,7 +153,7 @@ public class HAProxyAPI {
     }
 
     protected void fillServiceToContext(List<Frontend> frontendList, List<Backend> backendList) {
-        MarathonAPI marathonAPI = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
+        MarathonAPI marathonAPI = clusterService.getMarathonAPI();
         String appsString = marathonAPI.requestGetAPIasString("/tasks");
 
         JsonNode taskList = JsonUtils.toJsonNode(appsString).get("tasks");
@@ -242,7 +244,7 @@ public class HAProxyAPI {
 
         Set<String> removed = null;
         //marathon에 던져봐서 존재하는지 확인한다.
-        MarathonAPI marathonAPI = ServiceManager.getInstance().getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
+        MarathonAPI marathonAPI = clusterService.getMarathonAPI();
         String deployString = marathonAPI.requestGetAPIasString("/deployments");
         JsonNode deployList = JsonUtils.toJsonNode(deployString);
         Set<String> runningSet = new HashSet<>();

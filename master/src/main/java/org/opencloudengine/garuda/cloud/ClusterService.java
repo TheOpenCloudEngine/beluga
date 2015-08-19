@@ -38,8 +38,8 @@ public class ClusterService extends AbstractClusterService {
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
-        mesosAPI = new MesosAPI(clusterId, environment);
-        marathonAPI = new MarathonAPI(clusterId, environment);
+        mesosAPI = new MesosAPI(this, environment);
+        marathonAPI = new MarathonAPI(this, environment);
         dockerAPI = new DockerAPI(environment);
     }
 
@@ -280,14 +280,13 @@ public class ClusterService extends AbstractClusterService {
         if(clusterTopology.getProxyList().size() == 0) {
             return false;
         }
-        String clusterId = clusterTopology.getClusterId();
         String definitionId = clusterTopology.getDefinitionId();
         String proxyIpAddress = clusterTopology.getProxyList().get(0).getPublicIpAddress();
         ClusterDefinition clusterDefinition = environment.settingManager().getClusterDefinition(definitionId);
         String userId = clusterDefinition.getUserId();
         String keyPairFile = clusterDefinition.getKeyPairFile();
         int timeout = clusterDefinition.getTimeout();
-        haProxyAPI = new HAProxyAPI(clusterId, environment);
+        haProxyAPI = new HAProxyAPI(this, environment);
         final SshInfo sshInfo = new SshInfo().withHost(proxyIpAddress).withUser(userId).withPemFile(keyPairFile).withTimeout(timeout);
         proxyUpdateWorker = new ProxyUpdateWorker(sshInfo);
         proxyUpdateWorker.start();

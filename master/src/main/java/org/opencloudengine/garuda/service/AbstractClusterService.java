@@ -40,8 +40,12 @@ public abstract class AbstractClusterService {
 	public Settings settings(){
 		return settings;
 	}
-	
-	public boolean start() throws ServiceException {
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public boolean start() throws ServiceException {
 
 		if(lifecycle.canMoveToStarted()){
 			if(doStart()){
