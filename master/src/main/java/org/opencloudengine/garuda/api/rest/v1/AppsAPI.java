@@ -217,7 +217,7 @@ public class AppsAPI extends BaseAPI {
             return Response.ok(actionStatus).build();
         } catch (Throwable t) {
             logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+            throw t;
         }
     }
 
