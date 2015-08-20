@@ -6,6 +6,7 @@ import org.opencloudengine.garuda.action.ActionException;
 import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
+import org.opencloudengine.garuda.action.webapp.WebAppContextFile;
 import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
@@ -188,7 +189,10 @@ public class AppsAPI extends BaseAPI {
         try {
             Integer port = (Integer) data.get("port");
 
-            String webAppFile = (String) data.get("file");
+            String webAppContext1 = (String) data.get("context1");
+            String webAppFile1 = (String) data.get("file1");
+            String webAppContext2 = (String) data.get("context2");
+            String webAppFile2 = (String) data.get("file2");
             String webAppType = (String) data.get("type");
             Float cpus = null;
             if (data.get("cpus") != null) {
@@ -200,7 +204,15 @@ public class AppsAPI extends BaseAPI {
             }
             Integer scale = (Integer) data.get("scale");
 
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFile, webAppType, port, cpus, memory, scale, isUpdate);
+            List<WebAppContextFile> webAppFileList = new ArrayList<>();
+
+            if(webAppContext1 != null && webAppFile1 != null) {
+                webAppFileList.add(new WebAppContextFile(webAppContext1, webAppFile1));
+            }
+            if(webAppContext2 != null && webAppFile2 != null) {
+                webAppFileList.add(new WebAppContextFile(webAppContext2, webAppFile2));
+            }
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFileList, webAppType, port, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
@@ -209,7 +221,6 @@ public class AppsAPI extends BaseAPI {
                 Map<String, Object> entity = parseMarathonResponse((Response) result);
                 notifyDeployment(clusterId, entity);
             } else if(result instanceof Exception) {
-//                throw (Exception) result;
                 return Response.status(500).entity(((Exception)result).getMessage()).build();
             }
             return Response.ok().build();

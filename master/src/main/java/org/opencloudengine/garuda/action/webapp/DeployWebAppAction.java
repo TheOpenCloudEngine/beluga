@@ -37,7 +37,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         DeployWebAppActionRequest request = getActionRequest();
         String clusterId = request.getClusterId();
         String appId = request.getAppId();
-        String webAppFile = request.getWebAppFile();
+        List<WebAppContextFile> webAppFileList = request.getWebAppFileList();
         String webAppType = request.getWebAppType();
         //
         //for marathon
@@ -62,16 +62,16 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         }
 
         DockerAPI dockerAPI = clusterService.getDockerAPI();
-        boolean needImageBuild = webAppFile != null && webAppFile != null;
+        boolean needImageBuild = webAppFileList != null && webAppFileList.size() > 0;
         /*
         * 1. Build Image
         * */
         String imageName = registryAddress + "/" + appId;
         status.walkStep();
         if(needImageBuild) {
-            int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFile, memory);
+            int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFileList, memory);
             if(exitValue != 0) {
-                throw new GarudaException(String.format("Error while build docker image : %s, %s, %s", imageName, webAppType, webAppFile));
+                throw new GarudaException(String.format("Error while build docker image : %s, %s", imageName, webAppType));
             }
         }
 

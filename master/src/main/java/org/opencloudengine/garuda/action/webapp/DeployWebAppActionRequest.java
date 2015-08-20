@@ -3,6 +3,8 @@ package org.opencloudengine.garuda.action.webapp;
 import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.RunnableAction;
 
+import java.util.List;
+
 /**
  * Created by swsong on 2015. 8. 6..
  */
@@ -10,7 +12,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     private String clusterId;
     private String appId;
-    private String webAppFile;
+    private List<WebAppContextFile> webAppFileList;
     private String webAppType;
     private Integer port;
     private Float cpus;
@@ -19,10 +21,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Boolean isUpdate;
 
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
         this.clusterId = clusterId;
         this.appId = appId;
-        this.webAppFile = webAppFile;
+        this.webAppFileList = webAppFileList;
         this.webAppType = webAppType;
         this.port = port;
         this.cpus = cpus;
@@ -31,10 +33,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
         isUpdate = false;
     }
 
-    public DeployWebAppActionRequest(String clusterId, String appId, String webAppFile, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
+    public DeployWebAppActionRequest(String clusterId, String appId, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
-        this.webAppFile = webAppFile;
+        this.webAppFileList = webAppFileList;
         this.webAppType = webAppType;
         this.port = port;
         this.cpus = cpus;
@@ -51,8 +53,8 @@ public class DeployWebAppActionRequest extends ActionRequest {
         return appId;
     }
 
-    public String getWebAppFile() {
-        return webAppFile;
+    public List<WebAppContextFile> getWebAppFileList() {
+        return webAppFileList;
     }
 
     public String getWebAppType() {
