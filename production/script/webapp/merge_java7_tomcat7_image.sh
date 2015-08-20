@@ -29,8 +29,9 @@ cd $temp_dir
 cp $war_file ./app.war
 
 echo FROM "$base_image" > Dockerfile
-echo COPY app.war /root/wildfly/standalone/deployments/ROOT.war >> Dockerfile
-echo ENV JAVA_OPTS -Xms64m -Xmx${jvm_xmx}m -XX:MaxPermSize=${jvm_perm_size}m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true >> Dockerfile
+echo RUN rm -rf /usr/local/tomcat/webapps/ROOT >> Dockerfile
+echo COPY app.war /usr/local/tomcat/webapps/ROOT.war >> Dockerfile
+echo ENV CATALINA_OPTS -server -Xms64m -Xmx${jvm_xmx}m -XX:MaxPermSize=${jvm_perm_size}m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true >> Dockerfile
 docker build -t "$image_name" .
 
 push_result=$?
