@@ -79,7 +79,7 @@ public class HAProxyAPI {
      * Deploy 과정을 거치므로, 즉시 업데이트 하지 않고 deploymentSet 에 넣어둔뒤, 사라지는지 확인한다.
      * */
     public void notifyServiceChanged(String deploymentsId) {
-        logger.debug("Proxy notified Service Changed : {}", clusterId);
+        logger.debug("Proxy notified Service Changed : {} > {}", clusterId, deploymentsId);
         deploymentSet.add(deploymentsId);
     }
 
@@ -210,6 +210,9 @@ public class HAProxyAPI {
         Path tempDirPath = SettingManager.getInstance().getEnvironment().filePaths().path(tempDir);
 
         int sizeToRemove = proxyUpdateQueue.size();
+        if(sizeToRemove > 0) {
+            logger.debug("Found update! proxyUpdateQueue size >> {}", sizeToRemove);
+        }
         String configString = null;
         for (int i = 0; i < sizeToRemove; i++) {
             configString = proxyUpdateQueue.poll();

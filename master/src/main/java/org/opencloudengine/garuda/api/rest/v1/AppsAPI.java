@@ -3,11 +3,13 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionException;
+import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.common.util.JsonUtils;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.exception.GarudaException;
+import org.opencloudengine.garuda.proxy.HAProxyAPI;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -164,12 +166,17 @@ public class AppsAPI extends BaseAPI {
             } else {
                 response = marathonAPI(clusterId).updateCommandApp(appId, command, ports, cpus, memory, scale);
             }
-            String deploymentsId = getDeploymentId(response);
-            if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                //OK
+            } else if(response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {
+                throw new ActionException("App is already running.");
+            } else {
+                throw new ActionException("error while deploy to marathon : [" + response.getStatus() + "] " + response.getStatusInfo());
             }
-            return response;
 
+            Map<String, Object> entity = parseMarathonResponse(response);
+            notifyDeployment(clusterId, entity);
+            return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -198,23 +205,14 @@ public class AppsAPI extends BaseAPI {
             actionStatus.waitForDone();
 
             Object result = actionStatus.getResult();
-
             if(result instanceof Response) {
-
-                Response response = (Response) result;
-                String deploymentsId = getDeploymentId(response);
-                if(deploymentsId != null) {
-                    clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-                    //deploy가 성공했다면 haproxy를 갱신한다.
-                    if (actionStatus.getError() != null) {
-                        clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-                    }
-                }
-                return response;
-            } else if(result instanceof ActionException) {
-                throw (ActionException) result;
+                Map<String, Object> entity = parseMarathonResponse((Response) result);
+                notifyDeployment(clusterId, entity);
+            } else if(result instanceof Exception) {
+//                throw (Exception) result;
+                return Response.status(500).entity(((Exception)result).getMessage()).build();
             }
-            return Response.ok(actionStatus).build();
+            return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
             throw t;
@@ -229,11 +227,9 @@ public class AppsAPI extends BaseAPI {
         Response response = null;
         try {
             response = marathonAPI(clusterId).requestPostAPI("/apps/" + appId + "/restart", null);
-            String deploymentsId = getDeploymentId(response);
-            if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-            }
-            return response;
+            Map<String, Object> entity = parseMarathonResponse(response);
+            notifyDeployment(clusterId, entity);
+            return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -248,11 +244,8 @@ public class AppsAPI extends BaseAPI {
         try {
             // 삭제되었으면 haproxy에서 지워준다.
             response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId);
-            String deploymentsId = getDeploymentId(response);
-            if(deploymentsId != null) {
-                clusterService(clusterId).getProxyAPI().notifyServiceChanged(deploymentsId);
-                //unload haproxy worker
-            }
+            Map<String, Object> entity = parseMarathonResponse(response);
+            notifyDeployment(clusterId, entity);
             return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -260,16 +253,28 @@ public class AppsAPI extends BaseAPI {
         }
     }
 
-    private String getDeploymentId(Response response){
+    private Map<String, Object> parseMarathonResponse(Response response) {
         if(response == null) {
             return null;
         }
-        String entity = response.readEntity(String.class);
-        if(entity == null) {
+        String json = response.readEntity(String.class);
+        if(json == null) {
             return null;
         }
-        Map<String, Object> map = JsonUtils.unmarshal(entity);
-        return (String) map.get("deploymentId");
+        return JsonUtils.unmarshal(json);
+    }
+
+    private void notifyDeployment(String clusterId, Map<String, Object> entity){
+        if(entity == null) {
+            return;
+        }
+        List<Map<String, Object>> deployments = (List<Map<String, Object>>) entity.get("deployments");
+        if(deployments != null) {
+            HAProxyAPI haProxyAPI = clusterService(clusterId).getProxyAPI();
+            for (Map<String, Object> deployment : deployments) {
+                haProxyAPI.notifyServiceChanged((String) deployment.get("id"));
+            }
+        }
     }
 
 }

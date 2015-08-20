@@ -10,10 +10,15 @@ import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.mesos.MesosAPI;
 import org.opencloudengine.garuda.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.mesos.marathon.MarathonAPI;
+import org.opencloudengine.garuda.mesos.marathon.model.App;
+import org.opencloudengine.garuda.mesos.marathon.model.Deployment;
+import org.opencloudengine.garuda.proxy.HAProxyAPI;
+import org.opencloudengine.garuda.utils.JsonUtil;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 8. 6..
@@ -56,7 +61,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             throw new GarudaException("No registry instance in " + clusterId);
         }
 
-        DockerAPI dockerAPI = serviceManager.getService(ClustersService.class).getClusterService(clusterId).getDockerAPI();
+        DockerAPI dockerAPI = clusterService.getDockerAPI();
         boolean needImageBuild = webAppFile != null && webAppFile != null;
         /*
         * 1. Build Image
@@ -92,7 +97,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
             usedPort = new ArrayList<>();
             usedPort.add(port);
         }
-        MarathonAPI marathonAPI = serviceManager.getService(ClustersService.class).getClusterService(clusterId).getMarathonAPI();
+        MarathonAPI marathonAPI = clusterService.getMarathonAPI();
         Response response = null;
         if(isUpdate) {
             response = marathonAPI.updateDockerApp(appId, imageName, usedPort, cpus, memory, scale);

@@ -24,7 +24,8 @@ import java.util.Properties;
 * Created by swsong on 2015. 7. 20..
 */
 public class ClusterService extends AbstractClusterService {
-    private static final long CHECK_PERIOD = 5000;
+    private static final long PROXY_CHECK_PERIOD = 500;
+    private static final long DEPLOY_CHECK_PERIOD = 5000;
     private IaasProviderConfig iaasProviderConfig;
     private ClusterTopology clusterTopology;
 
@@ -377,14 +378,15 @@ public class ClusterService extends AbstractClusterService {
         }
         @Override
         public void run() {
+            logger.info("Start ProxyUpdateWorker.");
             while (!this.isInterrupted()) {
                 try {
                     haProxyAPI.applyProxyConfig(sshInfo);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("", e);
                 }
                 try {
-                    Thread.sleep(CHECK_PERIOD);
+                    Thread.sleep(PROXY_CHECK_PERIOD);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -394,6 +396,7 @@ public class ClusterService extends AbstractClusterService {
     class DeploymentsCheckWorker extends Thread {
         @Override
         public void run() {
+            logger.info("Start DeploymentsCheckWorker.");
             while (!this.isInterrupted()) {
                 try {
                     haProxyAPI.checkDeploymentsAndApply();
@@ -401,7 +404,7 @@ public class ClusterService extends AbstractClusterService {
                     logger.error("", e);
                 }
                 try {
-                    Thread.sleep(CHECK_PERIOD);
+                    Thread.sleep(DEPLOY_CHECK_PERIOD);
                 } catch (InterruptedException ignore) {
                 }
             }
