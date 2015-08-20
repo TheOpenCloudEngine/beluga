@@ -11,7 +11,7 @@ fi
 
 registry_address="$1:5000"
 
-for image_name in java7_wildfly8.2 php5_apache2
+for image_name in java7_tomcat7
 do
     docker build -t $registry_address/$image_name -f dockerfile/$image_name dockerfile/ && docker push $registry_address/$image_name
 done
