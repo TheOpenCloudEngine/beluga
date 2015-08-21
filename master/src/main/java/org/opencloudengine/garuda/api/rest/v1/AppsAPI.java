@@ -187,10 +187,13 @@ public class AppsAPI extends BaseAPI {
 
     private Response deployOrUpdateApp(String clusterId, String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
         try {
-            Integer port = (Integer) data.get("port");
-
-            String webAppContext1 = (String) data.get("context1");
-            String webAppFile1 = (String) data.get("file1");
+//            Integer port = (Integer) data.get("port");
+            /*
+             * Webapp의 port는 app이 정할 수 있는것이 아니므로 environment에 정해져 있는 포트를 연다.
+             */
+            Integer port = null;
+            String webAppContext = (String) data.get("context");
+            String webAppFile = (String) data.get("file");
             String webAppContext2 = (String) data.get("context2");
             String webAppFile2 = (String) data.get("file2");
             String webAppType = (String) data.get("type");
@@ -206,11 +209,11 @@ public class AppsAPI extends BaseAPI {
 
             List<WebAppContextFile> webAppFileList = new ArrayList<>();
 
-            if(webAppContext1 != null && webAppFile1 != null) {
-                webAppFileList.add(new WebAppContextFile(webAppContext1, webAppFile1));
+            if(webAppContext != null && webAppFile != null) {
+                webAppFileList.add(new WebAppContextFile(webAppFile, webAppContext));
             }
             if(webAppContext2 != null && webAppFile2 != null) {
-                webAppFileList.add(new WebAppContextFile(webAppContext2, webAppFile2));
+                webAppFileList.add(new WebAppContextFile(webAppFile2, webAppContext2));
             }
             DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFileList, webAppType, port, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);

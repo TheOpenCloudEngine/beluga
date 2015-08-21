@@ -4,11 +4,13 @@
 # @author : Sang Wook, Song
 #
 
-if [ $# -ne 3 ] ; then
+if [ $# -lt 4 ] ; then
     echo "Usage: $0 <image_name> <memory_size_MB> <war_file1> <context1> [<war_file2> <context2>]"
     echo "Sample: $0 192.168.0.10/java-calendar 300 Calendar.war /"
     exit 1
 fi
+
+echo Command : $0 "$@"
 
 base_image=fastcat/java7_tomcat7
 work_dir="/tmp"
@@ -62,6 +64,7 @@ do
 	echo COPY app${i}.war /usr/local/tomcat/webapps/${context}.war >> Dockerfile
 done
 
+echo docker build -t "$image_name" .
 docker build -t "$image_name" .
 
 push_result=$?
@@ -72,3 +75,5 @@ rm -rf $temp_dir
 if [ $push_result -ne 0 ]; then
     exit 1
 fi
+
+echo SUCCESS $0

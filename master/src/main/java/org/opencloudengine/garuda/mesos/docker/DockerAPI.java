@@ -48,6 +48,7 @@ public class DockerAPI {
         PumpStreamHandler streamHandler = new PumpStreamHandler(outLog, errLog, null);
         executor.setStreamHandler(streamHandler);
         executor.setExitValue(0);
+        logger.debug("Command : {}", cmdLine);
         int exitValue = executor.execute(cmdLine);
         logger.info("Build docker images process exit with {}", exitValue);
         return exitValue;
