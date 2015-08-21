@@ -19,6 +19,8 @@ public class Docker {
 
 	@JsonProperty("image")
 	private String image;
+    // docker pull 을 수행하여 최신 이미지로 시작한다.
+    private Boolean forcePullImage;
 	@JsonProperty("network")
 	private String network;
 	@JsonProperty("portMappings")
@@ -28,8 +30,6 @@ public class Docker {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	@JsonProperty("parameters")
 	private List<Parameter> parameters;
-	@JsonIgnore
-	private Map<String, Object> additionalProperties;
 
 	/**
 	 * @return The image
@@ -47,7 +47,15 @@ public class Docker {
 		this.image = image;
 	}
 
-	/**
+    public Boolean getForcePullImage() {
+        return forcePullImage;
+    }
+
+    public void setForcePullImage(Boolean forcePullImage) {
+        this.forcePullImage = forcePullImage;
+    }
+
+    /**
 	 * @return The network
 	 */
 	@JsonProperty("network")
@@ -111,14 +119,5 @@ public class Docker {
 		this.parameters = parameters;
 	}
 
-	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-
-	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
-	}
 
 }

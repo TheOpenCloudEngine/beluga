@@ -92,6 +92,7 @@ public class MarathonAPI {
         if(imageName != null) {
             Docker docker = new Docker();
             docker.setImage(imageName);
+            docker.setForcePullImage(true);
             docker.setNetwork("BRIDGE");
             docker.setPrivileged(true);
             docker.setPortMappings(portMappings);
