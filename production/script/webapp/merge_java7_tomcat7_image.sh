@@ -4,13 +4,13 @@
 # @author : Sang Wook, Song
 #
 
+echo Command : $0 "$@"
+
 if [ $# -lt 4 ] ; then
     echo "Usage: $0 <image_name> <memory_size_MB> <war_file1> <context1> [<war_file2> <context2>]"
     echo "Sample: $0 192.168.0.10/java-calendar 300 Calendar.war /"
     exit 1
 fi
-
-echo Command : $0 "$@"
 
 base_image=fastcat/java7_tomcat7
 work_dir="/tmp"
