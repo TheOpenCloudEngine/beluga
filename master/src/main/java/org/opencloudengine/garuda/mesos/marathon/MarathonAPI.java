@@ -2,10 +2,8 @@ package org.opencloudengine.garuda.mesos.marathon;
 
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
-import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.mesos.marathon.model.*;
-import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +73,14 @@ public class MarathonAPI {
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
+
+//    public Response scaleApp(String appId, Integer scale) {
+//        App appScaleRequest = new App();
+//        appScaleRequest.setId(appId);
+//        appScaleRequest.setInstances(scale);
+//        WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
+//        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appScaleRequest));
+//    }
 
     private App createDockerTypeApp(String imageId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         List<PortMapping> portMappings = null;

@@ -3,7 +3,6 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.action.ActionException;
-import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.action.webapp.WebAppContextFile;
@@ -126,6 +125,14 @@ public class AppsAPI extends BaseAPI {
         }
         return deployOrUpdateApp(clusterId, appId, data, false);
     }
+
+//    @PUT
+//    @Path("/{id}")
+//    public Response scaleApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
+//        Integer scale = (Integer) data.get("scale");
+//        Response response = marathonAPI(clusterId).scaleApp(appId, scale);
+//        return deployOrUpdateApp(clusterId, appId, data, true);
+//    }
 
     /**
      * 변경된 설정으로 앱을 재시작한다.
@@ -288,6 +295,12 @@ public class AppsAPI extends BaseAPI {
             for (Map<String, Object> deployment : deployments) {
                 haProxyAPI.notifyServiceChanged((String) deployment.get("id"));
             }
+        }
+
+        String deploymentId = (String) entity.get("deploymentId");
+        if(deploymentId != null) {
+            HAProxyAPI haProxyAPI = clusterService(clusterId).getProxyAPI();
+            haProxyAPI.notifyServiceChanged(deploymentId);
         }
     }
 
