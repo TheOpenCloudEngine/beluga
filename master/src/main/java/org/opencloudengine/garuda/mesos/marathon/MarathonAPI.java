@@ -61,14 +61,14 @@ public class MarathonAPI {
     }
 
     public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, getDefaultUpgradeStrategy());
 
         WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
     public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale);
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, null);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
@@ -82,7 +82,7 @@ public class MarathonAPI {
 //        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appScaleRequest));
 //    }
 
-    private App createDockerTypeApp(String imageId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    private App createDockerTypeApp(String imageId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, UpgradeStrategy upgradeStrategy) {
         List<PortMapping> portMappings = null;
         if(usedPorts != null) {
             portMappings = new ArrayList<>();
@@ -95,7 +95,7 @@ public class MarathonAPI {
             }
         }
         Container container = null;
-        if(imageName != null) {
+        if(imageName != null && portMappings != null) {
             Docker docker = new Docker();
             docker.setImage(imageName);
             docker.setForcePullImage(true);
@@ -113,7 +113,7 @@ public class MarathonAPI {
         app.setInstances(scale);
         app.setCpus(cpus);
         app.setMem(memory);
-        app.setUpgradeStrategy(getDefaultUpgradeStrategy());
+        app.setUpgradeStrategy(upgradeStrategy);
         return app;
     }
 

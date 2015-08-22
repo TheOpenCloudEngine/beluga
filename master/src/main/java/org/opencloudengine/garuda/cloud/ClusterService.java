@@ -25,7 +25,7 @@ import java.util.Properties;
 */
 public class ClusterService extends AbstractClusterService {
     private static final long PROXY_CHECK_PERIOD = 500;
-    private static final long DEPLOY_CHECK_PERIOD = 5000;
+    private static final long DEPLOY_CHECK_PERIOD = 500;
     private IaasProviderConfig iaasProviderConfig;
     private ClusterTopology clusterTopology;
 

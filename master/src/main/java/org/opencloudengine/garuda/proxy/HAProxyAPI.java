@@ -245,6 +245,10 @@ public class HAProxyAPI {
     }
     public void checkDeploymentsAndApply() {
 
+        //살펴볼 deploymentSet 이 없으면 체크하지 않는다.
+        if(deploymentSet.size() == 0) {
+            return;
+        }
         Set<String> removed = null;
         //marathon에 던져봐서 존재하는지 확인한다.
         MarathonAPI marathonAPI = clusterService.getMarathonAPI();
