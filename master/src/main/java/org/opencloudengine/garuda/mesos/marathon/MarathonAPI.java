@@ -114,6 +114,9 @@ public class MarathonAPI {
         app.setCpus(cpus);
         app.setMem(memory);
         app.setUpgradeStrategy(upgradeStrategy);
+        app.setBackoffSeconds(1);
+        app.setBackoffFactor(1.15f);
+        app.setMaxLaunchDelaySeconds(5 * 60); //5분안에 떠야한다.
         return app;
     }
 
@@ -140,6 +143,9 @@ public class MarathonAPI {
         app.setMem(memory);
         app.setPorts(usedPorts);
         app.setUpgradeStrategy(getDefaultUpgradeStrategy());
+        app.setBackoffSeconds(1);
+        app.setBackoffFactor(1.15f);
+        app.setMaxLaunchDelaySeconds(5 * 60); //5분안에 떠야한다.
         return app;
     }
 
@@ -149,8 +155,8 @@ public class MarathonAPI {
         // 즉, 새로운 앱으로 재시작될때, 최소 1/2은 살아있는 상태를 유지. Rolling 과정에서 총갯수의 0.2정도는 초과해서 컨테이너가 생길수 있다.
         // scale이 5개라면 1개정도는 작업과정에서 잠깐 초과될수 있음.
         UpgradeStrategy upgradeStrategy = new UpgradeStrategy();
-        upgradeStrategy.setMinimumHealthCapacity(0.5f);
-        upgradeStrategy.setMaximumOverCapacity(0.2f);
+        upgradeStrategy.setMinimumHealthCapacity(1.0f);
+        upgradeStrategy.setMaximumOverCapacity(0.0f);
         return upgradeStrategy;
     }
     /*

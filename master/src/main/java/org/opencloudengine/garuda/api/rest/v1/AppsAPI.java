@@ -199,6 +199,7 @@ public class AppsAPI extends BaseAPI {
              * Webapp의 port는 app이 정할 수 있는것이 아니므로 environment에 정해져 있는 포트를 연다.
              */
             Integer port = null;
+            Integer revision = (Integer) data.get("revision");
             String webAppContext = (String) data.get("context");
             String webAppFile = (String) data.get("file");
             String webAppContext2 = (String) data.get("context2");
@@ -222,7 +223,7 @@ public class AppsAPI extends BaseAPI {
             if(webAppContext2 != null && webAppFile2 != null) {
                 webAppFileList.add(new WebAppContextFile(webAppFile2, webAppContext2));
             }
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, webAppFileList, webAppType, port, cpus, memory, scale, isUpdate);
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 

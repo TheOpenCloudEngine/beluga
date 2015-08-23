@@ -37,6 +37,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         DeployWebAppActionRequest request = getActionRequest();
         String clusterId = request.getClusterId();
         String appId = request.getAppId();
+        Integer revision = request.getRevision();
         List<WebAppContextFile> webAppFileList = request.getWebAppFileList();
         String webAppType = request.getWebAppType();
         //
@@ -66,7 +67,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         /*
         * 1. Build Image
         * */
-        String imageName = registryAddress + "/" + appId;
+        String imageName = registryAddress + "/" + appId + ":" + (revision != null ? revision : "latest");
         status.walkStep();
         if(needImageBuild) {
             int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFileList, memory);

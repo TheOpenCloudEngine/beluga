@@ -12,6 +12,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     private String clusterId;
     private String appId;
+    private Integer revision;
     private List<WebAppContextFile> webAppFileList;
     private String webAppType;
     private Integer port;
@@ -21,9 +22,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Boolean isUpdate;
 
 
-    public DeployWebAppActionRequest(String clusterId, String appId, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
         this.clusterId = clusterId;
         this.appId = appId;
+        this.revision = revision;
         this.webAppFileList = webAppFileList;
         this.webAppType = webAppType;
         this.port = port;
@@ -33,9 +35,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
         isUpdate = false;
     }
 
-    public DeployWebAppActionRequest(String clusterId, String appId, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
+        this.revision = revision;
         this.webAppFileList = webAppFileList;
         this.webAppType = webAppType;
         this.port = port;
@@ -51,6 +54,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     public String getAppId() {
         return appId;
+    }
+
+    public Integer getRevision() {
+        return revision;
     }
 
     public List<WebAppContextFile> getWebAppFileList() {
