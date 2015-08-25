@@ -1,5 +1,7 @@
 package org.opencloudengine.garuda.settings;
 
+import org.opencloudengine.garuda.cloud.IaasSpec;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Properties;
  */
 public class ClusterDefinition extends PropertyConfig {
 
+    private String id;
     private String iaasProfile;
     private int timeout;
     private String userId;
@@ -17,13 +20,20 @@ public class ClusterDefinition extends PropertyConfig {
     private String keyPairFile;
     private List<Group> groupList;
     private List<RoleDefinition> roleList;
+    private String providerType;
 
-    public ClusterDefinition(File f) {
+    public ClusterDefinition(String id, File f) {
         super(f);
+        this.id = id;
     }
 
-    public ClusterDefinition(Properties p) {
+    public ClusterDefinition(String id, Properties p) {
         super(p);
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public AccessInfo getAccessInfo() {
@@ -62,6 +72,13 @@ public class ClusterDefinition extends PropertyConfig {
         return timeout;
     }
 
+    public String getProviderType() {
+        return providerType;
+    }
+
+    public void setProviderType(String providerType) {
+        this.providerType = providerType;
+    }
 
     @Override
     protected void init(Properties p) {
@@ -181,6 +198,7 @@ public class ClusterDefinition extends PropertyConfig {
         private String role;
         private String imageId;
         private String instanceType;
+        private IaasSpec iaasSpec;
         private int diskSize;
         private String group;
         private int defaultSize;
@@ -216,6 +234,14 @@ public class ClusterDefinition extends PropertyConfig {
 
         public int getDefaultSize() {
             return defaultSize;
+        }
+
+        public IaasSpec getIaasSpec() {
+            return iaasSpec;
+        }
+
+        public void setIaasSpec(IaasSpec iaasSpec) {
+            this.iaasSpec = iaasSpec;
         }
     }
 }

@@ -29,7 +29,10 @@
         <div class="navbar-collapse collapse" id="navbar-main">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="/a/cluster" class="current">Cluster</a>
+                    <a href="/" class="<%="home".equals(menuId) ? "current" : ""%>" >Home</a>
+                </li>
+                <li>
+                    <a href="/clusters/${_clusterId}" class="<%="cluster".equals(menuId) ? "current" : ""%>" >Cluster</a>
                 </li>
                 <li>
                     <a href="http://master.fastcatsearch.com:8080" target="_pop_marathon_admin">Apps</a>
@@ -43,16 +46,19 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <%--<li class="dropdown">--%>
-                    <%--<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">개발클러스터 <span class="caret"></span></a>--%>
-                    <%--<ul class="dropdown-menu" aria-labelledby="themes">--%>
-                        <%--<li><a href="#">개발클러스터</a></li>--%>
-                        <%--<li><a href="#">운영클러스터</a></li>--%>
-                        <%--<li class="divider"></li>--%>
-                        <%--<li><a href="/login">New Cluster</a></li>--%>
-                    <%--</ul>--%>
-                <%--</li>--%>
-                <li><a href="/a/settings"><i class="glyphicon glyphicon-cog"></i></a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">${_clusterId} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" aria-labelledby="themes">
+                        <c:forEach var="clusterId" items="${_clusterIdSet}">
+                            <li><a href="/clusters/${clusterId}">${clusterId}</a></li>
+                        </c:forEach>
+                        <c:if test="${not empty _clusterIdSet}">
+                            <li class="divider"></li>
+                        </c:if>
+                        <li><a href="/clusters/new">New Cluster</a></li>
+                    </ul>
+                </li>
+                <%--<li><a href="/settings"><i class="glyphicon glyphicon-cog"></i></a></li>--%>
             </ul>
 
         </div>

@@ -194,3 +194,7 @@ input.error { border-color: #dd4b39  !important; }
 .mleft-10 {margin-left : 10px}
 .maybe-hide {display:none;}
 .simple-file-btn {color: transparent;}
+
+.clickable {cursor:pointer;}
+
+.left-dl dl dt {text-align: left;}

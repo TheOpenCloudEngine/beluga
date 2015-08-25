@@ -115,7 +115,7 @@ public class SettingManager {
     }
 
     public ClusterDefinition getClusterDefinition(String definitionId) {
-        return new ClusterDefinition(getSettings(SettingFileNames.clusterDefinition, definitionId).properties());
+        return new ClusterDefinition(definitionId, getSettings(SettingFileNames.clusterDefinition, definitionId).properties());
     }
 
     public IaasProviderConfig getIaasProviderConfig() {

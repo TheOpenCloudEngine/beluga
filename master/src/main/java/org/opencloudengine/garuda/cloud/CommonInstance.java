@@ -1,7 +1,11 @@
 package org.opencloudengine.garuda.cloud;
 
+import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by swsong on 2015. 8. 3..
@@ -14,6 +18,10 @@ public class CommonInstance {
     private String privateIpAddress;
     private String state;
     private Object instance;
+
+    private String instanceType;
+    private List<String> groupList;
+    private IaasSpec iaasSpec;
 
     public CommonInstance(String instanceId) {
         this.instanceId = instanceId;
@@ -37,6 +45,13 @@ public class CommonInstance {
                 }
             }
             state = i.getState().getName();
+
+            instanceType = i.getInstanceType();
+            iaasSpec = IaasSpec.getSpec(IaasSpec.EC2_TYPE, instanceType);
+            groupList = new ArrayList<>();
+            for(GroupIdentifier id : i.getSecurityGroups()) {
+                groupList.add(id.getGroupName());
+            }
         }
         this.instance = instance;
     }
@@ -63,6 +78,18 @@ public class CommonInstance {
 
     public String getState() {
         return state;
+    }
+
+    public String getInstanceType() {
+        return instanceType;
+    }
+
+    public List<String> getGroupList() {
+        return groupList;
+    }
+
+    public IaasSpec getIaasSpec() {
+        return iaasSpec;
     }
 
     @Override

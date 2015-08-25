@@ -1,5 +1,8 @@
 package org.opencloudengine.garuda.console.controller;
 
+import org.opencloudengine.garuda.cloud.ClusterService;
+import org.opencloudengine.garuda.cloud.ClustersService;
+import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -8,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Created by swsong on 2015. 5. 11..
@@ -23,6 +27,17 @@ public class AuthMainInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession(true);
 
+        ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
+        Set<String> clusterIdSet = clustersService.getClusterIdSet();
+        request.setAttribute("_clusterIdSet", clusterIdSet);
+
+        String clusterId = (String) session.getAttribute("_clusterId");
+        if(clusterId == null) {
+            if(clusterIdSet.size() > 0) {
+                clusterId = clusterIdSet.iterator().next();
+                session.setAttribute("_clusterId", clusterId);
+            }
+        }
 //        User user = (User) session.getAttribute(User.USER_KEY);
 //
 //        if(user == null) {

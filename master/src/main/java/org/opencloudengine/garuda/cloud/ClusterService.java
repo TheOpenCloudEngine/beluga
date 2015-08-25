@@ -16,7 +16,6 @@ import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.utils.SshInfo;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,6 +35,8 @@ public class ClusterService extends AbstractClusterService {
     private ProxyUpdateWorker proxyUpdateWorker;
     private DeploymentsCheckWorker deploymentsCheckWorker;
 
+    private String domainName;
+
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
@@ -53,7 +54,13 @@ public class ClusterService extends AbstractClusterService {
     // instance의 start,stop은 달리 처리되야 한다.
 
 
+    public String getDomainName() {
+        return domainName;
+    }
 
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
 
     @Override
     protected boolean doStart() throws ServiceException {
@@ -351,6 +358,15 @@ public class ClusterService extends AbstractClusterService {
         environment.settingManager().deleteClusterTopology(clusterId);
     }
 
+    public IaasProvider getIaasProvider() {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        return iaasProviderConfig.getIaasProvider(iaasProfile);
+    }
+
+    public ClusterDefinition getClusterDefinition() {
+        String definitionId = clusterTopology.getDefinitionId();
+        return environment.settingManager().getClusterDefinition(definitionId);
+    }
     public ClusterTopology getClusterTopology() {
         return clusterTopology;
     }

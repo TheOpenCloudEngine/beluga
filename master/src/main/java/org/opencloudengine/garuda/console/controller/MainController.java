@@ -1,5 +1,8 @@
 package org.opencloudengine.garuda.console.controller;
 
+import org.opencloudengine.garuda.cloud.ClusterTopology;
+import org.opencloudengine.garuda.cloud.ClustersService;
+import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collection;
 
 /**
  * Created by swsong on 2015. 5. 11..
@@ -15,10 +19,13 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/")
 public class MainController {
 
-    @RequestMapping(value = { "", "/", "/index" }, method = RequestMethod.GET)
-    public ModelAndView index() throws Exception {
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ModelAndView clusters() throws Exception {
+        ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
+        Collection<ClusterTopology> topologyList = clustersService.getAllClusterTopology();
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("redirect:/cluster");
+        mav.addObject("topologyList", topologyList);
+        mav.setViewName("index");
         return mav;
     }
 

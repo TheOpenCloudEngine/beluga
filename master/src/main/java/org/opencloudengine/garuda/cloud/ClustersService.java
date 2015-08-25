@@ -24,8 +24,10 @@ public class ClustersService extends AbstractService {
     private IaasProviderConfig iaasProviderConfig;
 
     private static final String CLUSTERS_KEY = "clusters";
+    private static final String DEFINITIONS_KEY = "defines";
 
     private Map<String, ClusterService> clusterMap;
+    private Map<String, ClusterDefinition> definitionMap;
 
     public ClustersService(Environment environment, Settings settings, ServiceManager serviceManager) {
         super(environment, settings, serviceManager);
@@ -36,6 +38,7 @@ public class ClustersService extends AbstractService {
 
         iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
         clusterMap = new ConcurrentHashMap<>();
+        definitionMap = new ConcurrentHashMap<>();
 
         SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
@@ -51,7 +54,10 @@ public class ClustersService extends AbstractService {
                 }
             }
         }
-
+        String[] defineList = this.settings.getStringArray(DEFINITIONS_KEY);
+        for(String definitionId : defineList) {
+            definitionMap.put(definitionId, settingManager.getClusterDefinition(definitionId));
+        }
         return true;
     }
 
@@ -70,6 +76,9 @@ public class ClustersService extends AbstractService {
         return true;
     }
 
+    public Set<String> getClusterIdSet() {
+        return clusterMap.keySet();
+    }
     public ClusterService getClusterService(String clusterId) {
         return clusterMap.get(clusterId);
     }
@@ -157,5 +166,9 @@ public class ClustersService extends AbstractService {
             topologies.add(clusterService.getClusterTopology());
         }
         return topologies;
+    }
+
+    public Collection<ClusterDefinition> getDefinitions(){
+        return definitionMap.values();
     }
 }
