@@ -1,0 +1,197 @@
+html{
+    height: 100%;
+}
+body {
+    margin:0px;
+}
+
+legend { border: 0 }
+.login
+{
+    background-image: radial-gradient(center bottom, ellipse cover, #70D3FF, #144F76);
+    background-image: -o-radial-gradient(center bottom, ellipse cover, #70D3FF, #144F76);
+    background-image: -ms-radial-gradient(center bottom, ellipse cover, #70D3FF, #144F76);
+    background-image: -moz-radial-gradient(center bottom, ellipse cover, #70D3FF, #144F76);
+    background-image: -webkit-radial-gradient(center bottom, ellipse cover, #70D3FF, #144F76);
+
+    font-family:"proxima-nova";
+    padding:0
+}
+.login *
+{
+    box-sizing:border-box
+}
+.login br.only-mobile
+{
+    display:none
+}
+.login .logo
+{
+    display:block;
+    height:75px;
+    margin:30px auto 30px
+}
+.login .logo.oauth
+{
+    margin-bottom:0
+}
+.login a,.login a:visited
+{
+    text-decoration:underline;
+    color:inherit
+}
+.login ul.notice
+{
+    margin:0;
+    border:0;
+    width:100%;
+    text-align:center;
+    list-style-position:inside;
+    list-style:none;
+    font-weight:600;
+    font-size:15px;
+    padding:10px
+}
+.login ul.notice.errors
+{
+    background-color:#EDE04D;
+    color:#212200
+}
+.login ul.notice.success
+{
+    background-color:#82C872;
+    color:white
+}
+.login ul.notice li
+{
+    padding:5px 0
+}
+.login p.oauth
+{
+    font-size:22px;
+    line-height:28px;
+    font-weight:400;
+    text-align:center;
+    color:white;
+    margin:15px 0 40px
+}
+.login .vertical-form
+{
+    margin:0 auto;
+    width:400px;
+    padding:40px;
+    border-radius:3px;
+    background:white;
+    padding-bottom:30px
+}
+.login .vertical-form legend
+{
+    text-align:center;
+    font-weight:300;
+    color:#565656;
+    margin:0 auto 45px;
+    font-size:35px;
+    line-height:38px
+}
+.login .vertical-form ::-webkit-input-placeholder
+{
+    color:#afafaf
+}
+.login .vertical-form input[type='text'],.login .vertical-form input[type='password'],.login .vertical-form input[type='number'],.login .vertical-form input[type='submit']
+{
+
+    border:2px solid #e7e7e7;
+    margin:20px auto;
+    padding:15px;
+    width:100%;
+    display:block;
+    border-radius:3px;
+    font-size:18px;
+    transition:opacity 0.4s;
+    text-align:left
+}
+.login .vertical-form input[type='submit']
+{
+    border:0;
+    font-weight:500;
+    font-size:22px;
+    text-align:center;
+    cursor:pointer;
+    margin-bottom:0
+}
+.login .vertical-form input:hover[type='submit']
+{
+    -webkit-transition:background 0.1s;
+    -moz-transition:background 0.1s;
+    -o-transition:background 0.1s;
+    transition:background 0.1s
+}
+.login .vertical-form p
+{
+    font-size:14px;
+    text-align:center;
+    margin:0;
+    margin-top:10px;
+    color:#999
+}
+.login .vertical-form p a
+{
+    text-decoration:none;
+    border-bottom:1px solid #bbb
+}
+.login .vertical-form p a:hover
+{
+    border-color:#999;
+    color:#777
+}
+.login .footer
+{
+    text-align:center;
+    color:white;
+    margin:20px auto
+}
+.login .footer a
+{
+    font-weight:600
+}
+.login .footer a:hover
+{
+    color:#E7F1F9
+}
+.login .footer p
+{
+    margin-bottom:40px
+}
+@media screen and (max-width: 550px)
+{
+    .login .logo
+    {
+        height:65px;
+        padding-top:30px
+    }
+    .login p.oauth
+    {
+        margin:15px 0 25px;
+        font-size:17px;
+        line-height:21px;
+        font-weight:600
+    }
+    .login .vertical-form
+    {
+        width:100%;
+        border-radius:0;
+        padding:40px 20px
+    }
+
+}
+@media screen and (max-width: 350px)
+{
+    .login br.only-mobile
+    {
+        display:inline
+    }
+
+}
+
+label.error { color: #dd4b39 !important; }
+input.error { border-color: #dd4b39  !important; }

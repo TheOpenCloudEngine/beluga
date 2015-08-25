@@ -5,6 +5,7 @@ import org.opencloudengine.garuda.api.RestAPIService;
 import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.common.util.VersionConfigurer;
+import org.opencloudengine.garuda.console.WebConsoleService;
 import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.exception.GarudaException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -150,13 +151,13 @@ public class GarudaServer {
 		serviceManager.registerService("rest", RestAPIService.class);
         serviceManager.registerService("cluster", ClustersService.class);
         serviceManager.registerService("action", ActionService.class);
+		serviceManager.registerService("console", WebConsoleService.class);
 		logger = LoggerFactory.getLogger(GarudaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 
 		/*
 		* Start Services
 		* */
-
 
         serviceManager.startServices();
 

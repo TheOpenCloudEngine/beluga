@@ -34,7 +34,7 @@ public class RestAPIService extends AbstractService {
 	@Override
 	protected boolean doStart() throws ServiceException {
 
-		int servicePort = environment.settingManager().getSystemSettings().getInt("service.port");
+		int servicePort = settings.getInt("port");
 		jettyServer = new Server(servicePort);
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -50,11 +50,12 @@ public class RestAPIService extends AbstractService {
 		jettyServer.setHandler(context);
 
 		try {
+			jettyServer.setStopAtShutdown(true);
 			jettyServer.start();
             logger.info("REST Service is listening on port {}", servicePort);
 			return true;
 		} catch (Exception e) {
-			throw new ServiceException(e);
+			throw new ServiceException("Error while starting REST service on port " + servicePort, e);
 		}
 	}
 

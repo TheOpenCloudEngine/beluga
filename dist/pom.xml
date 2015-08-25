@@ -43,6 +43,25 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>copy-war</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${project.parent.build.directory}/${project.parent.artifactId}-${project.version}/console</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.parent.basedir}/console/target</directory>
+									<includes>
+										<include>*.war</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
 						<id>copy-lib</id>
 						<phase>process-resources</phase>
 						<goals>

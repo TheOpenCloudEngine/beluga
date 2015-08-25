@@ -1,0 +1,196 @@
+.navbar-default {
+    background-color: #fff;
+}
+.navbar > .container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+body > .container {
+    padding-top: 8rem;
+    padding-bottom: 50px;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    .container {
+        width: 970px;
+    }
+}
+
+/*화면 폭이 좁아질때 로고가 창에 붙는 현상방지.*/
+.container-fluid>.navbar-collapse,.container-fluid>.navbar-header,.container>.navbar-collapse,.container>.navbar-header
+{
+    margin-left:0px
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #555;
+    /*font-weight: bold;*/
+    font-size: 16px;
+}
+
+.navbar-default .navbar-nav>li>a.current {
+    color: #398BCE;
+}
+
+.navbar-default .navbar-nav>li>a.btn {
+    padding: 6px 10px;
+    margin-top: 5px;
+}
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+    margin-left: 0;
+}
+.navbar-right {
+    margin-right: 0;
+}
+a.app-link { color: #777; }
+
+.navbar-brand {
+    background: url(/resources/css/oce-logo.png);
+    width: 55px;
+    height: 55px;
+    text-indent: -9999px;
+    margin-right: 10px;
+    display: block;
+    float: left;
+}
+
+.page-header {
+    border-bottom: 0;
+}
+
+dd {  word-break: break-all; }
+
+.running-status {
+    color: #005824;
+}
+.stop-status {
+    color: #bd0026;
+}
+
+.btn-danger.outline {
+    color: #d9534f;
+    background-color: #fff;
+    border-color: #d43f3a;
+}
+
+.btn-danger.outline:hover {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.btn-primary.outline {
+    color: #337ab7;
+    background-color: #fff;
+    border-color: #2e6da4;
+}
+
+.btn-primary.outline:hover {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.line-space { height:20px; clear: both;}
+
+.progress.info {margin-bottom: 5px;}
+
+.page-header h1 {margin-bottom: 5px;}
+
+.sub-title { font-size:21px}
+
+.navbar-nav>li>.dropdown-menu { font-size: 15px; }
+
+.dropdown-menu {min-width: 120px;}
+
+.app-entry {
+    width: 283px;
+    padding: 15px;
+    border: #70D3FF 1px solid;
+}
+.app-entry-wrapper { margin-bottom: 30px; padding: 0; }
+.app-info {
+    margin: 10px 0 0 10px;
+}
+.app-thumbnail {
+    width: 100%; height: 200px;
+    background-color: #eee;
+    padding: 0;
+}
+.app-title { font-weight: bold; }
+.app-provider { font-size: 14px; }
+.app-date { font-size: 14px; }
+.app-button { margin-top: 10px; }
+.file-date {
+    font-size : 14px;
+    color: #777;
+}
+.display-inline {
+    display: inline;
+}
+.col-100 { width:100px;}
+.col-150 { width:150px;}
+.col-200 { width:200px;}
+.col-300 { width:300px;}
+
+.form-horizontal.compact .form-group { margin-bottom: 0;}
+.bottom-line {
+    border-bottom: 1px solid #e7e7e7;
+    padding-bottom: 10px;
+    margin: 20px 0 20px;
+}
+
+.box {
+    position: relative;
+    padding: 2rem;
+    border: 2px solid #f1f1f1;
+    border-radius: 3px;
+}
+
+.stat-box {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    color: #bbb;
+    border: 1px solid #E4E4E4;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 130px;
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+.stat-box p {
+    padding: 20px 0 20px 0;
+    margin-top: 10px;
+}
+
+.sub-options {
+    margin-left: 20px;
+}
+
+.no-padding-left {padding-left: 0;}
+
+label.error { color: #dd4b39 !important; }
+input.error { border-color: #dd4b39  !important; }
+
+.empty-apps {height: 200px; text-align: center;}
+.empty-apps h3 { margin-top: 60px; }
+.pleft-10 {padding-left : 10px}
+.mleft-10 {margin-left : 10px}
+.maybe-hide {display:none;}
+.simple-file-btn {color: transparent;}

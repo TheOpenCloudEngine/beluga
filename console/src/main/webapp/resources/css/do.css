@@ -1,0 +1,7653 @@
+.login
+{
+    background:#2089cf;
+    font-family:"proxima-nova";
+    padding:0
+}
+.login *
+{
+    box-sizing:border-box
+}
+.login br.only-mobile
+{
+    display:none
+}
+.login .logo
+{
+    display:block;
+    height:75px;
+    padding-top:40px;
+    margin:0 auto 30px
+}
+.login .logo.oauth
+{
+    margin-bottom:0
+}
+.login a,.login a:visited
+{
+    text-decoration:underline;
+    color:inherit
+}
+.login ul.notice
+{
+    margin:0;
+    border:0;
+    width:100%;
+    text-align:center;
+    list-style-position:inside;
+    list-style:none;
+    font-weight:600;
+    font-size:15px;
+    padding:10px
+}
+.login ul.notice.errors
+{
+    background-color:#EDE04D;
+    color:#212200
+}
+.login ul.notice.success
+{
+    background-color:#82C872;
+    color:white
+}
+.login ul.notice li
+{
+    padding:5px 0
+}
+.login p.oauth
+{
+    font-size:22px;
+    line-height:28px;
+    font-weight:400;
+    text-align:center;
+    color:white;
+    margin:15px 0 40px
+}
+.login .vertical-form
+{
+    margin:0 auto;
+    width:400px;
+    padding:40px;
+    border-radius:3px;
+    background:white;
+    padding-bottom:30px
+}
+.login .vertical-form legend
+{
+    text-align:center;
+    font-weight:300;
+    color:#565656;
+    margin:0 auto 45px;
+    font-size:35px;
+    line-height:38px
+}
+.login .vertical-form ::-webkit-input-placeholder
+{
+    color:#afafaf
+}
+.login .vertical-form input[type='text'],.login .vertical-form input[type='password'],.login .vertical-form input[type='number'],.login .vertical-form input[type='submit']
+{
+    background:#fcfcfc;
+    border:2px solid #e7e7e7;
+    margin:20px auto;
+    padding:15px;
+    width:100%;
+    display:block;
+    border-radius:3px;
+    font-size:18px;
+    transition:opacity 0.4s;
+    text-align:left
+}
+.login .vertical-form input[type='submit']
+{
+    color:white;
+    background:#82C872;
+    border:0;
+    font-weight:500;
+    font-size:22px;
+    text-align:center;
+    cursor:pointer;
+    margin-bottom:0
+}
+.login .vertical-form input:hover[type='submit']
+{
+    background-color:#71BF60;
+    -webkit-transition:background 0.1s;
+    -moz-transition:background 0.1s;
+    -o-transition:background 0.1s;
+    transition:background 0.1s
+}
+.login .vertical-form p
+{
+    font-size:14px;
+    text-align:center;
+    margin:0;
+    margin-top:10px;
+    color:#999
+}
+.login .vertical-form p a
+{
+    text-decoration:none;
+    border-bottom:1px solid #bbb
+}
+.login .vertical-form p a:hover
+{
+    border-color:#999;
+    color:#777
+}
+.login .footer
+{
+    text-align:center;
+    color:white;
+    margin:20px auto
+}
+.login .footer a
+{
+    font-weight:600
+}
+.login .footer a:hover
+{
+    color:#E7F1F9
+}
+.login .footer p
+{
+    margin-bottom:40px
+}
+@media screen and (max-width: 550px)
+{
+    .login .logo
+    {
+        height:65px;
+        padding-top:30px
+    }
+    .login p.oauth
+    {
+        margin:15px 0 25px;
+        font-size:17px;
+        line-height:21px;
+        font-weight:600
+    }
+    .login .vertical-form
+    {
+        width:100%;
+        border-radius:0;
+        padding:40px 20px
+    }
+
+}
+@media screen and (max-width: 350px)
+{
+    .login br.only-mobile
+    {
+        display:inline
+    }
+
+}
+.YlGn .q0-3
+{
+    fill:#f7fcb9
+}
+.YlGn .q1-3
+{
+    fill:#addd8e
+}
+.YlGn .q2-3
+{
+    fill:#31a354
+}
+.YlGn .q0-4
+{
+    fill:#ffc
+}
+.YlGn .q1-4
+{
+    fill:#c2e699
+}
+.YlGn .q2-4
+{
+    fill:#78c679
+}
+.YlGn .q3-4
+{
+    fill:#238443
+}
+.YlGn .q0-5
+{
+    fill:#ffc
+}
+.YlGn .q1-5
+{
+    fill:#c2e699
+}
+.YlGn .q2-5
+{
+    fill:#78c679
+}
+.YlGn .q3-5
+{
+    fill:#31a354
+}
+.YlGn .q4-5
+{
+    fill:#006837
+}
+.YlGn .q0-6
+{
+    fill:#ffc
+}
+.YlGn .q1-6
+{
+    fill:#d9f0a3
+}
+.YlGn .q2-6
+{
+    fill:#addd8e
+}
+.YlGn .q3-6
+{
+    fill:#78c679
+}
+.YlGn .q4-6
+{
+    fill:#31a354
+}
+.YlGn .q5-6
+{
+    fill:#006837
+}
+.YlGn .q0-7
+{
+    fill:#ffc
+}
+.YlGn .q1-7
+{
+    fill:#d9f0a3
+}
+.YlGn .q2-7
+{
+    fill:#addd8e
+}
+.YlGn .q3-7
+{
+    fill:#78c679
+}
+.YlGn .q4-7
+{
+    fill:#41ab5d
+}
+.YlGn .q5-7
+{
+    fill:#238443
+}
+.YlGn .q6-7
+{
+    fill:#005a32
+}
+.YlGn .q0-8
+{
+    fill:#ffffe5
+}
+.YlGn .q1-8
+{
+    fill:#f7fcb9
+}
+.YlGn .q2-8
+{
+    fill:#d9f0a3
+}
+.YlGn .q3-8
+{
+    fill:#addd8e
+}
+.YlGn .q4-8
+{
+    fill:#78c679
+}
+.YlGn .q5-8
+{
+    fill:#41ab5d
+}
+.YlGn .q6-8
+{
+    fill:#238443
+}
+.YlGn .q7-8
+{
+    fill:#005a32
+}
+.YlGn .q0-9
+{
+    fill:#ffffe5
+}
+.YlGn .q1-9
+{
+    fill:#f7fcb9
+}
+.YlGn .q2-9
+{
+    fill:#d9f0a3
+}
+.YlGn .q3-9
+{
+    fill:#addd8e
+}
+.YlGn .q4-9
+{
+    fill:#78c679
+}
+.YlGn .q5-9
+{
+    fill:#41ab5d
+}
+.YlGn .q6-9
+{
+    fill:#238443
+}
+.YlGn .q7-9
+{
+    fill:#006837
+}
+.YlGn .q8-9
+{
+    fill:#004529
+}
+.YlGnBu .q0-3
+{
+    fill:#edf8b1
+}
+.YlGnBu .q1-3
+{
+    fill:#7fcdbb
+}
+.YlGnBu .q2-3
+{
+    fill:#2c7fb8
+}
+.YlGnBu .q0-4
+{
+    fill:#ffc
+}
+.YlGnBu .q1-4
+{
+    fill:#a1dab4
+}
+.YlGnBu .q2-4
+{
+    fill:#41b6c4
+}
+.YlGnBu .q3-4
+{
+    fill:#225ea8
+}
+.YlGnBu .q0-5
+{
+    fill:#ffc
+}
+.YlGnBu .q1-5
+{
+    fill:#a1dab4
+}
+.YlGnBu .q2-5
+{
+    fill:#41b6c4
+}
+.YlGnBu .q3-5
+{
+    fill:#2c7fb8
+}
+.YlGnBu .q4-5
+{
+    fill:#253494
+}
+.YlGnBu .q0-6
+{
+    fill:#ffc
+}
+.YlGnBu .q1-6
+{
+    fill:#c7e9b4
+}
+.YlGnBu .q2-6
+{
+    fill:#7fcdbb
+}
+.YlGnBu .q3-6
+{
+    fill:#41b6c4
+}
+.YlGnBu .q4-6
+{
+    fill:#2c7fb8
+}
+.YlGnBu .q5-6
+{
+    fill:#253494
+}
+.YlGnBu .q0-7
+{
+    fill:#ffc
+}
+.YlGnBu .q1-7
+{
+    fill:#c7e9b4
+}
+.YlGnBu .q2-7
+{
+    fill:#7fcdbb
+}
+.YlGnBu .q3-7
+{
+    fill:#41b6c4
+}
+.YlGnBu .q4-7
+{
+    fill:#1d91c0
+}
+.YlGnBu .q5-7
+{
+    fill:#225ea8
+}
+.YlGnBu .q6-7
+{
+    fill:#0c2c84
+}
+.YlGnBu .q0-8
+{
+    fill:#ffffd9
+}
+.YlGnBu .q1-8
+{
+    fill:#edf8b1
+}
+.YlGnBu .q2-8
+{
+    fill:#c7e9b4
+}
+.YlGnBu .q3-8
+{
+    fill:#7fcdbb
+}
+.YlGnBu .q4-8
+{
+    fill:#41b6c4
+}
+.YlGnBu .q5-8
+{
+    fill:#1d91c0
+}
+.YlGnBu .q6-8
+{
+    fill:#225ea8
+}
+.YlGnBu .q7-8
+{
+    fill:#0c2c84
+}
+.YlGnBu .q0-9
+{
+    fill:#ffffd9
+}
+.YlGnBu .q1-9
+{
+    fill:#edf8b1
+}
+.YlGnBu .q2-9
+{
+    fill:#c7e9b4
+}
+.YlGnBu .q3-9
+{
+    fill:#7fcdbb
+}
+.YlGnBu .q4-9
+{
+    fill:#41b6c4
+}
+.YlGnBu .q5-9
+{
+    fill:#1d91c0
+}
+.YlGnBu .q6-9
+{
+    fill:#225ea8
+}
+.YlGnBu .q7-9
+{
+    fill:#253494
+}
+.YlGnBu .q8-9
+{
+    fill:#081d58
+}
+.GnBu .q0-3
+{
+    fill:#e0f3db
+}
+.GnBu .q1-3
+{
+    fill:#a8ddb5
+}
+.GnBu .q2-3
+{
+    fill:#43a2ca
+}
+.GnBu .q0-4
+{
+    fill:#f0f9e8
+}
+.GnBu .q1-4
+{
+    fill:#bae4bc
+}
+.GnBu .q2-4
+{
+    fill:#7bccc4
+}
+.GnBu .q3-4
+{
+    fill:#2b8cbe
+}
+.GnBu .q0-5
+{
+    fill:#f0f9e8
+}
+.GnBu .q1-5
+{
+    fill:#bae4bc
+}
+.GnBu .q2-5
+{
+    fill:#7bccc4
+}
+.GnBu .q3-5
+{
+    fill:#43a2ca
+}
+.GnBu .q4-5
+{
+    fill:#0868ac
+}
+.GnBu .q0-6
+{
+    fill:#f0f9e8
+}
+.GnBu .q1-6
+{
+    fill:#ccebc5
+}
+.GnBu .q2-6
+{
+    fill:#a8ddb5
+}
+.GnBu .q3-6
+{
+    fill:#7bccc4
+}
+.GnBu .q4-6
+{
+    fill:#43a2ca
+}
+.GnBu .q5-6
+{
+    fill:#0868ac
+}
+.GnBu .q0-7
+{
+    fill:#f0f9e8
+}
+.GnBu .q1-7
+{
+    fill:#ccebc5
+}
+.GnBu .q2-7
+{
+    fill:#a8ddb5
+}
+.GnBu .q3-7
+{
+    fill:#7bccc4
+}
+.GnBu .q4-7
+{
+    fill:#4eb3d3
+}
+.GnBu .q5-7
+{
+    fill:#2b8cbe
+}
+.GnBu .q6-7
+{
+    fill:#08589e
+}
+.GnBu .q0-8
+{
+    fill:#f7fcf0
+}
+.GnBu .q1-8
+{
+    fill:#e0f3db
+}
+.GnBu .q2-8
+{
+    fill:#ccebc5
+}
+.GnBu .q3-8
+{
+    fill:#a8ddb5
+}
+.GnBu .q4-8
+{
+    fill:#7bccc4
+}
+.GnBu .q5-8
+{
+    fill:#4eb3d3
+}
+.GnBu .q6-8
+{
+    fill:#2b8cbe
+}
+.GnBu .q7-8
+{
+    fill:#08589e
+}
+.GnBu .q0-9
+{
+    fill:#f7fcf0
+}
+.GnBu .q1-9
+{
+    fill:#e0f3db
+}
+.GnBu .q2-9
+{
+    fill:#ccebc5
+}
+.GnBu .q3-9
+{
+    fill:#a8ddb5
+}
+.GnBu .q4-9
+{
+    fill:#7bccc4
+}
+.GnBu .q5-9
+{
+    fill:#4eb3d3
+}
+.GnBu .q6-9
+{
+    fill:#2b8cbe
+}
+.GnBu .q7-9
+{
+    fill:#0868ac
+}
+.GnBu .q8-9
+{
+    fill:#084081
+}
+.BuGn .q0-3
+{
+    fill:#e5f5f9
+}
+.BuGn .q1-3
+{
+    fill:#99d8c9
+}
+.BuGn .q2-3
+{
+    fill:#2ca25f
+}
+.BuGn .q0-4
+{
+    fill:#edf8fb
+}
+.BuGn .q1-4
+{
+    fill:#b2e2e2
+}
+.BuGn .q2-4
+{
+    fill:#66c2a4
+}
+.BuGn .q3-4
+{
+    fill:#238b45
+}
+.BuGn .q0-5
+{
+    fill:#edf8fb
+}
+.BuGn .q1-5
+{
+    fill:#b2e2e2
+}
+.BuGn .q2-5
+{
+    fill:#66c2a4
+}
+.BuGn .q3-5
+{
+    fill:#2ca25f
+}
+.BuGn .q4-5
+{
+    fill:#006d2c
+}
+.BuGn .q0-6
+{
+    fill:#edf8fb
+}
+.BuGn .q1-6
+{
+    fill:#ccece6
+}
+.BuGn .q2-6
+{
+    fill:#99d8c9
+}
+.BuGn .q3-6
+{
+    fill:#66c2a4
+}
+.BuGn .q4-6
+{
+    fill:#2ca25f
+}
+.BuGn .q5-6
+{
+    fill:#006d2c
+}
+.BuGn .q0-7
+{
+    fill:#edf8fb
+}
+.BuGn .q1-7
+{
+    fill:#ccece6
+}
+.BuGn .q2-7
+{
+    fill:#99d8c9
+}
+.BuGn .q3-7
+{
+    fill:#66c2a4
+}
+.BuGn .q4-7
+{
+    fill:#41ae76
+}
+.BuGn .q5-7
+{
+    fill:#238b45
+}
+.BuGn .q6-7
+{
+    fill:#005824
+}
+.BuGn .q0-8
+{
+    fill:#f7fcfd
+}
+.BuGn .q1-8
+{
+    fill:#e5f5f9
+}
+.BuGn .q2-8
+{
+    fill:#ccece6
+}
+.BuGn .q3-8
+{
+    fill:#99d8c9
+}
+.BuGn .q4-8
+{
+    fill:#66c2a4
+}
+.BuGn .q5-8
+{
+    fill:#41ae76
+}
+.BuGn .q6-8
+{
+    fill:#238b45
+}
+.BuGn .q7-8
+{
+    fill:#005824
+}
+.BuGn .q0-9
+{
+    fill:#f7fcfd
+}
+.BuGn .q1-9
+{
+    fill:#e5f5f9
+}
+.BuGn .q2-9
+{
+    fill:#ccece6
+}
+.BuGn .q3-9
+{
+    fill:#99d8c9
+}
+.BuGn .q4-9
+{
+    fill:#66c2a4
+}
+.BuGn .q5-9
+{
+    fill:#41ae76
+}
+.BuGn .q6-9
+{
+    fill:#238b45
+}
+.BuGn .q7-9
+{
+    fill:#006d2c
+}
+.BuGn .q8-9
+{
+    fill:#00441b
+}
+.PuBuGn .q0-3
+{
+    fill:#ece2f0
+}
+.PuBuGn .q1-3
+{
+    fill:#a6bddb
+}
+.PuBuGn .q2-3
+{
+    fill:#1c9099
+}
+.PuBuGn .q0-4
+{
+    fill:#f6eff7
+}
+.PuBuGn .q1-4
+{
+    fill:#bdc9e1
+}
+.PuBuGn .q2-4
+{
+    fill:#67a9cf
+}
+.PuBuGn .q3-4
+{
+    fill:#02818a
+}
+.PuBuGn .q0-5
+{
+    fill:#f6eff7
+}
+.PuBuGn .q1-5
+{
+    fill:#bdc9e1
+}
+.PuBuGn .q2-5
+{
+    fill:#67a9cf
+}
+.PuBuGn .q3-5
+{
+    fill:#1c9099
+}
+.PuBuGn .q4-5
+{
+    fill:#016c59
+}
+.PuBuGn .q0-6
+{
+    fill:#f6eff7
+}
+.PuBuGn .q1-6
+{
+    fill:#d0d1e6
+}
+.PuBuGn .q2-6
+{
+    fill:#a6bddb
+}
+.PuBuGn .q3-6
+{
+    fill:#67a9cf
+}
+.PuBuGn .q4-6
+{
+    fill:#1c9099
+}
+.PuBuGn .q5-6
+{
+    fill:#016c59
+}
+.PuBuGn .q0-7
+{
+    fill:#f6eff7
+}
+.PuBuGn .q1-7
+{
+    fill:#d0d1e6
+}
+.PuBuGn .q2-7
+{
+    fill:#a6bddb
+}
+.PuBuGn .q3-7
+{
+    fill:#67a9cf
+}
+.PuBuGn .q4-7
+{
+    fill:#3690c0
+}
+.PuBuGn .q5-7
+{
+    fill:#02818a
+}
+.PuBuGn .q6-7
+{
+    fill:#016450
+}
+.PuBuGn .q0-8
+{
+    fill:#fff7fb
+}
+.PuBuGn .q1-8
+{
+    fill:#ece2f0
+}
+.PuBuGn .q2-8
+{
+    fill:#d0d1e6
+}
+.PuBuGn .q3-8
+{
+    fill:#a6bddb
+}
+.PuBuGn .q4-8
+{
+    fill:#67a9cf
+}
+.PuBuGn .q5-8
+{
+    fill:#3690c0
+}
+.PuBuGn .q6-8
+{
+    fill:#02818a
+}
+.PuBuGn .q7-8
+{
+    fill:#016450
+}
+.PuBuGn .q0-9
+{
+    fill:#fff7fb
+}
+.PuBuGn .q1-9
+{
+    fill:#ece2f0
+}
+.PuBuGn .q2-9
+{
+    fill:#d0d1e6
+}
+.PuBuGn .q3-9
+{
+    fill:#a6bddb
+}
+.PuBuGn .q4-9
+{
+    fill:#67a9cf
+}
+.PuBuGn .q5-9
+{
+    fill:#3690c0
+}
+.PuBuGn .q6-9
+{
+    fill:#02818a
+}
+.PuBuGn .q7-9
+{
+    fill:#016c59
+}
+.PuBuGn .q8-9
+{
+    fill:#014636
+}
+.PuBu .q0-3
+{
+    fill:#ece7f2
+}
+.PuBu .q1-3
+{
+    fill:#a6bddb
+}
+.PuBu .q2-3
+{
+    fill:#2b8cbe
+}
+.PuBu .q0-4
+{
+    fill:#f1eef6
+}
+.PuBu .q1-4
+{
+    fill:#bdc9e1
+}
+.PuBu .q2-4
+{
+    fill:#74a9cf
+}
+.PuBu .q3-4
+{
+    fill:#0570b0
+}
+.PuBu .q0-5
+{
+    fill:#f1eef6
+}
+.PuBu .q1-5
+{
+    fill:#bdc9e1
+}
+.PuBu .q2-5
+{
+    fill:#74a9cf
+}
+.PuBu .q3-5
+{
+    fill:#2b8cbe
+}
+.PuBu .q4-5
+{
+    fill:#045a8d
+}
+.PuBu .q0-6
+{
+    fill:#f1eef6
+}
+.PuBu .q1-6
+{
+    fill:#d0d1e6
+}
+.PuBu .q2-6
+{
+    fill:#a6bddb
+}
+.PuBu .q3-6
+{
+    fill:#74a9cf
+}
+.PuBu .q4-6
+{
+    fill:#2b8cbe
+}
+.PuBu .q5-6
+{
+    fill:#045a8d
+}
+.PuBu .q0-7
+{
+    fill:#f1eef6
+}
+.PuBu .q1-7
+{
+    fill:#d0d1e6
+}
+.PuBu .q2-7
+{
+    fill:#a6bddb
+}
+.PuBu .q3-7
+{
+    fill:#74a9cf
+}
+.PuBu .q4-7
+{
+    fill:#3690c0
+}
+.PuBu .q5-7
+{
+    fill:#0570b0
+}
+.PuBu .q6-7
+{
+    fill:#034e7b
+}
+.PuBu .q0-8
+{
+    fill:#fff7fb
+}
+.PuBu .q1-8
+{
+    fill:#ece7f2
+}
+.PuBu .q2-8
+{
+    fill:#d0d1e6
+}
+.PuBu .q3-8
+{
+    fill:#a6bddb
+}
+.PuBu .q4-8
+{
+    fill:#74a9cf
+}
+.PuBu .q5-8
+{
+    fill:#3690c0
+}
+.PuBu .q6-8
+{
+    fill:#0570b0
+}
+.PuBu .q7-8
+{
+    fill:#034e7b
+}
+.PuBu .q0-9
+{
+    fill:#fff7fb
+}
+.PuBu .q1-9
+{
+    fill:#ece7f2
+}
+.PuBu .q2-9
+{
+    fill:#d0d1e6
+}
+.PuBu .q3-9
+{
+    fill:#a6bddb
+}
+.PuBu .q4-9
+{
+    fill:#74a9cf
+}
+.PuBu .q5-9
+{
+    fill:#3690c0
+}
+.PuBu .q6-9
+{
+    fill:#0570b0
+}
+.PuBu .q7-9
+{
+    fill:#045a8d
+}
+.PuBu .q8-9
+{
+    fill:#023858
+}
+.BuPu .q0-3
+{
+    fill:#e0ecf4
+}
+.BuPu .q1-3
+{
+    fill:#9ebcda
+}
+.BuPu .q2-3
+{
+    fill:#8856a7
+}
+.BuPu .q0-4
+{
+    fill:#edf8fb
+}
+.BuPu .q1-4
+{
+    fill:#b3cde3
+}
+.BuPu .q2-4
+{
+    fill:#8c96c6
+}
+.BuPu .q3-4
+{
+    fill:#88419d
+}
+.BuPu .q0-5
+{
+    fill:#edf8fb
+}
+.BuPu .q1-5
+{
+    fill:#b3cde3
+}
+.BuPu .q2-5
+{
+    fill:#8c96c6
+}
+.BuPu .q3-5
+{
+    fill:#8856a7
+}
+.BuPu .q4-5
+{
+    fill:#810f7c
+}
+.BuPu .q0-6
+{
+    fill:#edf8fb
+}
+.BuPu .q1-6
+{
+    fill:#bfd3e6
+}
+.BuPu .q2-6
+{
+    fill:#9ebcda
+}
+.BuPu .q3-6
+{
+    fill:#8c96c6
+}
+.BuPu .q4-6
+{
+    fill:#8856a7
+}
+.BuPu .q5-6
+{
+    fill:#810f7c
+}
+.BuPu .q0-7
+{
+    fill:#edf8fb
+}
+.BuPu .q1-7
+{
+    fill:#bfd3e6
+}
+.BuPu .q2-7
+{
+    fill:#9ebcda
+}
+.BuPu .q3-7
+{
+    fill:#8c96c6
+}
+.BuPu .q4-7
+{
+    fill:#8c6bb1
+}
+.BuPu .q5-7
+{
+    fill:#88419d
+}
+.BuPu .q6-7
+{
+    fill:#6e016b
+}
+.BuPu .q0-8
+{
+    fill:#f7fcfd
+}
+.BuPu .q1-8
+{
+    fill:#e0ecf4
+}
+.BuPu .q2-8
+{
+    fill:#bfd3e6
+}
+.BuPu .q3-8
+{
+    fill:#9ebcda
+}
+.BuPu .q4-8
+{
+    fill:#8c96c6
+}
+.BuPu .q5-8
+{
+    fill:#8c6bb1
+}
+.BuPu .q6-8
+{
+    fill:#88419d
+}
+.BuPu .q7-8
+{
+    fill:#6e016b
+}
+.BuPu .q0-9
+{
+    fill:#f7fcfd
+}
+.BuPu .q1-9
+{
+    fill:#e0ecf4
+}
+.BuPu .q2-9
+{
+    fill:#bfd3e6
+}
+.BuPu .q3-9
+{
+    fill:#9ebcda
+}
+.BuPu .q4-9
+{
+    fill:#8c96c6
+}
+.BuPu .q5-9
+{
+    fill:#8c6bb1
+}
+.BuPu .q6-9
+{
+    fill:#88419d
+}
+.BuPu .q7-9
+{
+    fill:#810f7c
+}
+.BuPu .q8-9
+{
+    fill:#4d004b
+}
+.RdPu .q0-3
+{
+    fill:#fde0dd
+}
+.RdPu .q1-3
+{
+    fill:#fa9fb5
+}
+.RdPu .q2-3
+{
+    fill:#c51b8a
+}
+.RdPu .q0-4
+{
+    fill:#feebe2
+}
+.RdPu .q1-4
+{
+    fill:#fbb4b9
+}
+.RdPu .q2-4
+{
+    fill:#f768a1
+}
+.RdPu .q3-4
+{
+    fill:#ae017e
+}
+.RdPu .q0-5
+{
+    fill:#feebe2
+}
+.RdPu .q1-5
+{
+    fill:#fbb4b9
+}
+.RdPu .q2-5
+{
+    fill:#f768a1
+}
+.RdPu .q3-5
+{
+    fill:#c51b8a
+}
+.RdPu .q4-5
+{
+    fill:#7a0177
+}
+.RdPu .q0-6
+{
+    fill:#feebe2
+}
+.RdPu .q1-6
+{
+    fill:#fcc5c0
+}
+.RdPu .q2-6
+{
+    fill:#fa9fb5
+}
+.RdPu .q3-6
+{
+    fill:#f768a1
+}
+.RdPu .q4-6
+{
+    fill:#c51b8a
+}
+.RdPu .q5-6
+{
+    fill:#7a0177
+}
+.RdPu .q0-7
+{
+    fill:#feebe2
+}
+.RdPu .q1-7
+{
+    fill:#fcc5c0
+}
+.RdPu .q2-7
+{
+    fill:#fa9fb5
+}
+.RdPu .q3-7
+{
+    fill:#f768a1
+}
+.RdPu .q4-7
+{
+    fill:#dd3497
+}
+.RdPu .q5-7
+{
+    fill:#ae017e
+}
+.RdPu .q6-7
+{
+    fill:#7a0177
+}
+.RdPu .q0-8
+{
+    fill:#fff7f3
+}
+.RdPu .q1-8
+{
+    fill:#fde0dd
+}
+.RdPu .q2-8
+{
+    fill:#fcc5c0
+}
+.RdPu .q3-8
+{
+    fill:#fa9fb5
+}
+.RdPu .q4-8
+{
+    fill:#f768a1
+}
+.RdPu .q5-8
+{
+    fill:#dd3497
+}
+.RdPu .q6-8
+{
+    fill:#ae017e
+}
+.RdPu .q7-8
+{
+    fill:#7a0177
+}
+.RdPu .q0-9
+{
+    fill:#fff7f3
+}
+.RdPu .q1-9
+{
+    fill:#fde0dd
+}
+.RdPu .q2-9
+{
+    fill:#fcc5c0
+}
+.RdPu .q3-9
+{
+    fill:#fa9fb5
+}
+.RdPu .q4-9
+{
+    fill:#f768a1
+}
+.RdPu .q5-9
+{
+    fill:#dd3497
+}
+.RdPu .q6-9
+{
+    fill:#ae017e
+}
+.RdPu .q7-9
+{
+    fill:#7a0177
+}
+.RdPu .q8-9
+{
+    fill:#49006a
+}
+.PuRd .q0-3
+{
+    fill:#e7e1ef
+}
+.PuRd .q1-3
+{
+    fill:#c994c7
+}
+.PuRd .q2-3
+{
+    fill:#dd1c77
+}
+.PuRd .q0-4
+{
+    fill:#f1eef6
+}
+.PuRd .q1-4
+{
+    fill:#d7b5d8
+}
+.PuRd .q2-4
+{
+    fill:#df65b0
+}
+.PuRd .q3-4
+{
+    fill:#ce1256
+}
+.PuRd .q0-5
+{
+    fill:#f1eef6
+}
+.PuRd .q1-5
+{
+    fill:#d7b5d8
+}
+.PuRd .q2-5
+{
+    fill:#df65b0
+}
+.PuRd .q3-5
+{
+    fill:#dd1c77
+}
+.PuRd .q4-5
+{
+    fill:#980043
+}
+.PuRd .q0-6
+{
+    fill:#f1eef6
+}
+.PuRd .q1-6
+{
+    fill:#d4b9da
+}
+.PuRd .q2-6
+{
+    fill:#c994c7
+}
+.PuRd .q3-6
+{
+    fill:#df65b0
+}
+.PuRd .q4-6
+{
+    fill:#dd1c77
+}
+.PuRd .q5-6
+{
+    fill:#980043
+}
+.PuRd .q0-7
+{
+    fill:#f1eef6
+}
+.PuRd .q1-7
+{
+    fill:#d4b9da
+}
+.PuRd .q2-7
+{
+    fill:#c994c7
+}
+.PuRd .q3-7
+{
+    fill:#df65b0
+}
+.PuRd .q4-7
+{
+    fill:#e7298a
+}
+.PuRd .q5-7
+{
+    fill:#ce1256
+}
+.PuRd .q6-7
+{
+    fill:#91003f
+}
+.PuRd .q0-8
+{
+    fill:#f7f4f9
+}
+.PuRd .q1-8
+{
+    fill:#e7e1ef
+}
+.PuRd .q2-8
+{
+    fill:#d4b9da
+}
+.PuRd .q3-8
+{
+    fill:#c994c7
+}
+.PuRd .q4-8
+{
+    fill:#df65b0
+}
+.PuRd .q5-8
+{
+    fill:#e7298a
+}
+.PuRd .q6-8
+{
+    fill:#ce1256
+}
+.PuRd .q7-8
+{
+    fill:#91003f
+}
+.PuRd .q0-9
+{
+    fill:#f7f4f9
+}
+.PuRd .q1-9
+{
+    fill:#e7e1ef
+}
+.PuRd .q2-9
+{
+    fill:#d4b9da
+}
+.PuRd .q3-9
+{
+    fill:#c994c7
+}
+.PuRd .q4-9
+{
+    fill:#df65b0
+}
+.PuRd .q5-9
+{
+    fill:#e7298a
+}
+.PuRd .q6-9
+{
+    fill:#ce1256
+}
+.PuRd .q7-9
+{
+    fill:#980043
+}
+.PuRd .q8-9
+{
+    fill:#67001f
+}
+.OrRd .q0-3
+{
+    fill:#fee8c8
+}
+.OrRd .q1-3
+{
+    fill:#fdbb84
+}
+.OrRd .q2-3
+{
+    fill:#e34a33
+}
+.OrRd .q0-4
+{
+    fill:#fef0d9
+}
+.OrRd .q1-4
+{
+    fill:#fdcc8a
+}
+.OrRd .q2-4
+{
+    fill:#fc8d59
+}
+.OrRd .q3-4
+{
+    fill:#d7301f
+}
+.OrRd .q0-5
+{
+    fill:#fef0d9
+}
+.OrRd .q1-5
+{
+    fill:#fdcc8a
+}
+.OrRd .q2-5
+{
+    fill:#fc8d59
+}
+.OrRd .q3-5
+{
+    fill:#e34a33
+}
+.OrRd .q4-5
+{
+    fill:#b30000
+}
+.OrRd .q0-6
+{
+    fill:#fef0d9
+}
+.OrRd .q1-6
+{
+    fill:#fdd49e
+}
+.OrRd .q2-6
+{
+    fill:#fdbb84
+}
+.OrRd .q3-6
+{
+    fill:#fc8d59
+}
+.OrRd .q4-6
+{
+    fill:#e34a33
+}
+.OrRd .q5-6
+{
+    fill:#b30000
+}
+.OrRd .q0-7
+{
+    fill:#fef0d9
+}
+.OrRd .q1-7
+{
+    fill:#fdd49e
+}
+.OrRd .q2-7
+{
+    fill:#fdbb84
+}
+.OrRd .q3-7
+{
+    fill:#fc8d59
+}
+.OrRd .q4-7
+{
+    fill:#ef6548
+}
+.OrRd .q5-7
+{
+    fill:#d7301f
+}
+.OrRd .q6-7
+{
+    fill:#900
+}
+.OrRd .q0-8
+{
+    fill:#fff7ec
+}
+.OrRd .q1-8
+{
+    fill:#fee8c8
+}
+.OrRd .q2-8
+{
+    fill:#fdd49e
+}
+.OrRd .q3-8
+{
+    fill:#fdbb84
+}
+.OrRd .q4-8
+{
+    fill:#fc8d59
+}
+.OrRd .q5-8
+{
+    fill:#ef6548
+}
+.OrRd .q6-8
+{
+    fill:#d7301f
+}
+.OrRd .q7-8
+{
+    fill:#900
+}
+.OrRd .q0-9
+{
+    fill:#fff7ec
+}
+.OrRd .q1-9
+{
+    fill:#fee8c8
+}
+.OrRd .q2-9
+{
+    fill:#fdd49e
+}
+.OrRd .q3-9
+{
+    fill:#fdbb84
+}
+.OrRd .q4-9
+{
+    fill:#fc8d59
+}
+.OrRd .q5-9
+{
+    fill:#ef6548
+}
+.OrRd .q6-9
+{
+    fill:#d7301f
+}
+.OrRd .q7-9
+{
+    fill:#b30000
+}
+.OrRd .q8-9
+{
+    fill:#7f0000
+}
+.YlOrRd .q0-3
+{
+    fill:#ffeda0
+}
+.YlOrRd .q1-3
+{
+    fill:#feb24c
+}
+.YlOrRd .q2-3
+{
+    fill:#f03b20
+}
+.YlOrRd .q0-4
+{
+    fill:#ffffb2
+}
+.YlOrRd .q1-4
+{
+    fill:#fecc5c
+}
+.YlOrRd .q2-4
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q3-4
+{
+    fill:#e31a1c
+}
+.YlOrRd .q0-5
+{
+    fill:#ffffb2
+}
+.YlOrRd .q1-5
+{
+    fill:#fecc5c
+}
+.YlOrRd .q2-5
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q3-5
+{
+    fill:#f03b20
+}
+.YlOrRd .q4-5
+{
+    fill:#bd0026
+}
+.YlOrRd .q0-6
+{
+    fill:#ffffb2
+}
+.YlOrRd .q1-6
+{
+    fill:#fed976
+}
+.YlOrRd .q2-6
+{
+    fill:#feb24c
+}
+.YlOrRd .q3-6
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q4-6
+{
+    fill:#f03b20
+}
+.YlOrRd .q5-6
+{
+    fill:#bd0026
+}
+.YlOrRd .q0-7
+{
+    fill:#ffffb2
+}
+.YlOrRd .q1-7
+{
+    fill:#fed976
+}
+.YlOrRd .q2-7
+{
+    fill:#feb24c
+}
+.YlOrRd .q3-7
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q4-7
+{
+    fill:#fc4e2a
+}
+.YlOrRd .q5-7
+{
+    fill:#e31a1c
+}
+.YlOrRd .q6-7
+{
+    fill:#b10026
+}
+.YlOrRd .q0-8
+{
+    fill:#ffc
+}
+.YlOrRd .q1-8
+{
+    fill:#ffeda0
+}
+.YlOrRd .q2-8
+{
+    fill:#fed976
+}
+.YlOrRd .q3-8
+{
+    fill:#feb24c
+}
+.YlOrRd .q4-8
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q5-8
+{
+    fill:#fc4e2a
+}
+.YlOrRd .q6-8
+{
+    fill:#e31a1c
+}
+.YlOrRd .q7-8
+{
+    fill:#b10026
+}
+.YlOrRd .q0-9
+{
+    fill:#ffc
+}
+.YlOrRd .q1-9
+{
+    fill:#ffeda0
+}
+.YlOrRd .q2-9
+{
+    fill:#fed976
+}
+.YlOrRd .q3-9
+{
+    fill:#feb24c
+}
+.YlOrRd .q4-9
+{
+    fill:#fd8d3c
+}
+.YlOrRd .q5-9
+{
+    fill:#fc4e2a
+}
+.YlOrRd .q6-9
+{
+    fill:#e31a1c
+}
+.YlOrRd .q7-9
+{
+    fill:#bd0026
+}
+.YlOrRd .q8-9
+{
+    fill:#800026
+}
+.YlOrBr .q0-3
+{
+    fill:#fff7bc
+}
+.YlOrBr .q1-3
+{
+    fill:#fec44f
+}
+.YlOrBr .q2-3
+{
+    fill:#d95f0e
+}
+.YlOrBr .q0-4
+{
+    fill:#ffffd4
+}
+.YlOrBr .q1-4
+{
+    fill:#fed98e
+}
+.YlOrBr .q2-4
+{
+    fill:#fe9929
+}
+.YlOrBr .q3-4
+{
+    fill:#cc4c02
+}
+.YlOrBr .q0-5
+{
+    fill:#ffffd4
+}
+.YlOrBr .q1-5
+{
+    fill:#fed98e
+}
+.YlOrBr .q2-5
+{
+    fill:#fe9929
+}
+.YlOrBr .q3-5
+{
+    fill:#d95f0e
+}
+.YlOrBr .q4-5
+{
+    fill:#993404
+}
+.YlOrBr .q0-6
+{
+    fill:#ffffd4
+}
+.YlOrBr .q1-6
+{
+    fill:#fee391
+}
+.YlOrBr .q2-6
+{
+    fill:#fec44f
+}
+.YlOrBr .q3-6
+{
+    fill:#fe9929
+}
+.YlOrBr .q4-6
+{
+    fill:#d95f0e
+}
+.YlOrBr .q5-6
+{
+    fill:#993404
+}
+.YlOrBr .q0-7
+{
+    fill:#ffffd4
+}
+.YlOrBr .q1-7
+{
+    fill:#fee391
+}
+.YlOrBr .q2-7
+{
+    fill:#fec44f
+}
+.YlOrBr .q3-7
+{
+    fill:#fe9929
+}
+.YlOrBr .q4-7
+{
+    fill:#ec7014
+}
+.YlOrBr .q5-7
+{
+    fill:#cc4c02
+}
+.YlOrBr .q6-7
+{
+    fill:#8c2d04
+}
+.YlOrBr .q0-8
+{
+    fill:#ffffe5
+}
+.YlOrBr .q1-8
+{
+    fill:#fff7bc
+}
+.YlOrBr .q2-8
+{
+    fill:#fee391
+}
+.YlOrBr .q3-8
+{
+    fill:#fec44f
+}
+.YlOrBr .q4-8
+{
+    fill:#fe9929
+}
+.YlOrBr .q5-8
+{
+    fill:#ec7014
+}
+.YlOrBr .q6-8
+{
+    fill:#cc4c02
+}
+.YlOrBr .q7-8
+{
+    fill:#8c2d04
+}
+.YlOrBr .q0-9
+{
+    fill:#ffffe5
+}
+.YlOrBr .q1-9
+{
+    fill:#fff7bc
+}
+.YlOrBr .q2-9
+{
+    fill:#fee391
+}
+.YlOrBr .q3-9
+{
+    fill:#fec44f
+}
+.YlOrBr .q4-9
+{
+    fill:#fe9929
+}
+.YlOrBr .q5-9
+{
+    fill:#ec7014
+}
+.YlOrBr .q6-9
+{
+    fill:#cc4c02
+}
+.YlOrBr .q7-9
+{
+    fill:#993404
+}
+.YlOrBr .q8-9
+{
+    fill:#662506
+}
+.Purples .q0-3
+{
+    fill:#efedf5
+}
+.Purples .q1-3
+{
+    fill:#bcbddc
+}
+.Purples .q2-3
+{
+    fill:#756bb1
+}
+.Purples .q0-4
+{
+    fill:#f2f0f7
+}
+.Purples .q1-4
+{
+    fill:#cbc9e2
+}
+.Purples .q2-4
+{
+    fill:#9e9ac8
+}
+.Purples .q3-4
+{
+    fill:#6a51a3
+}
+.Purples .q0-5
+{
+    fill:#f2f0f7
+}
+.Purples .q1-5
+{
+    fill:#cbc9e2
+}
+.Purples .q2-5
+{
+    fill:#9e9ac8
+}
+.Purples .q3-5
+{
+    fill:#756bb1
+}
+.Purples .q4-5
+{
+    fill:#54278f
+}
+.Purples .q0-6
+{
+    fill:#f2f0f7
+}
+.Purples .q1-6
+{
+    fill:#dadaeb
+}
+.Purples .q2-6
+{
+    fill:#bcbddc
+}
+.Purples .q3-6
+{
+    fill:#9e9ac8
+}
+.Purples .q4-6
+{
+    fill:#756bb1
+}
+.Purples .q5-6
+{
+    fill:#54278f
+}
+.Purples .q0-7
+{
+    fill:#f2f0f7
+}
+.Purples .q1-7
+{
+    fill:#dadaeb
+}
+.Purples .q2-7
+{
+    fill:#bcbddc
+}
+.Purples .q3-7
+{
+    fill:#9e9ac8
+}
+.Purples .q4-7
+{
+    fill:#807dba
+}
+.Purples .q5-7
+{
+    fill:#6a51a3
+}
+.Purples .q6-7
+{
+    fill:#4a1486
+}
+.Purples .q0-8
+{
+    fill:#fcfbfd
+}
+.Purples .q1-8
+{
+    fill:#efedf5
+}
+.Purples .q2-8
+{
+    fill:#dadaeb
+}
+.Purples .q3-8
+{
+    fill:#bcbddc
+}
+.Purples .q4-8
+{
+    fill:#9e9ac8
+}
+.Purples .q5-8
+{
+    fill:#807dba
+}
+.Purples .q6-8
+{
+    fill:#6a51a3
+}
+.Purples .q7-8
+{
+    fill:#4a1486
+}
+.Purples .q0-9
+{
+    fill:#fcfbfd
+}
+.Purples .q1-9
+{
+    fill:#efedf5
+}
+.Purples .q2-9
+{
+    fill:#dadaeb
+}
+.Purples .q3-9
+{
+    fill:#bcbddc
+}
+.Purples .q4-9
+{
+    fill:#9e9ac8
+}
+.Purples .q5-9
+{
+    fill:#807dba
+}
+.Purples .q6-9
+{
+    fill:#6a51a3
+}
+.Purples .q7-9
+{
+    fill:#54278f
+}
+.Purples .q8-9
+{
+    fill:#3f007d
+}
+.Blues .q0-3
+{
+    fill:#deebf7
+}
+.Blues .q1-3
+{
+    fill:#9ecae1
+}
+.Blues .q2-3
+{
+    fill:#3182bd
+}
+.Blues .q0-4
+{
+    fill:#eff3ff
+}
+.Blues .q1-4
+{
+    fill:#bdd7e7
+}
+.Blues .q2-4
+{
+    fill:#6baed6
+}
+.Blues .q3-4
+{
+    fill:#2171b5
+}
+.Blues .q0-5
+{
+    fill:#eff3ff
+}
+.Blues .q1-5
+{
+    fill:#bdd7e7
+}
+.Blues .q2-5
+{
+    fill:#6baed6
+}
+.Blues .q3-5
+{
+    fill:#3182bd
+}
+.Blues .q4-5
+{
+    fill:#08519c
+}
+.Blues .q0-6
+{
+    fill:#eff3ff
+}
+.Blues .q1-6
+{
+    fill:#c6dbef
+}
+.Blues .q2-6
+{
+    fill:#9ecae1
+}
+.Blues .q3-6
+{
+    fill:#6baed6
+}
+.Blues .q4-6
+{
+    fill:#3182bd
+}
+.Blues .q5-6
+{
+    fill:#08519c
+}
+.Blues .q0-7
+{
+    fill:#eff3ff
+}
+.Blues .q1-7
+{
+    fill:#c6dbef
+}
+.Blues .q2-7
+{
+    fill:#9ecae1
+}
+.Blues .q3-7
+{
+    fill:#6baed6
+}
+.Blues .q4-7
+{
+    fill:#4292c6
+}
+.Blues .q5-7
+{
+    fill:#2171b5
+}
+.Blues .q6-7
+{
+    fill:#084594
+}
+.Blues .q0-8
+{
+    fill:#f7fbff
+}
+.Blues .q1-8
+{
+    fill:#deebf7
+}
+.Blues .q2-8
+{
+    fill:#c6dbef
+}
+.Blues .q3-8
+{
+    fill:#9ecae1
+}
+.Blues .q4-8
+{
+    fill:#6baed6
+}
+.Blues .q5-8
+{
+    fill:#4292c6
+}
+.Blues .q6-8
+{
+    fill:#2171b5
+}
+.Blues .q7-8
+{
+    fill:#084594
+}
+.Blues .q0-9
+{
+    fill:#f7fbff
+}
+.Blues .q1-9
+{
+    fill:#deebf7
+}
+.Blues .q2-9
+{
+    fill:#c6dbef
+}
+.Blues .q3-9
+{
+    fill:#9ecae1
+}
+.Blues .q4-9
+{
+    fill:#6baed6
+}
+.Blues .q5-9
+{
+    fill:#4292c6
+}
+.Blues .q6-9
+{
+    fill:#2171b5
+}
+.Blues .q7-9
+{
+    fill:#08519c
+}
+.Blues .q8-9
+{
+    fill:#08306b
+}
+.Greens .q0-3
+{
+    fill:#e5f5e0
+}
+.Greens .q1-3
+{
+    fill:#a1d99b
+}
+.Greens .q2-3
+{
+    fill:#31a354
+}
+.Greens .q0-4
+{
+    fill:#edf8e9
+}
+.Greens .q1-4
+{
+    fill:#bae4b3
+}
+.Greens .q2-4
+{
+    fill:#74c476
+}
+.Greens .q3-4
+{
+    fill:#238b45
+}
+.Greens .q0-5
+{
+    fill:#edf8e9
+}
+.Greens .q1-5
+{
+    fill:#bae4b3
+}
+.Greens .q2-5
+{
+    fill:#74c476
+}
+.Greens .q3-5
+{
+    fill:#31a354
+}
+.Greens .q4-5
+{
+    fill:#006d2c
+}
+.Greens .q0-6
+{
+    fill:#edf8e9
+}
+.Greens .q1-6
+{
+    fill:#c7e9c0
+}
+.Greens .q2-6
+{
+    fill:#a1d99b
+}
+.Greens .q3-6
+{
+    fill:#74c476
+}
+.Greens .q4-6
+{
+    fill:#31a354
+}
+.Greens .q5-6
+{
+    fill:#006d2c
+}
+.Greens .q0-7
+{
+    fill:#edf8e9
+}
+.Greens .q1-7
+{
+    fill:#c7e9c0
+}
+.Greens .q2-7
+{
+    fill:#a1d99b
+}
+.Greens .q3-7
+{
+    fill:#74c476
+}
+.Greens .q4-7
+{
+    fill:#41ab5d
+}
+.Greens .q5-7
+{
+    fill:#238b45
+}
+.Greens .q6-7
+{
+    fill:#005a32
+}
+.Greens .q0-8
+{
+    fill:#f7fcf5
+}
+.Greens .q1-8
+{
+    fill:#e5f5e0
+}
+.Greens .q2-8
+{
+    fill:#c7e9c0
+}
+.Greens .q3-8
+{
+    fill:#a1d99b
+}
+.Greens .q4-8
+{
+    fill:#74c476
+}
+.Greens .q5-8
+{
+    fill:#41ab5d
+}
+.Greens .q6-8
+{
+    fill:#238b45
+}
+.Greens .q7-8
+{
+    fill:#005a32
+}
+.Greens .q0-9
+{
+    fill:#f7fcf5
+}
+.Greens .q1-9
+{
+    fill:#e5f5e0
+}
+.Greens .q2-9
+{
+    fill:#c7e9c0
+}
+.Greens .q3-9
+{
+    fill:#a1d99b
+}
+.Greens .q4-9
+{
+    fill:#74c476
+}
+.Greens .q5-9
+{
+    fill:#41ab5d
+}
+.Greens .q6-9
+{
+    fill:#238b45
+}
+.Greens .q7-9
+{
+    fill:#006d2c
+}
+.Greens .q8-9
+{
+    fill:#00441b
+}
+.Oranges .q0-3
+{
+    fill:#fee6ce
+}
+.Oranges .q1-3
+{
+    fill:#fdae6b
+}
+.Oranges .q2-3
+{
+    fill:#e6550d
+}
+.Oranges .q0-4
+{
+    fill:#feedde
+}
+.Oranges .q1-4
+{
+    fill:#fdbe85
+}
+.Oranges .q2-4
+{
+    fill:#fd8d3c
+}
+.Oranges .q3-4
+{
+    fill:#d94701
+}
+.Oranges .q0-5
+{
+    fill:#feedde
+}
+.Oranges .q1-5
+{
+    fill:#fdbe85
+}
+.Oranges .q2-5
+{
+    fill:#fd8d3c
+}
+.Oranges .q3-5
+{
+    fill:#e6550d
+}
+.Oranges .q4-5
+{
+    fill:#a63603
+}
+.Oranges .q0-6
+{
+    fill:#feedde
+}
+.Oranges .q1-6
+{
+    fill:#fdd0a2
+}
+.Oranges .q2-6
+{
+    fill:#fdae6b
+}
+.Oranges .q3-6
+{
+    fill:#fd8d3c
+}
+.Oranges .q4-6
+{
+    fill:#e6550d
+}
+.Oranges .q5-6
+{
+    fill:#a63603
+}
+.Oranges .q0-7
+{
+    fill:#feedde
+}
+.Oranges .q1-7
+{
+    fill:#fdd0a2
+}
+.Oranges .q2-7
+{
+    fill:#fdae6b
+}
+.Oranges .q3-7
+{
+    fill:#fd8d3c
+}
+.Oranges .q4-7
+{
+    fill:#f16913
+}
+.Oranges .q5-7
+{
+    fill:#d94801
+}
+.Oranges .q6-7
+{
+    fill:#8c2d04
+}
+.Oranges .q0-8
+{
+    fill:#fff5eb
+}
+.Oranges .q1-8
+{
+    fill:#fee6ce
+}
+.Oranges .q2-8
+{
+    fill:#fdd0a2
+}
+.Oranges .q3-8
+{
+    fill:#fdae6b
+}
+.Oranges .q4-8
+{
+    fill:#fd8d3c
+}
+.Oranges .q5-8
+{
+    fill:#f16913
+}
+.Oranges .q6-8
+{
+    fill:#d94801
+}
+.Oranges .q7-8
+{
+    fill:#8c2d04
+}
+.Oranges .q0-9
+{
+    fill:#fff5eb
+}
+.Oranges .q1-9
+{
+    fill:#fee6ce
+}
+.Oranges .q2-9
+{
+    fill:#fdd0a2
+}
+.Oranges .q3-9
+{
+    fill:#fdae6b
+}
+.Oranges .q4-9
+{
+    fill:#fd8d3c
+}
+.Oranges .q5-9
+{
+    fill:#f16913
+}
+.Oranges .q6-9
+{
+    fill:#d94801
+}
+.Oranges .q7-9
+{
+    fill:#a63603
+}
+.Oranges .q8-9
+{
+    fill:#7f2704
+}
+.Reds .q0-3
+{
+    fill:#fee0d2
+}
+.Reds .q1-3
+{
+    fill:#fc9272
+}
+.Reds .q2-3
+{
+    fill:#de2d26
+}
+.Reds .q0-4
+{
+    fill:#fee5d9
+}
+.Reds .q1-4
+{
+    fill:#fcae91
+}
+.Reds .q2-4
+{
+    fill:#fb6a4a
+}
+.Reds .q3-4
+{
+    fill:#cb181d
+}
+.Reds .q0-5
+{
+    fill:#fee5d9
+}
+.Reds .q1-5
+{
+    fill:#fcae91
+}
+.Reds .q2-5
+{
+    fill:#fb6a4a
+}
+.Reds .q3-5
+{
+    fill:#de2d26
+}
+.Reds .q4-5
+{
+    fill:#a50f15
+}
+.Reds .q0-6
+{
+    fill:#fee5d9
+}
+.Reds .q1-6
+{
+    fill:#fcbba1
+}
+.Reds .q2-6
+{
+    fill:#fc9272
+}
+.Reds .q3-6
+{
+    fill:#fb6a4a
+}
+.Reds .q4-6
+{
+    fill:#de2d26
+}
+.Reds .q5-6
+{
+    fill:#a50f15
+}
+.Reds .q0-7
+{
+    fill:#fee5d9
+}
+.Reds .q1-7
+{
+    fill:#fcbba1
+}
+.Reds .q2-7
+{
+    fill:#fc9272
+}
+.Reds .q3-7
+{
+    fill:#fb6a4a
+}
+.Reds .q4-7
+{
+    fill:#ef3b2c
+}
+.Reds .q5-7
+{
+    fill:#cb181d
+}
+.Reds .q6-7
+{
+    fill:#99000d
+}
+.Reds .q0-8
+{
+    fill:#fff5f0
+}
+.Reds .q1-8
+{
+    fill:#fee0d2
+}
+.Reds .q2-8
+{
+    fill:#fcbba1
+}
+.Reds .q3-8
+{
+    fill:#fc9272
+}
+.Reds .q4-8
+{
+    fill:#fb6a4a
+}
+.Reds .q5-8
+{
+    fill:#ef3b2c
+}
+.Reds .q6-8
+{
+    fill:#cb181d
+}
+.Reds .q7-8
+{
+    fill:#99000d
+}
+.Reds .q0-9
+{
+    fill:#fff5f0
+}
+.Reds .q1-9
+{
+    fill:#fee0d2
+}
+.Reds .q2-9
+{
+    fill:#fcbba1
+}
+.Reds .q3-9
+{
+    fill:#fc9272
+}
+.Reds .q4-9
+{
+    fill:#fb6a4a
+}
+.Reds .q5-9
+{
+    fill:#ef3b2c
+}
+.Reds .q6-9
+{
+    fill:#cb181d
+}
+.Reds .q7-9
+{
+    fill:#a50f15
+}
+.Reds .q8-9
+{
+    fill:#67000d
+}
+.Greys .q0-3
+{
+    fill:#f0f0f0
+}
+.Greys .q1-3
+{
+    fill:#bdbdbd
+}
+.Greys .q2-3
+{
+    fill:#636363
+}
+.Greys .q0-4
+{
+    fill:#f7f7f7
+}
+.Greys .q1-4
+{
+    fill:#ccc
+}
+.Greys .q2-4
+{
+    fill:#969696
+}
+.Greys .q3-4
+{
+    fill:#525252
+}
+.Greys .q0-5
+{
+    fill:#f7f7f7
+}
+.Greys .q1-5
+{
+    fill:#ccc
+}
+.Greys .q2-5
+{
+    fill:#969696
+}
+.Greys .q3-5
+{
+    fill:#636363
+}
+.Greys .q4-5
+{
+    fill:#252525
+}
+.Greys .q0-6
+{
+    fill:#f7f7f7
+}
+.Greys .q1-6
+{
+    fill:#d9d9d9
+}
+.Greys .q2-6
+{
+    fill:#bdbdbd
+}
+.Greys .q3-6
+{
+    fill:#969696
+}
+.Greys .q4-6
+{
+    fill:#636363
+}
+.Greys .q5-6
+{
+    fill:#252525
+}
+.Greys .q0-7
+{
+    fill:#f7f7f7
+}
+.Greys .q1-7
+{
+    fill:#d9d9d9
+}
+.Greys .q2-7
+{
+    fill:#bdbdbd
+}
+.Greys .q3-7
+{
+    fill:#969696
+}
+.Greys .q4-7
+{
+    fill:#737373
+}
+.Greys .q5-7
+{
+    fill:#525252
+}
+.Greys .q6-7
+{
+    fill:#252525
+}
+.Greys .q0-8
+{
+    fill:#fff
+}
+.Greys .q1-8
+{
+    fill:#f0f0f0
+}
+.Greys .q2-8
+{
+    fill:#d9d9d9
+}
+.Greys .q3-8
+{
+    fill:#bdbdbd
+}
+.Greys .q4-8
+{
+    fill:#969696
+}
+.Greys .q5-8
+{
+    fill:#737373
+}
+.Greys .q6-8
+{
+    fill:#525252
+}
+.Greys .q7-8
+{
+    fill:#252525
+}
+.Greys .q0-9
+{
+    fill:#fff
+}
+.Greys .q1-9
+{
+    fill:#f0f0f0
+}
+.Greys .q2-9
+{
+    fill:#d9d9d9
+}
+.Greys .q3-9
+{
+    fill:#bdbdbd
+}
+.Greys .q4-9
+{
+    fill:#969696
+}
+.Greys .q5-9
+{
+    fill:#737373
+}
+.Greys .q6-9
+{
+    fill:#525252
+}
+.Greys .q7-9
+{
+    fill:#252525
+}
+.Greys .q8-9
+{
+    fill:#000
+}
+.PuOr .q0-3
+{
+    fill:#f1a340
+}
+.PuOr .q1-3
+{
+    fill:#f7f7f7
+}
+.PuOr .q2-3
+{
+    fill:#998ec3
+}
+.PuOr .q0-4
+{
+    fill:#e66101
+}
+.PuOr .q1-4
+{
+    fill:#fdb863
+}
+.PuOr .q2-4
+{
+    fill:#b2abd2
+}
+.PuOr .q3-4
+{
+    fill:#5e3c99
+}
+.PuOr .q0-5
+{
+    fill:#e66101
+}
+.PuOr .q1-5
+{
+    fill:#fdb863
+}
+.PuOr .q2-5
+{
+    fill:#f7f7f7
+}
+.PuOr .q3-5
+{
+    fill:#b2abd2
+}
+.PuOr .q4-5
+{
+    fill:#5e3c99
+}
+.PuOr .q0-6
+{
+    fill:#b35806
+}
+.PuOr .q1-6
+{
+    fill:#f1a340
+}
+.PuOr .q2-6
+{
+    fill:#fee0b6
+}
+.PuOr .q3-6
+{
+    fill:#d8daeb
+}
+.PuOr .q4-6
+{
+    fill:#998ec3
+}
+.PuOr .q5-6
+{
+    fill:#542788
+}
+.PuOr .q0-7
+{
+    fill:#b35806
+}
+.PuOr .q1-7
+{
+    fill:#f1a340
+}
+.PuOr .q2-7
+{
+    fill:#fee0b6
+}
+.PuOr .q3-7
+{
+    fill:#f7f7f7
+}
+.PuOr .q4-7
+{
+    fill:#d8daeb
+}
+.PuOr .q5-7
+{
+    fill:#998ec3
+}
+.PuOr .q6-7
+{
+    fill:#542788
+}
+.PuOr .q0-8
+{
+    fill:#b35806
+}
+.PuOr .q1-8
+{
+    fill:#e08214
+}
+.PuOr .q2-8
+{
+    fill:#fdb863
+}
+.PuOr .q3-8
+{
+    fill:#fee0b6
+}
+.PuOr .q4-8
+{
+    fill:#d8daeb
+}
+.PuOr .q5-8
+{
+    fill:#b2abd2
+}
+.PuOr .q6-8
+{
+    fill:#8073ac
+}
+.PuOr .q7-8
+{
+    fill:#542788
+}
+.PuOr .q0-9
+{
+    fill:#b35806
+}
+.PuOr .q1-9
+{
+    fill:#e08214
+}
+.PuOr .q2-9
+{
+    fill:#fdb863
+}
+.PuOr .q3-9
+{
+    fill:#fee0b6
+}
+.PuOr .q4-9
+{
+    fill:#f7f7f7
+}
+.PuOr .q5-9
+{
+    fill:#d8daeb
+}
+.PuOr .q6-9
+{
+    fill:#b2abd2
+}
+.PuOr .q7-9
+{
+    fill:#8073ac
+}
+.PuOr .q8-9
+{
+    fill:#542788
+}
+.PuOr .q0-10
+{
+    fill:#7f3b08
+}
+.PuOr .q1-10
+{
+    fill:#b35806
+}
+.PuOr .q2-10
+{
+    fill:#e08214
+}
+.PuOr .q3-10
+{
+    fill:#fdb863
+}
+.PuOr .q4-10
+{
+    fill:#fee0b6
+}
+.PuOr .q5-10
+{
+    fill:#d8daeb
+}
+.PuOr .q6-10
+{
+    fill:#b2abd2
+}
+.PuOr .q7-10
+{
+    fill:#8073ac
+}
+.PuOr .q8-10
+{
+    fill:#542788
+}
+.PuOr .q9-10
+{
+    fill:#2d004b
+}
+.PuOr .q0-11
+{
+    fill:#7f3b08
+}
+.PuOr .q1-11
+{
+    fill:#b35806
+}
+.PuOr .q2-11
+{
+    fill:#e08214
+}
+.PuOr .q3-11
+{
+    fill:#fdb863
+}
+.PuOr .q4-11
+{
+    fill:#fee0b6
+}
+.PuOr .q5-11
+{
+    fill:#f7f7f7
+}
+.PuOr .q6-11
+{
+    fill:#d8daeb
+}
+.PuOr .q7-11
+{
+    fill:#b2abd2
+}
+.PuOr .q8-11
+{
+    fill:#8073ac
+}
+.PuOr .q9-11
+{
+    fill:#542788
+}
+.PuOr .q10-11
+{
+    fill:#2d004b
+}
+.BrBG .q0-3
+{
+    fill:#d8b365
+}
+.BrBG .q1-3
+{
+    fill:#f5f5f5
+}
+.BrBG .q2-3
+{
+    fill:#5ab4ac
+}
+.BrBG .q0-4
+{
+    fill:#a6611a
+}
+.BrBG .q1-4
+{
+    fill:#dfc27d
+}
+.BrBG .q2-4
+{
+    fill:#80cdc1
+}
+.BrBG .q3-4
+{
+    fill:#018571
+}
+.BrBG .q0-5
+{
+    fill:#a6611a
+}
+.BrBG .q1-5
+{
+    fill:#dfc27d
+}
+.BrBG .q2-5
+{
+    fill:#f5f5f5
+}
+.BrBG .q3-5
+{
+    fill:#80cdc1
+}
+.BrBG .q4-5
+{
+    fill:#018571
+}
+.BrBG .q0-6
+{
+    fill:#8c510a
+}
+.BrBG .q1-6
+{
+    fill:#d8b365
+}
+.BrBG .q2-6
+{
+    fill:#f6e8c3
+}
+.BrBG .q3-6
+{
+    fill:#c7eae5
+}
+.BrBG .q4-6
+{
+    fill:#5ab4ac
+}
+.BrBG .q5-6
+{
+    fill:#01665e
+}
+.BrBG .q0-7
+{
+    fill:#8c510a
+}
+.BrBG .q1-7
+{
+    fill:#d8b365
+}
+.BrBG .q2-7
+{
+    fill:#f6e8c3
+}
+.BrBG .q3-7
+{
+    fill:#f5f5f5
+}
+.BrBG .q4-7
+{
+    fill:#c7eae5
+}
+.BrBG .q5-7
+{
+    fill:#5ab4ac
+}
+.BrBG .q6-7
+{
+    fill:#01665e
+}
+.BrBG .q0-8
+{
+    fill:#8c510a
+}
+.BrBG .q1-8
+{
+    fill:#bf812d
+}
+.BrBG .q2-8
+{
+    fill:#dfc27d
+}
+.BrBG .q3-8
+{
+    fill:#f6e8c3
+}
+.BrBG .q4-8
+{
+    fill:#c7eae5
+}
+.BrBG .q5-8
+{
+    fill:#80cdc1
+}
+.BrBG .q6-8
+{
+    fill:#35978f
+}
+.BrBG .q7-8
+{
+    fill:#01665e
+}
+.BrBG .q0-9
+{
+    fill:#8c510a
+}
+.BrBG .q1-9
+{
+    fill:#bf812d
+}
+.BrBG .q2-9
+{
+    fill:#dfc27d
+}
+.BrBG .q3-9
+{
+    fill:#f6e8c3
+}
+.BrBG .q4-9
+{
+    fill:#f5f5f5
+}
+.BrBG .q5-9
+{
+    fill:#c7eae5
+}
+.BrBG .q6-9
+{
+    fill:#80cdc1
+}
+.BrBG .q7-9
+{
+    fill:#35978f
+}
+.BrBG .q8-9
+{
+    fill:#01665e
+}
+.BrBG .q0-10
+{
+    fill:#543005
+}
+.BrBG .q1-10
+{
+    fill:#8c510a
+}
+.BrBG .q2-10
+{
+    fill:#bf812d
+}
+.BrBG .q3-10
+{
+    fill:#dfc27d
+}
+.BrBG .q4-10
+{
+    fill:#f6e8c3
+}
+.BrBG .q5-10
+{
+    fill:#c7eae5
+}
+.BrBG .q6-10
+{
+    fill:#80cdc1
+}
+.BrBG .q7-10
+{
+    fill:#35978f
+}
+.BrBG .q8-10
+{
+    fill:#01665e
+}
+.BrBG .q9-10
+{
+    fill:#003c30
+}
+.BrBG .q0-11
+{
+    fill:#543005
+}
+.BrBG .q1-11
+{
+    fill:#8c510a
+}
+.BrBG .q2-11
+{
+    fill:#bf812d
+}
+.BrBG .q3-11
+{
+    fill:#dfc27d
+}
+.BrBG .q4-11
+{
+    fill:#f6e8c3
+}
+.BrBG .q5-11
+{
+    fill:#f5f5f5
+}
+.BrBG .q6-11
+{
+    fill:#c7eae5
+}
+.BrBG .q7-11
+{
+    fill:#80cdc1
+}
+.BrBG .q8-11
+{
+    fill:#35978f
+}
+.BrBG .q9-11
+{
+    fill:#01665e
+}
+.BrBG .q10-11
+{
+    fill:#003c30
+}
+.PRGn .q0-3
+{
+    fill:#af8dc3
+}
+.PRGn .q1-3
+{
+    fill:#f7f7f7
+}
+.PRGn .q2-3
+{
+    fill:#7fbf7b
+}
+.PRGn .q0-4
+{
+    fill:#7b3294
+}
+.PRGn .q1-4
+{
+    fill:#c2a5cf
+}
+.PRGn .q2-4
+{
+    fill:#a6dba0
+}
+.PRGn .q3-4
+{
+    fill:#008837
+}
+.PRGn .q0-5
+{
+    fill:#7b3294
+}
+.PRGn .q1-5
+{
+    fill:#c2a5cf
+}
+.PRGn .q2-5
+{
+    fill:#f7f7f7
+}
+.PRGn .q3-5
+{
+    fill:#a6dba0
+}
+.PRGn .q4-5
+{
+    fill:#008837
+}
+.PRGn .q0-6
+{
+    fill:#762a83
+}
+.PRGn .q1-6
+{
+    fill:#af8dc3
+}
+.PRGn .q2-6
+{
+    fill:#e7d4e8
+}
+.PRGn .q3-6
+{
+    fill:#d9f0d3
+}
+.PRGn .q4-6
+{
+    fill:#7fbf7b
+}
+.PRGn .q5-6
+{
+    fill:#1b7837
+}
+.PRGn .q0-7
+{
+    fill:#762a83
+}
+.PRGn .q1-7
+{
+    fill:#af8dc3
+}
+.PRGn .q2-7
+{
+    fill:#e7d4e8
+}
+.PRGn .q3-7
+{
+    fill:#f7f7f7
+}
+.PRGn .q4-7
+{
+    fill:#d9f0d3
+}
+.PRGn .q5-7
+{
+    fill:#7fbf7b
+}
+.PRGn .q6-7
+{
+    fill:#1b7837
+}
+.PRGn .q0-8
+{
+    fill:#762a83
+}
+.PRGn .q1-8
+{
+    fill:#9970ab
+}
+.PRGn .q2-8
+{
+    fill:#c2a5cf
+}
+.PRGn .q3-8
+{
+    fill:#e7d4e8
+}
+.PRGn .q4-8
+{
+    fill:#d9f0d3
+}
+.PRGn .q5-8
+{
+    fill:#a6dba0
+}
+.PRGn .q6-8
+{
+    fill:#5aae61
+}
+.PRGn .q7-8
+{
+    fill:#1b7837
+}
+.PRGn .q0-9
+{
+    fill:#762a83
+}
+.PRGn .q1-9
+{
+    fill:#9970ab
+}
+.PRGn .q2-9
+{
+    fill:#c2a5cf
+}
+.PRGn .q3-9
+{
+    fill:#e7d4e8
+}
+.PRGn .q4-9
+{
+    fill:#f7f7f7
+}
+.PRGn .q5-9
+{
+    fill:#d9f0d3
+}
+.PRGn .q6-9
+{
+    fill:#a6dba0
+}
+.PRGn .q7-9
+{
+    fill:#5aae61
+}
+.PRGn .q8-9
+{
+    fill:#1b7837
+}
+.PRGn .q0-10
+{
+    fill:#40004b
+}
+.PRGn .q1-10
+{
+    fill:#762a83
+}
+.PRGn .q2-10
+{
+    fill:#9970ab
+}
+.PRGn .q3-10
+{
+    fill:#c2a5cf
+}
+.PRGn .q4-10
+{
+    fill:#e7d4e8
+}
+.PRGn .q5-10
+{
+    fill:#d9f0d3
+}
+.PRGn .q6-10
+{
+    fill:#a6dba0
+}
+.PRGn .q7-10
+{
+    fill:#5aae61
+}
+.PRGn .q8-10
+{
+    fill:#1b7837
+}
+.PRGn .q9-10
+{
+    fill:#00441b
+}
+.PRGn .q0-11
+{
+    fill:#40004b
+}
+.PRGn .q1-11
+{
+    fill:#762a83
+}
+.PRGn .q2-11
+{
+    fill:#9970ab
+}
+.PRGn .q3-11
+{
+    fill:#c2a5cf
+}
+.PRGn .q4-11
+{
+    fill:#e7d4e8
+}
+.PRGn .q5-11
+{
+    fill:#f7f7f7
+}
+.PRGn .q6-11
+{
+    fill:#d9f0d3
+}
+.PRGn .q7-11
+{
+    fill:#a6dba0
+}
+.PRGn .q8-11
+{
+    fill:#5aae61
+}
+.PRGn .q9-11
+{
+    fill:#1b7837
+}
+.PRGn .q10-11
+{
+    fill:#00441b
+}
+.PiYG .q0-3
+{
+    fill:#e9a3c9
+}
+.PiYG .q1-3
+{
+    fill:#f7f7f7
+}
+.PiYG .q2-3
+{
+    fill:#a1d76a
+}
+.PiYG .q0-4
+{
+    fill:#d01c8b
+}
+.PiYG .q1-4
+{
+    fill:#f1b6da
+}
+.PiYG .q2-4
+{
+    fill:#b8e186
+}
+.PiYG .q3-4
+{
+    fill:#4dac26
+}
+.PiYG .q0-5
+{
+    fill:#d01c8b
+}
+.PiYG .q1-5
+{
+    fill:#f1b6da
+}
+.PiYG .q2-5
+{
+    fill:#f7f7f7
+}
+.PiYG .q3-5
+{
+    fill:#b8e186
+}
+.PiYG .q4-5
+{
+    fill:#4dac26
+}
+.PiYG .q0-6
+{
+    fill:#c51b7d
+}
+.PiYG .q1-6
+{
+    fill:#e9a3c9
+}
+.PiYG .q2-6
+{
+    fill:#fde0ef
+}
+.PiYG .q3-6
+{
+    fill:#e6f5d0
+}
+.PiYG .q4-6
+{
+    fill:#a1d76a
+}
+.PiYG .q5-6
+{
+    fill:#4d9221
+}
+.PiYG .q0-7
+{
+    fill:#c51b7d
+}
+.PiYG .q1-7
+{
+    fill:#e9a3c9
+}
+.PiYG .q2-7
+{
+    fill:#fde0ef
+}
+.PiYG .q3-7
+{
+    fill:#f7f7f7
+}
+.PiYG .q4-7
+{
+    fill:#e6f5d0
+}
+.PiYG .q5-7
+{
+    fill:#a1d76a
+}
+.PiYG .q6-7
+{
+    fill:#4d9221
+}
+.PiYG .q0-8
+{
+    fill:#c51b7d
+}
+.PiYG .q1-8
+{
+    fill:#de77ae
+}
+.PiYG .q2-8
+{
+    fill:#f1b6da
+}
+.PiYG .q3-8
+{
+    fill:#fde0ef
+}
+.PiYG .q4-8
+{
+    fill:#e6f5d0
+}
+.PiYG .q5-8
+{
+    fill:#b8e186
+}
+.PiYG .q6-8
+{
+    fill:#7fbc41
+}
+.PiYG .q7-8
+{
+    fill:#4d9221
+}
+.PiYG .q0-9
+{
+    fill:#c51b7d
+}
+.PiYG .q1-9
+{
+    fill:#de77ae
+}
+.PiYG .q2-9
+{
+    fill:#f1b6da
+}
+.PiYG .q3-9
+{
+    fill:#fde0ef
+}
+.PiYG .q4-9
+{
+    fill:#f7f7f7
+}
+.PiYG .q5-9
+{
+    fill:#e6f5d0
+}
+.PiYG .q6-9
+{
+    fill:#b8e186
+}
+.PiYG .q7-9
+{
+    fill:#7fbc41
+}
+.PiYG .q8-9
+{
+    fill:#4d9221
+}
+.PiYG .q0-10
+{
+    fill:#8e0152
+}
+.PiYG .q1-10
+{
+    fill:#c51b7d
+}
+.PiYG .q2-10
+{
+    fill:#de77ae
+}
+.PiYG .q3-10
+{
+    fill:#f1b6da
+}
+.PiYG .q4-10
+{
+    fill:#fde0ef
+}
+.PiYG .q5-10
+{
+    fill:#e6f5d0
+}
+.PiYG .q6-10
+{
+    fill:#b8e186
+}
+.PiYG .q7-10
+{
+    fill:#7fbc41
+}
+.PiYG .q8-10
+{
+    fill:#4d9221
+}
+.PiYG .q9-10
+{
+    fill:#276419
+}
+.PiYG .q0-11
+{
+    fill:#8e0152
+}
+.PiYG .q1-11
+{
+    fill:#c51b7d
+}
+.PiYG .q2-11
+{
+    fill:#de77ae
+}
+.PiYG .q3-11
+{
+    fill:#f1b6da
+}
+.PiYG .q4-11
+{
+    fill:#fde0ef
+}
+.PiYG .q5-11
+{
+    fill:#f7f7f7
+}
+.PiYG .q6-11
+{
+    fill:#e6f5d0
+}
+.PiYG .q7-11
+{
+    fill:#b8e186
+}
+.PiYG .q8-11
+{
+    fill:#7fbc41
+}
+.PiYG .q9-11
+{
+    fill:#4d9221
+}
+.PiYG .q10-11
+{
+    fill:#276419
+}
+.RdBu .q0-3
+{
+    fill:#ef8a62
+}
+.RdBu .q1-3
+{
+    fill:#f7f7f7
+}
+.RdBu .q2-3
+{
+    fill:#67a9cf
+}
+.RdBu .q0-4
+{
+    fill:#ca0020
+}
+.RdBu .q1-4
+{
+    fill:#f4a582
+}
+.RdBu .q2-4
+{
+    fill:#92c5de
+}
+.RdBu .q3-4
+{
+    fill:#0571b0
+}
+.RdBu .q0-5
+{
+    fill:#ca0020
+}
+.RdBu .q1-5
+{
+    fill:#f4a582
+}
+.RdBu .q2-5
+{
+    fill:#f7f7f7
+}
+.RdBu .q3-5
+{
+    fill:#92c5de
+}
+.RdBu .q4-5
+{
+    fill:#0571b0
+}
+.RdBu .q0-6
+{
+    fill:#b2182b
+}
+.RdBu .q1-6
+{
+    fill:#ef8a62
+}
+.RdBu .q2-6
+{
+    fill:#fddbc7
+}
+.RdBu .q3-6
+{
+    fill:#d1e5f0
+}
+.RdBu .q4-6
+{
+    fill:#67a9cf
+}
+.RdBu .q5-6
+{
+    fill:#2166ac
+}
+.RdBu .q0-7
+{
+    fill:#b2182b
+}
+.RdBu .q1-7
+{
+    fill:#ef8a62
+}
+.RdBu .q2-7
+{
+    fill:#fddbc7
+}
+.RdBu .q3-7
+{
+    fill:#f7f7f7
+}
+.RdBu .q4-7
+{
+    fill:#d1e5f0
+}
+.RdBu .q5-7
+{
+    fill:#67a9cf
+}
+.RdBu .q6-7
+{
+    fill:#2166ac
+}
+.RdBu .q0-8
+{
+    fill:#b2182b
+}
+.RdBu .q1-8
+{
+    fill:#d6604d
+}
+.RdBu .q2-8
+{
+    fill:#f4a582
+}
+.RdBu .q3-8
+{
+    fill:#fddbc7
+}
+.RdBu .q4-8
+{
+    fill:#d1e5f0
+}
+.RdBu .q5-8
+{
+    fill:#92c5de
+}
+.RdBu .q6-8
+{
+    fill:#4393c3
+}
+.RdBu .q7-8
+{
+    fill:#2166ac
+}
+.RdBu .q0-9
+{
+    fill:#b2182b
+}
+.RdBu .q1-9
+{
+    fill:#d6604d
+}
+.RdBu .q2-9
+{
+    fill:#f4a582
+}
+.RdBu .q3-9
+{
+    fill:#fddbc7
+}
+.RdBu .q4-9
+{
+    fill:#f7f7f7
+}
+.RdBu .q5-9
+{
+    fill:#d1e5f0
+}
+.RdBu .q6-9
+{
+    fill:#92c5de
+}
+.RdBu .q7-9
+{
+    fill:#4393c3
+}
+.RdBu .q8-9
+{
+    fill:#2166ac
+}
+.RdBu .q0-10
+{
+    fill:#67001f
+}
+.RdBu .q1-10
+{
+    fill:#b2182b
+}
+.RdBu .q2-10
+{
+    fill:#d6604d
+}
+.RdBu .q3-10
+{
+    fill:#f4a582
+}
+.RdBu .q4-10
+{
+    fill:#fddbc7
+}
+.RdBu .q5-10
+{
+    fill:#d1e5f0
+}
+.RdBu .q6-10
+{
+    fill:#92c5de
+}
+.RdBu .q7-10
+{
+    fill:#4393c3
+}
+.RdBu .q8-10
+{
+    fill:#2166ac
+}
+.RdBu .q9-10
+{
+    fill:#053061
+}
+.RdBu .q0-11
+{
+    fill:#67001f
+}
+.RdBu .q1-11
+{
+    fill:#b2182b
+}
+.RdBu .q2-11
+{
+    fill:#d6604d
+}
+.RdBu .q3-11
+{
+    fill:#f4a582
+}
+.RdBu .q4-11
+{
+    fill:#fddbc7
+}
+.RdBu .q5-11
+{
+    fill:#f7f7f7
+}
+.RdBu .q6-11
+{
+    fill:#d1e5f0
+}
+.RdBu .q7-11
+{
+    fill:#92c5de
+}
+.RdBu .q8-11
+{
+    fill:#4393c3
+}
+.RdBu .q9-11
+{
+    fill:#2166ac
+}
+.RdBu .q10-11
+{
+    fill:#053061
+}
+.RdGy .q0-3
+{
+    fill:#ef8a62
+}
+.RdGy .q1-3
+{
+    fill:#fff
+}
+.RdGy .q2-3
+{
+    fill:#999
+}
+.RdGy .q0-4
+{
+    fill:#ca0020
+}
+.RdGy .q1-4
+{
+    fill:#f4a582
+}
+.RdGy .q2-4
+{
+    fill:#bababa
+}
+.RdGy .q3-4
+{
+    fill:#404040
+}
+.RdGy .q0-5
+{
+    fill:#ca0020
+}
+.RdGy .q1-5
+{
+    fill:#f4a582
+}
+.RdGy .q2-5
+{
+    fill:#fff
+}
+.RdGy .q3-5
+{
+    fill:#bababa
+}
+.RdGy .q4-5
+{
+    fill:#404040
+}
+.RdGy .q0-6
+{
+    fill:#b2182b
+}
+.RdGy .q1-6
+{
+    fill:#ef8a62
+}
+.RdGy .q2-6
+{
+    fill:#fddbc7
+}
+.RdGy .q3-6
+{
+    fill:#e0e0e0
+}
+.RdGy .q4-6
+{
+    fill:#999
+}
+.RdGy .q5-6
+{
+    fill:#4d4d4d
+}
+.RdGy .q0-7
+{
+    fill:#b2182b
+}
+.RdGy .q1-7
+{
+    fill:#ef8a62
+}
+.RdGy .q2-7
+{
+    fill:#fddbc7
+}
+.RdGy .q3-7
+{
+    fill:#fff
+}
+.RdGy .q4-7
+{
+    fill:#e0e0e0
+}
+.RdGy .q5-7
+{
+    fill:#999
+}
+.RdGy .q6-7
+{
+    fill:#4d4d4d
+}
+.RdGy .q0-8
+{
+    fill:#b2182b
+}
+.RdGy .q1-8
+{
+    fill:#d6604d
+}
+.RdGy .q2-8
+{
+    fill:#f4a582
+}
+.RdGy .q3-8
+{
+    fill:#fddbc7
+}
+.RdGy .q4-8
+{
+    fill:#e0e0e0
+}
+.RdGy .q5-8
+{
+    fill:#bababa
+}
+.RdGy .q6-8
+{
+    fill:#878787
+}
+.RdGy .q7-8
+{
+    fill:#4d4d4d
+}
+.RdGy .q0-9
+{
+    fill:#b2182b
+}
+.RdGy .q1-9
+{
+    fill:#d6604d
+}
+.RdGy .q2-9
+{
+    fill:#f4a582
+}
+.RdGy .q3-9
+{
+    fill:#fddbc7
+}
+.RdGy .q4-9
+{
+    fill:#fff
+}
+.RdGy .q5-9
+{
+    fill:#e0e0e0
+}
+.RdGy .q6-9
+{
+    fill:#bababa
+}
+.RdGy .q7-9
+{
+    fill:#878787
+}
+.RdGy .q8-9
+{
+    fill:#4d4d4d
+}
+.RdGy .q0-10
+{
+    fill:#67001f
+}
+.RdGy .q1-10
+{
+    fill:#b2182b
+}
+.RdGy .q2-10
+{
+    fill:#d6604d
+}
+.RdGy .q3-10
+{
+    fill:#f4a582
+}
+.RdGy .q4-10
+{
+    fill:#fddbc7
+}
+.RdGy .q5-10
+{
+    fill:#e0e0e0
+}
+.RdGy .q6-10
+{
+    fill:#bababa
+}
+.RdGy .q7-10
+{
+    fill:#878787
+}
+.RdGy .q8-10
+{
+    fill:#4d4d4d
+}
+.RdGy .q9-10
+{
+    fill:#1a1a1a
+}
+.RdGy .q0-11
+{
+    fill:#67001f
+}
+.RdGy .q1-11
+{
+    fill:#b2182b
+}
+.RdGy .q2-11
+{
+    fill:#d6604d
+}
+.RdGy .q3-11
+{
+    fill:#f4a582
+}
+.RdGy .q4-11
+{
+    fill:#fddbc7
+}
+.RdGy .q5-11
+{
+    fill:#fff
+}
+.RdGy .q6-11
+{
+    fill:#e0e0e0
+}
+.RdGy .q7-11
+{
+    fill:#bababa
+}
+.RdGy .q8-11
+{
+    fill:#878787
+}
+.RdGy .q9-11
+{
+    fill:#4d4d4d
+}
+.RdGy .q10-11
+{
+    fill:#1a1a1a
+}
+.RdYlBu .q0-3
+{
+    fill:#fc8d59
+}
+.RdYlBu .q1-3
+{
+    fill:#ffffbf
+}
+.RdYlBu .q2-3
+{
+    fill:#91bfdb
+}
+.RdYlBu .q0-4
+{
+    fill:#d7191c
+}
+.RdYlBu .q1-4
+{
+    fill:#fdae61
+}
+.RdYlBu .q2-4
+{
+    fill:#abd9e9
+}
+.RdYlBu .q3-4
+{
+    fill:#2c7bb6
+}
+.RdYlBu .q0-5
+{
+    fill:#d7191c
+}
+.RdYlBu .q1-5
+{
+    fill:#fdae61
+}
+.RdYlBu .q2-5
+{
+    fill:#ffffbf
+}
+.RdYlBu .q3-5
+{
+    fill:#abd9e9
+}
+.RdYlBu .q4-5
+{
+    fill:#2c7bb6
+}
+.RdYlBu .q0-6
+{
+    fill:#d73027
+}
+.RdYlBu .q1-6
+{
+    fill:#fc8d59
+}
+.RdYlBu .q2-6
+{
+    fill:#fee090
+}
+.RdYlBu .q3-6
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q4-6
+{
+    fill:#91bfdb
+}
+.RdYlBu .q5-6
+{
+    fill:#4575b4
+}
+.RdYlBu .q0-7
+{
+    fill:#d73027
+}
+.RdYlBu .q1-7
+{
+    fill:#fc8d59
+}
+.RdYlBu .q2-7
+{
+    fill:#fee090
+}
+.RdYlBu .q3-7
+{
+    fill:#ffffbf
+}
+.RdYlBu .q4-7
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q5-7
+{
+    fill:#91bfdb
+}
+.RdYlBu .q6-7
+{
+    fill:#4575b4
+}
+.RdYlBu .q0-8
+{
+    fill:#d73027
+}
+.RdYlBu .q1-8
+{
+    fill:#f46d43
+}
+.RdYlBu .q2-8
+{
+    fill:#fdae61
+}
+.RdYlBu .q3-8
+{
+    fill:#fee090
+}
+.RdYlBu .q4-8
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q5-8
+{
+    fill:#abd9e9
+}
+.RdYlBu .q6-8
+{
+    fill:#74add1
+}
+.RdYlBu .q7-8
+{
+    fill:#4575b4
+}
+.RdYlBu .q0-9
+{
+    fill:#d73027
+}
+.RdYlBu .q1-9
+{
+    fill:#f46d43
+}
+.RdYlBu .q2-9
+{
+    fill:#fdae61
+}
+.RdYlBu .q3-9
+{
+    fill:#fee090
+}
+.RdYlBu .q4-9
+{
+    fill:#ffffbf
+}
+.RdYlBu .q5-9
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q6-9
+{
+    fill:#abd9e9
+}
+.RdYlBu .q7-9
+{
+    fill:#74add1
+}
+.RdYlBu .q8-9
+{
+    fill:#4575b4
+}
+.RdYlBu .q0-10
+{
+    fill:#a50026
+}
+.RdYlBu .q1-10
+{
+    fill:#d73027
+}
+.RdYlBu .q2-10
+{
+    fill:#f46d43
+}
+.RdYlBu .q3-10
+{
+    fill:#fdae61
+}
+.RdYlBu .q4-10
+{
+    fill:#fee090
+}
+.RdYlBu .q5-10
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q6-10
+{
+    fill:#abd9e9
+}
+.RdYlBu .q7-10
+{
+    fill:#74add1
+}
+.RdYlBu .q8-10
+{
+    fill:#4575b4
+}
+.RdYlBu .q9-10
+{
+    fill:#313695
+}
+.RdYlBu .q0-11
+{
+    fill:#a50026
+}
+.RdYlBu .q1-11
+{
+    fill:#d73027
+}
+.RdYlBu .q2-11
+{
+    fill:#f46d43
+}
+.RdYlBu .q3-11
+{
+    fill:#fdae61
+}
+.RdYlBu .q4-11
+{
+    fill:#fee090
+}
+.RdYlBu .q5-11
+{
+    fill:#ffffbf
+}
+.RdYlBu .q6-11
+{
+    fill:#e0f3f8
+}
+.RdYlBu .q7-11
+{
+    fill:#abd9e9
+}
+.RdYlBu .q8-11
+{
+    fill:#74add1
+}
+.RdYlBu .q9-11
+{
+    fill:#4575b4
+}
+.RdYlBu .q10-11
+{
+    fill:#313695
+}
+.Spectral .q0-3
+{
+    fill:#fc8d59
+}
+.Spectral .q1-3
+{
+    fill:#ffffbf
+}
+.Spectral .q2-3
+{
+    fill:#99d594
+}
+.Spectral .q0-4
+{
+    fill:#d7191c
+}
+.Spectral .q1-4
+{
+    fill:#fdae61
+}
+.Spectral .q2-4
+{
+    fill:#abdda4
+}
+.Spectral .q3-4
+{
+    fill:#2b83ba
+}
+.Spectral .q0-5
+{
+    fill:#d7191c
+}
+.Spectral .q1-5
+{
+    fill:#fdae61
+}
+.Spectral .q2-5
+{
+    fill:#ffffbf
+}
+.Spectral .q3-5
+{
+    fill:#abdda4
+}
+.Spectral .q4-5
+{
+    fill:#2b83ba
+}
+.Spectral .q0-6
+{
+    fill:#d53e4f
+}
+.Spectral .q1-6
+{
+    fill:#fc8d59
+}
+.Spectral .q2-6
+{
+    fill:#fee08b
+}
+.Spectral .q3-6
+{
+    fill:#e6f598
+}
+.Spectral .q4-6
+{
+    fill:#99d594
+}
+.Spectral .q5-6
+{
+    fill:#3288bd
+}
+.Spectral .q0-7
+{
+    fill:#d53e4f
+}
+.Spectral .q1-7
+{
+    fill:#fc8d59
+}
+.Spectral .q2-7
+{
+    fill:#fee08b
+}
+.Spectral .q3-7
+{
+    fill:#ffffbf
+}
+.Spectral .q4-7
+{
+    fill:#e6f598
+}
+.Spectral .q5-7
+{
+    fill:#99d594
+}
+.Spectral .q6-7
+{
+    fill:#3288bd
+}
+.Spectral .q0-8
+{
+    fill:#d53e4f
+}
+.Spectral .q1-8
+{
+    fill:#f46d43
+}
+.Spectral .q2-8
+{
+    fill:#fdae61
+}
+.Spectral .q3-8
+{
+    fill:#fee08b
+}
+.Spectral .q4-8
+{
+    fill:#e6f598
+}
+.Spectral .q5-8
+{
+    fill:#abdda4
+}
+.Spectral .q6-8
+{
+    fill:#66c2a5
+}
+.Spectral .q7-8
+{
+    fill:#3288bd
+}
+.Spectral .q0-9
+{
+    fill:#d53e4f
+}
+.Spectral .q1-9
+{
+    fill:#f46d43
+}
+.Spectral .q2-9
+{
+    fill:#fdae61
+}
+.Spectral .q3-9
+{
+    fill:#fee08b
+}
+.Spectral .q4-9
+{
+    fill:#ffffbf
+}
+.Spectral .q5-9
+{
+    fill:#e6f598
+}
+.Spectral .q6-9
+{
+    fill:#abdda4
+}
+.Spectral .q7-9
+{
+    fill:#66c2a5
+}
+.Spectral .q8-9
+{
+    fill:#3288bd
+}
+.Spectral .q0-10
+{
+    fill:#9e0142
+}
+.Spectral .q1-10
+{
+    fill:#d53e4f
+}
+.Spectral .q2-10
+{
+    fill:#f46d43
+}
+.Spectral .q3-10
+{
+    fill:#fdae61
+}
+.Spectral .q4-10
+{
+    fill:#fee08b
+}
+.Spectral .q5-10
+{
+    fill:#e6f598
+}
+.Spectral .q6-10
+{
+    fill:#abdda4
+}
+.Spectral .q7-10
+{
+    fill:#66c2a5
+}
+.Spectral .q8-10
+{
+    fill:#3288bd
+}
+.Spectral .q9-10
+{
+    fill:#5e4fa2
+}
+.Spectral .q0-11
+{
+    fill:#9e0142
+}
+.Spectral .q1-11
+{
+    fill:#d53e4f
+}
+.Spectral .q2-11
+{
+    fill:#f46d43
+}
+.Spectral .q3-11
+{
+    fill:#fdae61
+}
+.Spectral .q4-11
+{
+    fill:#fee08b
+}
+.Spectral .q5-11
+{
+    fill:#ffffbf
+}
+.Spectral .q6-11
+{
+    fill:#e6f598
+}
+.Spectral .q7-11
+{
+    fill:#abdda4
+}
+.Spectral .q8-11
+{
+    fill:#66c2a5
+}
+.Spectral .q9-11
+{
+    fill:#3288bd
+}
+.Spectral .q10-11
+{
+    fill:#5e4fa2
+}
+.RdYlGn .q0-3
+{
+    fill:#fc8d59
+}
+.RdYlGn .q1-3
+{
+    fill:#ffffbf
+}
+.RdYlGn .q2-3
+{
+    fill:#91cf60
+}
+.RdYlGn .q0-4
+{
+    fill:#d7191c
+}
+.RdYlGn .q1-4
+{
+    fill:#fdae61
+}
+.RdYlGn .q2-4
+{
+    fill:#a6d96a
+}
+.RdYlGn .q3-4
+{
+    fill:#1a9641
+}
+.RdYlGn .q0-5
+{
+    fill:#d7191c
+}
+.RdYlGn .q1-5
+{
+    fill:#fdae61
+}
+.RdYlGn .q2-5
+{
+    fill:#ffffbf
+}
+.RdYlGn .q3-5
+{
+    fill:#a6d96a
+}
+.RdYlGn .q4-5
+{
+    fill:#1a9641
+}
+.RdYlGn .q0-6
+{
+    fill:#d73027
+}
+.RdYlGn .q1-6
+{
+    fill:#fc8d59
+}
+.RdYlGn .q2-6
+{
+    fill:#fee08b
+}
+.RdYlGn .q3-6
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q4-6
+{
+    fill:#91cf60
+}
+.RdYlGn .q5-6
+{
+    fill:#1a9850
+}
+.RdYlGn .q0-7
+{
+    fill:#d73027
+}
+.RdYlGn .q1-7
+{
+    fill:#fc8d59
+}
+.RdYlGn .q2-7
+{
+    fill:#fee08b
+}
+.RdYlGn .q3-7
+{
+    fill:#ffffbf
+}
+.RdYlGn .q4-7
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q5-7
+{
+    fill:#91cf60
+}
+.RdYlGn .q6-7
+{
+    fill:#1a9850
+}
+.RdYlGn .q0-8
+{
+    fill:#d73027
+}
+.RdYlGn .q1-8
+{
+    fill:#f46d43
+}
+.RdYlGn .q2-8
+{
+    fill:#fdae61
+}
+.RdYlGn .q3-8
+{
+    fill:#fee08b
+}
+.RdYlGn .q4-8
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q5-8
+{
+    fill:#a6d96a
+}
+.RdYlGn .q6-8
+{
+    fill:#66bd63
+}
+.RdYlGn .q7-8
+{
+    fill:#1a9850
+}
+.RdYlGn .q0-9
+{
+    fill:#d73027
+}
+.RdYlGn .q1-9
+{
+    fill:#f46d43
+}
+.RdYlGn .q2-9
+{
+    fill:#fdae61
+}
+.RdYlGn .q3-9
+{
+    fill:#fee08b
+}
+.RdYlGn .q4-9
+{
+    fill:#ffffbf
+}
+.RdYlGn .q5-9
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q6-9
+{
+    fill:#a6d96a
+}
+.RdYlGn .q7-9
+{
+    fill:#66bd63
+}
+.RdYlGn .q8-9
+{
+    fill:#1a9850
+}
+.RdYlGn .q0-10
+{
+    fill:#a50026
+}
+.RdYlGn .q1-10
+{
+    fill:#d73027
+}
+.RdYlGn .q2-10
+{
+    fill:#f46d43
+}
+.RdYlGn .q3-10
+{
+    fill:#fdae61
+}
+.RdYlGn .q4-10
+{
+    fill:#fee08b
+}
+.RdYlGn .q5-10
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q6-10
+{
+    fill:#a6d96a
+}
+.RdYlGn .q7-10
+{
+    fill:#66bd63
+}
+.RdYlGn .q8-10
+{
+    fill:#1a9850
+}
+.RdYlGn .q9-10
+{
+    fill:#006837
+}
+.RdYlGn .q0-11
+{
+    fill:#a50026
+}
+.RdYlGn .q1-11
+{
+    fill:#d73027
+}
+.RdYlGn .q2-11
+{
+    fill:#f46d43
+}
+.RdYlGn .q3-11
+{
+    fill:#fdae61
+}
+.RdYlGn .q4-11
+{
+    fill:#fee08b
+}
+.RdYlGn .q5-11
+{
+    fill:#ffffbf
+}
+.RdYlGn .q6-11
+{
+    fill:#d9ef8b
+}
+.RdYlGn .q7-11
+{
+    fill:#a6d96a
+}
+.RdYlGn .q8-11
+{
+    fill:#66bd63
+}
+.RdYlGn .q9-11
+{
+    fill:#1a9850
+}
+.RdYlGn .q10-11
+{
+    fill:#006837
+}
+.Accent .q0-3
+{
+    fill:#7fc97f
+}
+.Accent .q1-3
+{
+    fill:#beaed4
+}
+.Accent .q2-3
+{
+    fill:#fdc086
+}
+.Accent .q0-4
+{
+    fill:#7fc97f
+}
+.Accent .q1-4
+{
+    fill:#beaed4
+}
+.Accent .q2-4
+{
+    fill:#fdc086
+}
+.Accent .q3-4
+{
+    fill:#ff9
+}
+.Accent .q0-5
+{
+    fill:#7fc97f
+}
+.Accent .q1-5
+{
+    fill:#beaed4
+}
+.Accent .q2-5
+{
+    fill:#fdc086
+}
+.Accent .q3-5
+{
+    fill:#ff9
+}
+.Accent .q4-5
+{
+    fill:#386cb0
+}
+.Accent .q0-6
+{
+    fill:#7fc97f
+}
+.Accent .q1-6
+{
+    fill:#beaed4
+}
+.Accent .q2-6
+{
+    fill:#fdc086
+}
+.Accent .q3-6
+{
+    fill:#ff9
+}
+.Accent .q4-6
+{
+    fill:#386cb0
+}
+.Accent .q5-6
+{
+    fill:#f0027f
+}
+.Accent .q0-7
+{
+    fill:#7fc97f
+}
+.Accent .q1-7
+{
+    fill:#beaed4
+}
+.Accent .q2-7
+{
+    fill:#fdc086
+}
+.Accent .q3-7
+{
+    fill:#ff9
+}
+.Accent .q4-7
+{
+    fill:#386cb0
+}
+.Accent .q5-7
+{
+    fill:#f0027f
+}
+.Accent .q6-7
+{
+    fill:#bf5b17
+}
+.Accent .q0-8
+{
+    fill:#7fc97f
+}
+.Accent .q1-8
+{
+    fill:#beaed4
+}
+.Accent .q2-8
+{
+    fill:#fdc086
+}
+.Accent .q3-8
+{
+    fill:#ff9
+}
+.Accent .q4-8
+{
+    fill:#386cb0
+}
+.Accent .q5-8
+{
+    fill:#f0027f
+}
+.Accent .q6-8
+{
+    fill:#bf5b17
+}
+.Accent .q7-8
+{
+    fill:#666
+}
+.Dark2 .q0-3
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-3
+{
+    fill:#d95f02
+}
+.Dark2 .q2-3
+{
+    fill:#7570b3
+}
+.Dark2 .q0-4
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-4
+{
+    fill:#d95f02
+}
+.Dark2 .q2-4
+{
+    fill:#7570b3
+}
+.Dark2 .q3-4
+{
+    fill:#e7298a
+}
+.Dark2 .q0-5
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-5
+{
+    fill:#d95f02
+}
+.Dark2 .q2-5
+{
+    fill:#7570b3
+}
+.Dark2 .q3-5
+{
+    fill:#e7298a
+}
+.Dark2 .q4-5
+{
+    fill:#66a61e
+}
+.Dark2 .q0-6
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-6
+{
+    fill:#d95f02
+}
+.Dark2 .q2-6
+{
+    fill:#7570b3
+}
+.Dark2 .q3-6
+{
+    fill:#e7298a
+}
+.Dark2 .q4-6
+{
+    fill:#66a61e
+}
+.Dark2 .q5-6
+{
+    fill:#e6ab02
+}
+.Dark2 .q0-7
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-7
+{
+    fill:#d95f02
+}
+.Dark2 .q2-7
+{
+    fill:#7570b3
+}
+.Dark2 .q3-7
+{
+    fill:#e7298a
+}
+.Dark2 .q4-7
+{
+    fill:#66a61e
+}
+.Dark2 .q5-7
+{
+    fill:#e6ab02
+}
+.Dark2 .q6-7
+{
+    fill:#a6761d
+}
+.Dark2 .q0-8
+{
+    fill:#1b9e77
+}
+.Dark2 .q1-8
+{
+    fill:#d95f02
+}
+.Dark2 .q2-8
+{
+    fill:#7570b3
+}
+.Dark2 .q3-8
+{
+    fill:#e7298a
+}
+.Dark2 .q4-8
+{
+    fill:#66a61e
+}
+.Dark2 .q5-8
+{
+    fill:#e6ab02
+}
+.Dark2 .q6-8
+{
+    fill:#a6761d
+}
+.Dark2 .q7-8
+{
+    fill:#666
+}
+.Paired .q0-3
+{
+    fill:#a6cee3
+}
+.Paired .q1-3
+{
+    fill:#1f78b4
+}
+.Paired .q2-3
+{
+    fill:#b2df8a
+}
+.Paired .q0-4
+{
+    fill:#a6cee3
+}
+.Paired .q1-4
+{
+    fill:#1f78b4
+}
+.Paired .q2-4
+{
+    fill:#b2df8a
+}
+.Paired .q3-4
+{
+    fill:#33a02c
+}
+.Paired .q0-5
+{
+    fill:#a6cee3
+}
+.Paired .q1-5
+{
+    fill:#1f78b4
+}
+.Paired .q2-5
+{
+    fill:#b2df8a
+}
+.Paired .q3-5
+{
+    fill:#33a02c
+}
+.Paired .q4-5
+{
+    fill:#fb9a99
+}
+.Paired .q0-6
+{
+    fill:#a6cee3
+}
+.Paired .q1-6
+{
+    fill:#1f78b4
+}
+.Paired .q2-6
+{
+    fill:#b2df8a
+}
+.Paired .q3-6
+{
+    fill:#33a02c
+}
+.Paired .q4-6
+{
+    fill:#fb9a99
+}
+.Paired .q5-6
+{
+    fill:#e31a1c
+}
+.Paired .q0-7
+{
+    fill:#a6cee3
+}
+.Paired .q1-7
+{
+    fill:#1f78b4
+}
+.Paired .q2-7
+{
+    fill:#b2df8a
+}
+.Paired .q3-7
+{
+    fill:#33a02c
+}
+.Paired .q4-7
+{
+    fill:#fb9a99
+}
+.Paired .q5-7
+{
+    fill:#e31a1c
+}
+.Paired .q6-7
+{
+    fill:#fdbf6f
+}
+.Paired .q0-8
+{
+    fill:#a6cee3
+}
+.Paired .q1-8
+{
+    fill:#1f78b4
+}
+.Paired .q2-8
+{
+    fill:#b2df8a
+}
+.Paired .q3-8
+{
+    fill:#33a02c
+}
+.Paired .q4-8
+{
+    fill:#fb9a99
+}
+.Paired .q5-8
+{
+    fill:#e31a1c
+}
+.Paired .q6-8
+{
+    fill:#fdbf6f
+}
+.Paired .q7-8
+{
+    fill:#ff7f00
+}
+.Paired .q0-9
+{
+    fill:#a6cee3
+}
+.Paired .q1-9
+{
+    fill:#1f78b4
+}
+.Paired .q2-9
+{
+    fill:#b2df8a
+}
+.Paired .q3-9
+{
+    fill:#33a02c
+}
+.Paired .q4-9
+{
+    fill:#fb9a99
+}
+.Paired .q5-9
+{
+    fill:#e31a1c
+}
+.Paired .q6-9
+{
+    fill:#fdbf6f
+}
+.Paired .q7-9
+{
+    fill:#ff7f00
+}
+.Paired .q8-9
+{
+    fill:#cab2d6
+}
+.Paired .q0-10
+{
+    fill:#a6cee3
+}
+.Paired .q1-10
+{
+    fill:#1f78b4
+}
+.Paired .q2-10
+{
+    fill:#b2df8a
+}
+.Paired .q3-10
+{
+    fill:#33a02c
+}
+.Paired .q4-10
+{
+    fill:#fb9a99
+}
+.Paired .q5-10
+{
+    fill:#e31a1c
+}
+.Paired .q6-10
+{
+    fill:#fdbf6f
+}
+.Paired .q7-10
+{
+    fill:#ff7f00
+}
+.Paired .q8-10
+{
+    fill:#cab2d6
+}
+.Paired .q9-10
+{
+    fill:#6a3d9a
+}
+.Paired .q0-11
+{
+    fill:#a6cee3
+}
+.Paired .q1-11
+{
+    fill:#1f78b4
+}
+.Paired .q2-11
+{
+    fill:#b2df8a
+}
+.Paired .q3-11
+{
+    fill:#33a02c
+}
+.Paired .q4-11
+{
+    fill:#fb9a99
+}
+.Paired .q5-11
+{
+    fill:#e31a1c
+}
+.Paired .q6-11
+{
+    fill:#fdbf6f
+}
+.Paired .q7-11
+{
+    fill:#ff7f00
+}
+.Paired .q8-11
+{
+    fill:#cab2d6
+}
+.Paired .q9-11
+{
+    fill:#6a3d9a
+}
+.Paired .q10-11
+{
+    fill:#ff9
+}
+.Paired .q0-12
+{
+    fill:#a6cee3
+}
+.Paired .q1-12
+{
+    fill:#1f78b4
+}
+.Paired .q2-12
+{
+    fill:#b2df8a
+}
+.Paired .q3-12
+{
+    fill:#33a02c
+}
+.Paired .q4-12
+{
+    fill:#fb9a99
+}
+.Paired .q5-12
+{
+    fill:#e31a1c
+}
+.Paired .q6-12
+{
+    fill:#fdbf6f
+}
+.Paired .q7-12
+{
+    fill:#ff7f00
+}
+.Paired .q8-12
+{
+    fill:#cab2d6
+}
+.Paired .q9-12
+{
+    fill:#6a3d9a
+}
+.Paired .q10-12
+{
+    fill:#ff9
+}
+.Paired .q11-12
+{
+    fill:#b15928
+}
+.Pastel1 .q0-3
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-3
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-3
+{
+    fill:#ccebc5
+}
+.Pastel1 .q0-4
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-4
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-4
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-4
+{
+    fill:#decbe4
+}
+.Pastel1 .q0-5
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-5
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-5
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-5
+{
+    fill:#decbe4
+}
+.Pastel1 .q4-5
+{
+    fill:#fed9a6
+}
+.Pastel1 .q0-6
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-6
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-6
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-6
+{
+    fill:#decbe4
+}
+.Pastel1 .q4-6
+{
+    fill:#fed9a6
+}
+.Pastel1 .q5-6
+{
+    fill:#ffc
+}
+.Pastel1 .q0-7
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-7
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-7
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-7
+{
+    fill:#decbe4
+}
+.Pastel1 .q4-7
+{
+    fill:#fed9a6
+}
+.Pastel1 .q5-7
+{
+    fill:#ffc
+}
+.Pastel1 .q6-7
+{
+    fill:#e5d8bd
+}
+.Pastel1 .q0-8
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-8
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-8
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-8
+{
+    fill:#decbe4
+}
+.Pastel1 .q4-8
+{
+    fill:#fed9a6
+}
+.Pastel1 .q5-8
+{
+    fill:#ffc
+}
+.Pastel1 .q6-8
+{
+    fill:#e5d8bd
+}
+.Pastel1 .q7-8
+{
+    fill:#fddaec
+}
+.Pastel1 .q0-9
+{
+    fill:#fbb4ae
+}
+.Pastel1 .q1-9
+{
+    fill:#b3cde3
+}
+.Pastel1 .q2-9
+{
+    fill:#ccebc5
+}
+.Pastel1 .q3-9
+{
+    fill:#decbe4
+}
+.Pastel1 .q4-9
+{
+    fill:#fed9a6
+}
+.Pastel1 .q5-9
+{
+    fill:#ffc
+}
+.Pastel1 .q6-9
+{
+    fill:#e5d8bd
+}
+.Pastel1 .q7-9
+{
+    fill:#fddaec
+}
+.Pastel1 .q8-9
+{
+    fill:#f2f2f2
+}
+.Pastel2 .q0-3
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-3
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-3
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q0-4
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-4
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-4
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q3-4
+{
+    fill:#f4cae4
+}
+.Pastel2 .q0-5
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-5
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-5
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q3-5
+{
+    fill:#f4cae4
+}
+.Pastel2 .q4-5
+{
+    fill:#e6f5c9
+}
+.Pastel2 .q0-6
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-6
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-6
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q3-6
+{
+    fill:#f4cae4
+}
+.Pastel2 .q4-6
+{
+    fill:#e6f5c9
+}
+.Pastel2 .q5-6
+{
+    fill:#fff2ae
+}
+.Pastel2 .q0-7
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-7
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-7
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q3-7
+{
+    fill:#f4cae4
+}
+.Pastel2 .q4-7
+{
+    fill:#e6f5c9
+}
+.Pastel2 .q5-7
+{
+    fill:#fff2ae
+}
+.Pastel2 .q6-7
+{
+    fill:#f1e2cc
+}
+.Pastel2 .q0-8
+{
+    fill:#b3e2cd
+}
+.Pastel2 .q1-8
+{
+    fill:#fdcdac
+}
+.Pastel2 .q2-8
+{
+    fill:#cbd5e8
+}
+.Pastel2 .q3-8
+{
+    fill:#f4cae4
+}
+.Pastel2 .q4-8
+{
+    fill:#e6f5c9
+}
+.Pastel2 .q5-8
+{
+    fill:#fff2ae
+}
+.Pastel2 .q6-8
+{
+    fill:#f1e2cc
+}
+.Pastel2 .q7-8
+{
+    fill:#ccc
+}
+.Set1 .q0-3
+{
+    fill:#e41a1c
+}
+.Set1 .q1-3
+{
+    fill:#377eb8
+}
+.Set1 .q2-3
+{
+    fill:#4daf4a
+}
+.Set1 .q0-4
+{
+    fill:#e41a1c
+}
+.Set1 .q1-4
+{
+    fill:#377eb8
+}
+.Set1 .q2-4
+{
+    fill:#4daf4a
+}
+.Set1 .q3-4
+{
+    fill:#984ea3
+}
+.Set1 .q0-5
+{
+    fill:#e41a1c
+}
+.Set1 .q1-5
+{
+    fill:#377eb8
+}
+.Set1 .q2-5
+{
+    fill:#4daf4a
+}
+.Set1 .q3-5
+{
+    fill:#984ea3
+}
+.Set1 .q4-5
+{
+    fill:#ff7f00
+}
+.Set1 .q0-6
+{
+    fill:#e41a1c
+}
+.Set1 .q1-6
+{
+    fill:#377eb8
+}
+.Set1 .q2-6
+{
+    fill:#4daf4a
+}
+.Set1 .q3-6
+{
+    fill:#984ea3
+}
+.Set1 .q4-6
+{
+    fill:#ff7f00
+}
+.Set1 .q5-6
+{
+    fill:#ff3
+}
+.Set1 .q0-7
+{
+    fill:#e41a1c
+}
+.Set1 .q1-7
+{
+    fill:#377eb8
+}
+.Set1 .q2-7
+{
+    fill:#4daf4a
+}
+.Set1 .q3-7
+{
+    fill:#984ea3
+}
+.Set1 .q4-7
+{
+    fill:#ff7f00
+}
+.Set1 .q5-7
+{
+    fill:#ff3
+}
+.Set1 .q6-7
+{
+    fill:#a65628
+}
+.Set1 .q0-8
+{
+    fill:#e41a1c
+}
+.Set1 .q1-8
+{
+    fill:#377eb8
+}
+.Set1 .q2-8
+{
+    fill:#4daf4a
+}
+.Set1 .q3-8
+{
+    fill:#984ea3
+}
+.Set1 .q4-8
+{
+    fill:#ff7f00
+}
+.Set1 .q5-8
+{
+    fill:#ff3
+}
+.Set1 .q6-8
+{
+    fill:#a65628
+}
+.Set1 .q7-8
+{
+    fill:#f781bf
+}
+.Set1 .q0-9
+{
+    fill:#e41a1c
+}
+.Set1 .q1-9
+{
+    fill:#377eb8
+}
+.Set1 .q2-9
+{
+    fill:#4daf4a
+}
+.Set1 .q3-9
+{
+    fill:#984ea3
+}
+.Set1 .q4-9
+{
+    fill:#ff7f00
+}
+.Set1 .q5-9
+{
+    fill:#ff3
+}
+.Set1 .q6-9
+{
+    fill:#a65628
+}
+.Set1 .q7-9
+{
+    fill:#f781bf
+}
+.Set1 .q8-9
+{
+    fill:#999
+}
+.Set2 .q0-3
+{
+    fill:#66c2a5
+}
+.Set2 .q1-3
+{
+    fill:#fc8d62
+}
+.Set2 .q2-3
+{
+    fill:#8da0cb
+}
+.Set2 .q0-4
+{
+    fill:#66c2a5
+}
+.Set2 .q1-4
+{
+    fill:#fc8d62
+}
+.Set2 .q2-4
+{
+    fill:#8da0cb
+}
+.Set2 .q3-4
+{
+    fill:#e78ac3
+}
+.Set2 .q0-5
+{
+    fill:#66c2a5
+}
+.Set2 .q1-5
+{
+    fill:#fc8d62
+}
+.Set2 .q2-5
+{
+    fill:#8da0cb
+}
+.Set2 .q3-5
+{
+    fill:#e78ac3
+}
+.Set2 .q4-5
+{
+    fill:#a6d854
+}
+.Set2 .q0-6
+{
+    fill:#66c2a5
+}
+.Set2 .q1-6
+{
+    fill:#fc8d62
+}
+.Set2 .q2-6
+{
+    fill:#8da0cb
+}
+.Set2 .q3-6
+{
+    fill:#e78ac3
+}
+.Set2 .q4-6
+{
+    fill:#a6d854
+}
+.Set2 .q5-6
+{
+    fill:#ffd92f
+}
+.Set2 .q0-7
+{
+    fill:#66c2a5
+}
+.Set2 .q1-7
+{
+    fill:#fc8d62
+}
+.Set2 .q2-7
+{
+    fill:#8da0cb
+}
+.Set2 .q3-7
+{
+    fill:#e78ac3
+}
+.Set2 .q4-7
+{
+    fill:#a6d854
+}
+.Set2 .q5-7
+{
+    fill:#ffd92f
+}
+.Set2 .q6-7
+{
+    fill:#e5c494
+}
+.Set2 .q0-8
+{
+    fill:#66c2a5
+}
+.Set2 .q1-8
+{
+    fill:#fc8d62
+}
+.Set2 .q2-8
+{
+    fill:#8da0cb
+}
+.Set2 .q3-8
+{
+    fill:#e78ac3
+}
+.Set2 .q4-8
+{
+    fill:#a6d854
+}
+.Set2 .q5-8
+{
+    fill:#ffd92f
+}
+.Set2 .q6-8
+{
+    fill:#e5c494
+}
+.Set2 .q7-8
+{
+    fill:#b3b3b3
+}
+.Set3 .q0-3
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-3
+{
+    fill:#ffffb3
+}
+.Set3 .q2-3
+{
+    fill:#bebada
+}
+.Set3 .q0-4
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-4
+{
+    fill:#ffffb3
+}
+.Set3 .q2-4
+{
+    fill:#bebada
+}
+.Set3 .q3-4
+{
+    fill:#fb8072
+}
+.Set3 .q0-5
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-5
+{
+    fill:#ffffb3
+}
+.Set3 .q2-5
+{
+    fill:#bebada
+}
+.Set3 .q3-5
+{
+    fill:#fb8072
+}
+.Set3 .q4-5
+{
+    fill:#80b1d3
+}
+.Set3 .q0-6
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-6
+{
+    fill:#ffffb3
+}
+.Set3 .q2-6
+{
+    fill:#bebada
+}
+.Set3 .q3-6
+{
+    fill:#fb8072
+}
+.Set3 .q4-6
+{
+    fill:#80b1d3
+}
+.Set3 .q5-6
+{
+    fill:#fdb462
+}
+.Set3 .q0-7
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-7
+{
+    fill:#ffffb3
+}
+.Set3 .q2-7
+{
+    fill:#bebada
+}
+.Set3 .q3-7
+{
+    fill:#fb8072
+}
+.Set3 .q4-7
+{
+    fill:#80b1d3
+}
+.Set3 .q5-7
+{
+    fill:#fdb462
+}
+.Set3 .q6-7
+{
+    fill:#b3de69
+}
+.Set3 .q0-8
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-8
+{
+    fill:#ffffb3
+}
+.Set3 .q2-8
+{
+    fill:#bebada
+}
+.Set3 .q3-8
+{
+    fill:#fb8072
+}
+.Set3 .q4-8
+{
+    fill:#80b1d3
+}
+.Set3 .q5-8
+{
+    fill:#fdb462
+}
+.Set3 .q6-8
+{
+    fill:#b3de69
+}
+.Set3 .q7-8
+{
+    fill:#fccde5
+}
+.Set3 .q0-9
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-9
+{
+    fill:#ffffb3
+}
+.Set3 .q2-9
+{
+    fill:#bebada
+}
+.Set3 .q3-9
+{
+    fill:#fb8072
+}
+.Set3 .q4-9
+{
+    fill:#80b1d3
+}
+.Set3 .q5-9
+{
+    fill:#fdb462
+}
+.Set3 .q6-9
+{
+    fill:#b3de69
+}
+.Set3 .q7-9
+{
+    fill:#fccde5
+}
+.Set3 .q8-9
+{
+    fill:#d9d9d9
+}
+.Set3 .q0-10
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-10
+{
+    fill:#ffffb3
+}
+.Set3 .q2-10
+{
+    fill:#bebada
+}
+.Set3 .q3-10
+{
+    fill:#fb8072
+}
+.Set3 .q4-10
+{
+    fill:#80b1d3
+}
+.Set3 .q5-10
+{
+    fill:#fdb462
+}
+.Set3 .q6-10
+{
+    fill:#b3de69
+}
+.Set3 .q7-10
+{
+    fill:#fccde5
+}
+.Set3 .q8-10
+{
+    fill:#d9d9d9
+}
+.Set3 .q9-10
+{
+    fill:#bc80bd
+}
+.Set3 .q0-11
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-11
+{
+    fill:#ffffb3
+}
+.Set3 .q2-11
+{
+    fill:#bebada
+}
+.Set3 .q3-11
+{
+    fill:#fb8072
+}
+.Set3 .q4-11
+{
+    fill:#80b1d3
+}
+.Set3 .q5-11
+{
+    fill:#fdb462
+}
+.Set3 .q6-11
+{
+    fill:#b3de69
+}
+.Set3 .q7-11
+{
+    fill:#fccde5
+}
+.Set3 .q8-11
+{
+    fill:#d9d9d9
+}
+.Set3 .q9-11
+{
+    fill:#bc80bd
+}
+.Set3 .q10-11
+{
+    fill:#ccebc5
+}
+.Set3 .q0-12
+{
+    fill:#8dd3c7
+}
+.Set3 .q1-12
+{
+    fill:#ffffb3
+}
+.Set3 .q2-12
+{
+    fill:#bebada
+}
+.Set3 .q3-12
+{
+    fill:#fb8072
+}
+.Set3 .q4-12
+{
+    fill:#80b1d3
+}
+.Set3 .q5-12
+{
+    fill:#fdb462
+}
+.Set3 .q6-12
+{
+    fill:#b3de69
+}
+.Set3 .q7-12
+{
+    fill:#fccde5
+}
+.Set3 .q8-12
+{
+    fill:#d9d9d9
+}
+.Set3 .q9-12
+{
+    fill:#bc80bd
+}
+.Set3 .q10-12
+{
+    fill:#ccebc5
+}
+.Set3 .q11-12
+{
+    fill:#ffed6f
+}
+.select2-container
+{
+    margin:0;
+    position:relative;
+    display:inline-block;
+    zoom:1;
+    *display:inline;
+    vertical-align:middle
+}
+.select2-container,.select2-drop,.select2-search,.select2-search input
+{
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box
+}
+.select2-container .select2-choice
+{
+    text-align:left;
+    display:block;
+    height:40px;
+    padding:0 0 0 11px;
+    overflow:hidden;
+    position:relative;
+    font-size:12px;
+    white-space:nowrap;
+    line-height:42px;
+    color:#656565;
+    text-decoration:none;
+    border-radius:3px;
+    background-clip:padding-box;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    background-color:#dedede
+}
+.select2-container.select2-drop-above .select2-choice
+{
+    border-bottom-color:#aaa;
+    border-radius:0 0 3px 3px;
+    background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.9, #fff));
+    background-image:-webkit-linear-gradient(center bottom, #eee 0%, #fff 90%);
+    background-image:-moz-linear-gradient(center bottom, #eee 0%, #fff 90%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+    background-image:linear-gradient(top, #eee 0%, #fff 90%)
+}
+.select2-container.select2-allowclear .select2-choice .select2-chosen
+{
+    margin-right:42px
+}
+.select2-chosen .code
+{
+    float:none;
+    color:#A8A8A8;
+    font-size:12px;
+    padding-top:2px;
+    padding-left:7px
+}
+.select2-container .select2-choice>.select2-chosen
+{
+    margin-right:26px;
+    display:block;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis
+}
+.select2-container .select2-choice abbr
+{
+    display:none
+}
+.select2-container.select2-allowclear .select2-choice abbr
+{
+    display:inline-block
+}
+.select2-container .select2-choice abbr:hover
+{
+    background-position:right -11px;
+    cursor:pointer
+}
+.select2-drop-mask
+{
+    border:0;
+    margin:0;
+    padding:0;
+    position:fixed;
+    left:0;
+    top:0;
+    min-height:100%;
+    min-width:100%;
+    height:auto;
+    width:auto;
+    opacity:0;
+    z-index:9998;
+    background-color:#fff;
+    filter:alpha(opacity=0)
+}
+.select2-drop
+{
+    width:100%;
+    margin-top:10px;
+    position:absolute;
+    z-index:9999;
+    top:100%;
+    background:#efefef;
+    color:#656565;
+    border-radius:3px
+}
+.select2-drop-auto-width
+{
+    border-top:1px solid #aaa;
+    width:auto
+}
+.select2-drop-auto-width .select2-search
+{
+    padding-top:4px
+}
+.select2-drop.select2-drop-above
+{
+    margin-top:1px;
+    border-top:1px solid #aaa;
+    border-bottom:0;
+    border-radius:3px 3px 0 0
+}
+.select2-drop-active
+{
+    border-top:none
+}
+.select2-drop.select2-drop-above.select2-drop-active
+{
+    border-top:1px solid #5897fb
+}
+.select2-container .select2-choice .select2-arrow
+{
+    display:inline-block;
+    width:27px;
+    height:100%;
+    position:absolute;
+    right:0;
+    top:0;
+    background-clip:padding-box
+}
+.select2-container .select2-choice .select2-arrow b
+{
+    display:block;
+    width:100%;
+    height:100%
+}
+.select2-search
+{
+    display:inline-block;
+    width:100%;
+    min-height:26px;
+    margin:0;
+    padding-left:6px;
+    padding-right:6px;
+    padding-top:6px;
+    margin-bottom:8px;
+    position:relative;
+    z-index:10000;
+    white-space:nowrap
+}
+.select2-search input
+{
+    width:100%;
+    height:auto !important;
+    min-height:26px;
+    padding:6px 20px 4px 5px;
+    margin:0;
+    color:#A3A3A3;
+    outline:0;
+    font-size:12px;
+    border:1px solid #ccc;
+    border-radius:3px;
+    background:#fff url("select2.png") no-repeat 97% -22px
+}
+.select2-drop.select2-drop-above .select2-search input
+{
+    margin-top:4px
+}
+.select2-search input.select2-active
+{
+    background:#fff url("select2-spinner.gif") no-repeat 100%;
+    background:url("select2-spinner.gif") no-repeat 100%,-webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee));
+    background:url("select2-spinner.gif") no-repeat 100%,-webkit-linear-gradient(center bottom, #fff 85%, #eee 99%);
+    background:url("select2-spinner.gif") no-repeat 100%,-moz-linear-gradient(center bottom, #fff 85%, #eee 99%);
+    background:url("select2-spinner.gif") no-repeat 100%,linear-gradient(top, #fff 85%, #eee 99%)
+}
+.select2-container-active .select2-choice,.select2-container-active .select2-choices
+{
+    outline:none
+}
+.select2-dropdown-open.select2-drop-above .select2-choice,.select2-dropdown-open.select2-drop-above .select2-choices
+{
+    border-top-color:transparent;
+    background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(0.5, #eee));
+    background-image:-webkit-linear-gradient(center top, #fff 0%, #eee 50%);
+    background-image:-moz-linear-gradient(center top, #fff 0%, #eee 50%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff', GradientType=0);
+    background-image:linear-gradient(bottom, #fff 0%, #eee 50%)
+}
+.select2-dropdown-open .select2-choice .select2-arrow
+{
+    background:transparent;
+    border-left:none;
+    filter:none
+}
+.select2-dropdown-open .select2-choice .select2-arrow b
+{
+    background-position:-28px 5px
+}
+.select2-results
+{
+    max-height:200px;
+    padding:0;
+    margin:0;
+    position:relative;
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-tap-highlight-color:transparent
+}
+.select2-results ul.select2-result-sub
+{
+    margin:0;
+    padding-left:0
+}
+.select2-results ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:20px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:40px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:60px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:80px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:100px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:110px
+}
+.select2-results ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub ul.select2-result-sub>li .select2-result-label
+{
+    padding-left:120px
+}
+.select2-results li
+{
+    list-style:none;
+    display:list-item;
+    background-image:none;
+    float:left;
+    width:100%
+}
+.select2-results li.select2-result-with-children>.select2-result-label
+{
+    font-weight:600
+}
+.select2-results .select2-result-label
+{
+    padding:6px 9px 7px;
+    margin:0;
+    cursor:pointer;
+    font-size:12px;
+    float:left;
+    width:100%;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none
+}
+.select2-results .code
+{
+    float:right;
+    font-family:arial;
+    color:#9b9b9b;
+    font-size:11px;
+    padding-top:2px;
+    font-weight:600;
+    display:block;
+    text-align:right
+}
+.select2-results .country
+{
+    float:left;
+    width:100px;
+    display:block
+}
+.select2-results .select2-highlighted
+{
+    background:#dedede
+}
+.select2-results li em
+{
+    background:#feffde;
+    font-style:normal
+}
+.select2-results .select2-highlighted em
+{
+    background:transparent
+}
+.select2-results .select2-highlighted ul
+{
+    background:#fff;
+    color:#000
+}
+.select2-results .select2-no-results,.select2-results .select2-searching,.select2-results .select2-selection-limit
+{
+    background:#f4f4f4;
+    display:list-item
+}
+.select2-results .select2-no-results
+{
+    padding-left:10px;
+    font-size:12px;
+    text-transform:uppercase;
+    margin-bottom:9px;
+    font-weight:bold
+}
+.select2-results .select2-disabled.select2-highlighted
+{
+    color:#666;
+    background:#f4f4f4;
+    display:list-item;
+    cursor:default
+}
+.select2-results .select2-disabled
+{
+    background:#f4f4f4;
+    display:list-item;
+    cursor:default
+}
+.select2-results .select2-selected
+{
+    display:none
+}
+.select2-more-results.select2-active
+{
+    background:#f4f4f4 url("select2-spinner.gif") no-repeat 100%
+}
+.select2-more-results
+{
+    background:#f4f4f4;
+    display:list-item
+}
+.select2-container.select2-container-disabled .select2-choice
+{
+    background-color:#f4f4f4;
+    background-image:none;
+    border:1px solid #ddd;
+    cursor:default
+}
+.select2-container.select2-container-disabled .select2-choice .select2-arrow
+{
+    background-color:#f4f4f4;
+    background-image:none;
+    border-left:0
+}
+.select2-container.select2-container-disabled .select2-choice abbr
+{
+    display:none
+}
+.select2-container-multi .select2-choices
+{
+    height:auto !important;
+    height:1%;
+    margin:0;
+    padding:0;
+    position:relative;
+    border:1px solid #aaa;
+    cursor:text;
+    overflow:hidden;
+    background-color:#fff;
+    background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eee), color-stop(15%, #fff));
+    background-image:-webkit-linear-gradient(top, #eee 1%, #fff 15%);
+    background-image:-moz-linear-gradient(top, #eee 1%, #fff 15%);
+    background-image:linear-gradient(top, #eee 1%, #fff 15%)
+}
+.select2-locked
+{
+    padding:3px 5px 3px 5px !important
+}
+.select2-container-multi .select2-choices
+{
+    min-height:26px
+}
+.select2-container-multi.select2-container-active .select2-choices
+{
+    outline:none
+}
+.select2-container-multi .select2-choices li
+{
+    float:left;
+    list-style:none
+}
+.select2-container-multi .select2-choices .select2-search-field
+{
+    margin:0;
+    padding:0;
+    white-space:nowrap
+}
+.select2-container-multi .select2-choices .select2-search-field input
+{
+    padding:5px;
+    margin:1px 0;
+    font-family:sans-serif;
+    font-size:100%;
+    color:#666;
+    outline:0;
+    border:0;
+    background:transparent !important
+}
+.select2-container-multi .select2-choices .select2-search-field input.select2-active
+{
+    background:#fff url("select2-spinner.gif") no-repeat 100% !important
+}
+.select2-container-multi .select2-choices .select2-search-choice
+{
+    padding:3px 5px 3px 18px;
+    margin:3px 0 3px 5px;
+    position:relative;
+    line-height:13px;
+    color:#333;
+    cursor:default;
+    border:1px solid #aaaaaa;
+    border-radius:3px;
+    background-clip:padding-box;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    background-color:#e4e4e4;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#f4f4f4', GradientType=0);
+    background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), color-stop(100%, #eee));
+    background-image:-webkit-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+    background-image:-moz-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+    background-image:linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%)
+}
+.select2-container-multi .select2-choices .select2-search-choice .select2-chosen
+{
+    cursor:default
+}
+.select2-container-multi .select2-choices .select2-search-choice-focus
+{
+    background:#d4d4d4
+}
+.select2-search-choice-close
+{
+    display:block;
+    width:12px;
+    height:13px;
+    position:absolute;
+    right:3px;
+    top:4px;
+    font-size:1px;
+    outline:none;
+    background:url("select2.png") right top no-repeat
+}
+.select2-container-multi .select2-search-choice-close
+{
+    left:3px
+}
+.select2-container-multi .select2-choices .select2-search-choice .select2-search-choice-close:hover
+{
+    background-position:right -11px
+}
+.select2-container-multi .select2-choices .select2-search-choice-focus .select2-search-choice-close
+{
+    background-position:right -11px
+}
+.select2-container-multi.select2-container-disabled .select2-choices
+{
+    background-color:#f4f4f4;
+    background-image:none;
+    border:1px solid #ddd;
+    cursor:default
+}
+.select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice
+{
+    padding:3px 5px 3px 5px;
+    border:1px solid #ddd;
+    background-image:none;
+    background-color:#f4f4f4
+}
+.select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice .select2-search-choice-close
+{
+    display:none;
+    background:none
+}
+.select2-result-selectable .select2-match,.select2-result-unselectable .select2-match
+{
+    text-decoration:underline
+}
+.select2-offscreen,.select2-offscreen:focus
+{
+    clip:rect(0 0 0 0) !important;
+    width:1px !important;
+    height:1px !important;
+    border:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    position:absolute !important;
+    outline:0 !important;
+    left:0px !important;
+    top:0px !important
+}
+.select2-display-none
+{
+    display:none
+}
+.select2-measure-scrollbar
+{
+    position:absolute;
+    top:-10000px;
+    left:-10000px;
+    width:100px;
+    height:100px;
+    overflow:scroll
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 144dpi)
+{
+    .select2-search input,.select2-search-choice-close,.select2-container .select2-choice abbr,.select2-container .select2-choice .select2-arrow b
+    {
+        background-image:url("select2x2.png") !important;
+        background-repeat:no-repeat !important;
+        background-size:60px 40px !important
+    }
+    .select2-search input
+    {
+        background-position:100% -21px !important
+    }
+
+}
+.c3 svg
+{
+    font:10px sans-serif
+}
+.c3 path,.c3 line
+{
+    fill:none;
+    stroke:#000
+}
+.c3 text
+{
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none
+}
+.c3-legend-item-tile,.c3-xgrid-focus,.c3-ygrid,.c3-event-rect,.c3-bars path
+{
+    shape-rendering:crispEdges
+}
+.c3-chart-arc path
+{
+    stroke:#fff
+}
+.c3-chart-arc text
+{
+    fill:#fff;
+    font-size:13px
+}
+.c3-grid line
+{
+    stroke:#aaa
+}
+.c3-grid text
+{
+    fill:#aaa
+}
+.c3-xgrid,.c3-ygrid
+{
+    stroke-dasharray:3 3
+}
+.c3-text.c3-empty
+{
+    fill:#808080;
+    font-size:2em
+}
+.c3-line
+{
+    stroke-width:1px
+}
+.c3-circle._expanded_
+{
+    stroke-width:1px;
+    stroke:white
+}
+.c3-selected-circle
+{
+    fill:white;
+    stroke-width:2px
+}
+.c3-bar
+{
+    stroke-width:0
+}
+.c3-bar._expanded_
+{
+    fill-opacity:0.75
+}
+.c3-chart-arcs-title
+{
+    font-size:1.3em
+}
+.c3-target.c3-focused path.c3-line,.c3-target.c3-focused path.c3-step
+{
+    stroke-width:2px
+}
+.c3-region
+{
+    fill:steelblue;
+    fill-opacity:.1
+}
+.c3-brush .extent
+{
+    fill-opacity:.1
+}
+.c3-legend-item
+{
+    font-size:12px
+}
+.c3-legend-background
+{
+    opacity:0.75;
+    fill:white;
+    stroke:lightgray;
+    stroke-width:1
+}
+.c3-tooltip
+{
+    border-collapse:collapse;
+    border-spacing:0;
+    background-color:#fff;
+    empty-cells:show;
+    -webkit-box-shadow:7px 7px 12px -9px #777;
+    -moz-box-shadow:7px 7px 12px -9px #777;
+    box-shadow:7px 7px 12px -9px #777;
+    opacity:0.9
+}
+.c3-tooltip tr
+{
+    border:1px solid #CCC
+}
+.c3-tooltip th
+{
+    background-color:#aaa;
+    font-size:14px;
+    padding:2px 5px;
+    text-align:left;
+    color:#FFF
+}
+.c3-tooltip td
+{
+    font-size:13px;
+    padding:3px 6px;
+    background-color:#fff;
+    border-left:1px dotted #999
+}
+.c3-tooltip td>span
+{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    margin-right:6px
+}
+.c3-tooltip td.value
+{
+    text-align:right
+}
+.c3-area
+{
+    stroke-width:0;
+    opacity:0.2
+}
+.c3-chart-arcs .c3-chart-arcs-background
+{
+    fill:#e0e0e0;
+    stroke:none
+}
+.c3-chart-arcs .c3-chart-arcs-gauge-unit
+{
+    fill:#000;
+    font-size:16px
+}
+.c3-chart-arcs .c3-chart-arcs-gauge-max
+{
+    fill:#777
+}
+.c3-chart-arcs .c3-chart-arcs-gauge-min
+{
+    fill:#777
+}
+.c3-chart-arc .c3-gauge-value
+{
+    fill:#000;
+    font-size:28px
+}
+

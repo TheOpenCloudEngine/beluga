@@ -38,7 +38,6 @@ public class Environment {
 
 		System.setProperty("logback.configurationFile", new File(new File(homeFile, "conf"), "logback.xml").getAbsolutePath());
 		System.setProperty("log.path", logHomeFile.getAbsolutePath());
-        domainName = System.getProperty("garuda.domain");
 
 		logger = LoggerFactory.getLogger(Environment.class);
 		 
@@ -48,6 +47,8 @@ public class Environment {
 	public Environment init() {
 		settingManager = new SettingManager(this);
 		settingManager.asSingleton();
+		domainName = settingManager.getSystemSettings().getString("domain");
+		logger.info("Domain Name = {}", domainName);
 		return this;
 	}
 	
