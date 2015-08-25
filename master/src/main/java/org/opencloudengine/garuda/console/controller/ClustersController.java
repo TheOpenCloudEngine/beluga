@@ -129,6 +129,7 @@ public class ClustersController {
             ActionRequest request = new DestroyClusterActionRequest(clusterId);
             ActionStatus actionStatus = ServiceManager.getInstance().getService(ActionService.class).request(request);
             actionStatus.waitForDone();
+            session.removeAttribute("_clusterId");
             response.setStatus(200);
         } catch (Throwable t) {
             logger.error("", t);
