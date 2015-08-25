@@ -1,24 +1,30 @@
 package org.opencloudengine.garuda.console.controller;
 
 import org.opencloudengine.garuda.action.ActionRequest;
+import org.opencloudengine.garuda.action.ActionService;
+import org.opencloudengine.garuda.action.ActionStatus;
+import org.opencloudengine.garuda.action.cluster.CreateClusterActionRequest;
+import org.opencloudengine.garuda.api.RestAPIService;
 import org.opencloudengine.garuda.cloud.*;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
 import org.opencloudengine.garuda.settings.IaasProviderConfig;
+import org.opencloudengine.garuda.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.management.relation.RoleList;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 5. 11..
@@ -52,13 +58,12 @@ public class ClustersController {
     /**
      * Edit cluster by clusterId
      * */
-    @RequestMapping(value = "/{clusterId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{clusterId}", method = RequestMethod.PUT)
     public ModelAndView editCluster(@PathVariable String clusterId) throws Exception {
-        ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
-        ClusterService clusterService = clustersService.getClusterService(clusterId);
-        ClusterTopology clusterTopology = clusterService.getClusterTopology();
+
+        //TODO
+
         ModelAndView mav = new ModelAndView();
-        mav.addObject("clusterTopology", clusterTopology);
         mav.setViewName("cluster");
         return mav;
     }
@@ -76,7 +81,7 @@ public class ClustersController {
             for(ClusterDefinition.RoleDefinition roleDefinition : definition.getRoleList()) {
                 String instanceType = roleDefinition.getInstanceType();
                 IaasSpec spec = IaasSpec.getSpec(providerType, instanceType);
-                logger.debug("providerType={} instanceType={} spec = {}", providerType, instanceType, spec);
+//                logger.debug("providerType={} instanceType={} spec = {}", providerType, instanceType, spec);
                 roleDefinition.setIaasSpec(spec);
             }
         }
@@ -89,13 +94,34 @@ public class ClustersController {
 
     /**
      * Create new cluster
+     * REST API
      * */
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ModelAndView clusterNew() throws Exception {
-        String clusterId = null;
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("cluster/"+clusterId);
-        return mav;
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public void clusterNew(HttpServletResponse response, @RequestBody String json) throws Exception {
+        json = URLDecoder.decode(json, "utf-8");
+        Map<String, Object> data = JsonUtil.json2Object(json);
+        String clusterId = (String) data.get("id");
+        if(clusterId == null) {
+            response.sendError(500, "ID must be set.");
+            return;
+        }
+        String definitionId = (String) data.get("definition");
+        if (definitionId == null) {
+            response.sendError(500, "Definition must be set.");
+            return;
+        }
+        Boolean await = (Boolean) data.get("await");
+        try {
+            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionStatus actionStatus = ServiceManager.getInstance().getService(ActionService.class).request(request);
+            if (await != null && await.booleanValue()) {
+                actionStatus.waitForDone();
+            }
+            response.setStatus(200);
+        } catch (Throwable t) {
+            logger.error("", t);
+            response.sendError(500, t.getMessage());
+        }
     }
 
 }

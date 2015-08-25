@@ -22,6 +22,7 @@ import org.opencloudengine.garuda.service.common.ServiceManager;
 public class RestAPIService extends AbstractService {
 
 	private Server jettyServer;
+	private int servicePort;
 
 	private static final String jersey_provider_class = "jersey.config.server.provider.classnames";
 	private static final String garuda_rest_api_package = "org.opencloudengine.garuda.api.rest";
@@ -31,10 +32,14 @@ public class RestAPIService extends AbstractService {
 
 	}
 
+	public int getServicePort() {
+		return servicePort;
+	}
+
 	@Override
 	protected boolean doStart() throws ServiceException {
 
-		int servicePort = settings.getInt("port");
+		servicePort = settings.getInt("port");
 		jettyServer = new Server(servicePort);
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);

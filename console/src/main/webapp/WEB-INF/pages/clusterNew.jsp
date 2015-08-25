@@ -21,24 +21,25 @@
            showModalSpinner();
 
            $.ajax({
-               url: "/v1/clusters/",
+               url: "/clusters",
                type: "POST",
-               data: {
-                   id: clusterId,
-                   definition: definitionId,
-                   await: true
-               },
+               processData: false,
+               data: JSON.stringify({
+                   id:clusterId,
+                   definition:definitionId,
+                   await:true
+               }),
                success: function() {
                    hideModalSpinner();
                    alert("Create Cluster '"+clusterId+"' Success!");
                },
                error: function(xhr) {
                    hideModalSpinner();
-                    alert("Error : " + xhr.responseText);
+                   console.log(xhr.responseText);
+                   alert("Error : " + xhr.responseText);
                }
 
-           })
-
+           });
        });
     });
 

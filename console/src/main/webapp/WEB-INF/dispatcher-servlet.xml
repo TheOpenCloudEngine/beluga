@@ -34,8 +34,8 @@
         <property name="maxUploadSize" value="209715200"/>
     </bean>
 
-    <bean id="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
-        <property name="indentOutput" value="true"/>
-    </bean>
+    <!--<bean id="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">-->
+        <!--<property name="indentOutput" value="true"/>-->
+    <!--</bean>-->
 
 </beans>
