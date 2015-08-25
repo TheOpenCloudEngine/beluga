@@ -6,3 +6,4 @@ production/tmp/
 production/.lock
 production/velocity.log
 production/logs/system.log
+production/console/temp/
