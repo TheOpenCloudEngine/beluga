@@ -4,6 +4,7 @@ import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.CreateClusterActionRequest;
+import org.opencloudengine.garuda.action.cluster.DestroyClusterActionRequest;
 import org.opencloudengine.garuda.api.RestAPIService;
 import org.opencloudengine.garuda.cloud.*;
 import org.opencloudengine.garuda.env.SettingManager;
@@ -21,10 +22,7 @@ import javax.management.relation.RoleList;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by swsong on 2015. 5. 11..
@@ -97,7 +95,7 @@ public class ClustersController {
      * REST API
      * */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void clusterNew(HttpServletResponse response, @RequestBody String json) throws Exception {
+    public void clusterNew(@RequestBody String json, HttpServletResponse response) throws Exception {
         json = URLDecoder.decode(json, "utf-8");
         Map<String, Object> data = JsonUtil.json2Object(json);
         String clusterId = (String) data.get("id");
@@ -117,6 +115,20 @@ public class ClustersController {
             if (await != null && await.booleanValue()) {
                 actionStatus.waitForDone();
             }
+            response.setStatus(200);
+        } catch (Throwable t) {
+            logger.error("", t);
+            response.sendError(500, t.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/{clusterId}", method = RequestMethod.DELETE)
+    public void deleteCluster(@PathVariable String clusterId, HttpServletResponse response, HttpSession session) throws Exception {
+
+        try {
+            ActionRequest request = new DestroyClusterActionRequest(clusterId);
+            ActionStatus actionStatus = ServiceManager.getInstance().getService(ActionService.class).request(request);
+            actionStatus.waitForDone();
             response.setStatus(200);
         } catch (Throwable t) {
             logger.error("", t);

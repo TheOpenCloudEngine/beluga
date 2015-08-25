@@ -32,6 +32,7 @@
                success: function() {
                    hideModalSpinner();
                    alert("Create Cluster '"+clusterId+"' Success!");
+                   location.href = "/clusters/" + clusterId;
                },
                error: function(xhr) {
                    hideModalSpinner();

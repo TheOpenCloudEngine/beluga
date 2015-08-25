@@ -3,7 +3,23 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <% String menuId = "cluster"; %>
 <%@include file="top.jsp" %>
+<script>
+$(function(){
+    $("#deleteClusterButton").on("click", function(){
+        $.ajax({
+            url: "/clusters/${topology.clusterId}",
+            type: "DELETE",
+            success: function() {
+                location.href = "/";
+            },
+            error: function(xhr, status, e) {
+                alert("cannot delete cluster : " + xhr.responseText);
+            }
+        })
+    });
+});
 
+</script>
 <div class="container" id="content">
     <div class="row">
         <div class="col-md-12">
@@ -186,21 +202,37 @@
 
                 </tbody>
             </table>
+        </div>
 
-            <div>
-                <%--<div class="pull-left">--%>
-                    <%--<a href="javascript:refreshList()" class="btn btn-default"> Add Instance</a>--%>
-                    <%--&nbsp;<a href="javascript:refreshList()" class="btn btn-danger outline"> Remove Instance</a>--%>
-                <%--</div>--%>
+        <div class="col-md-12">
+            <div class="box" >
                 <div class="pull-right">
-                    <%--<a href="javascript:refreshList()" class="btn btn-default"> Stop Cluster</a>--%>
-                    <%--&nbsp;--%>
-                    <a href="javascript:refreshList()" class="btn btn-danger outline">Destroy Cluster</a>
+                    <button type="button" class="btn btn-lg btn-danger outline" data-toggle="modal" data-target="#deleteModal"><i class="glyphicon glyphicon-trash"></i> Delete Cluster</button>
                 </div>
+                <h2>Delete Cluster</h2>
+                <p>This will terminate running app and permanently delete all instances.</p>
             </div>
-
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Are you sure?</h4>
+            </div>
+            <div class="modal-body">
+                <p>This will terminate running app and permanently delete all instances.</p>
+                <p><strong class="text-danger">Delete cluster "${topology.clusterId}".</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="deleteClusterButton">Yes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <%@include file="bottom.jsp" %>
