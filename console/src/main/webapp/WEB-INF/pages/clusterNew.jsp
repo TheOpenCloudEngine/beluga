@@ -3,7 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <% String menuId = "cluster"; %>
 <%@include file="top.jsp" %>
-
+<script src="/resources/js/spin.min.js"></script>
 <script>
     function createCluster(definitionId) {
         $("#createClusterModal").modal('show');
@@ -16,7 +16,10 @@
            }
 
            $("#createClusterModal").modal('hide');
-
+           showModalSpinner();
+           setTimeout(function(){
+               hideModalSpinner();
+           }, 5000);
 
        });
     });
