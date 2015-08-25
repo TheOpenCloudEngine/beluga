@@ -36,6 +36,7 @@ public class EC2Iaas implements Iaas {
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale) {
         List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
 
+        String clusterId = request.getClusterId();
         RunInstancesResult runInstancesResult = null;
         if (scale > 0) {
             RunInstancesRequest runRequest = new RunInstancesRequest();
@@ -66,7 +67,7 @@ public class EC2Iaas implements Iaas {
                     CreateTagsRequest createTagsRequest = new CreateTagsRequest();
                     String tagName = name;
                     if (scale > 1) {
-                        tagName = String.format("%s-%d", name, idx);
+                        tagName = String.format("%s-%s-%d", clusterId, name, idx);
                     }
 
                     createTagsRequest.withResources(instance.getInstanceId()).withTags(new Tag("Name", tagName));

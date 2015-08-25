@@ -7,19 +7,29 @@ import java.util.HashSet;
  * Created by swsong on 2015. 7. 15..
  */
 public class InstanceRequest {
+    private String clusterId;
     private String instanceType;
     private String imageId;
     private int volumeSize;
     private HashSet<String> groups;
     private String keyPair;
 
-    public InstanceRequest(String instanceType, String imageId, int volumeSize, String group, String keyPair) {
+    public InstanceRequest(String clusterId, String instanceType, String imageId, int volumeSize, String group, String keyPair) {
+        this.clusterId = clusterId;
         this.instanceType = instanceType;
         this.imageId = imageId;
         this.volumeSize = volumeSize;
         this.groups = new HashSet<String>();
         groups.add(group);
         this.keyPair = keyPair;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getInstanceType() {

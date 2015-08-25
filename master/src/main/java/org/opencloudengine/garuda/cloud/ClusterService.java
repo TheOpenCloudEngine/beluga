@@ -143,6 +143,7 @@ public class ClusterService extends AbstractClusterService {
 
     private void createInstances(ClusterTopology clusterTopology, ClusterDefinition clusterDefinition, IaasProvider iaasProvider, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, GarudaException {
         String keyPair = clusterDefinition.getKeyPair();
+        String clusterId = clusterTopology.getClusterId();
         Iaas iaas = null;
         try {
             iaas = iaasProvider.getIaas();
@@ -151,7 +152,7 @@ public class ClusterService extends AbstractClusterService {
             for (ClusterDefinition.RoleDefinition roleDefinition : roleDefinitions) {
                 String role = roleDefinition.getRole();
                 int size = roleDefinition.getDefaultSize();
-                InstanceRequest request = new InstanceRequest(roleDefinition.getInstanceType(), roleDefinition.getImageId()
+                InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
                         , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
                 List<CommonInstance> instanceList = iaas.launchInstance(request, role, size);
 

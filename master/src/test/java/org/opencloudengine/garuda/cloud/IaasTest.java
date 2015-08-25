@@ -20,6 +20,7 @@ public class IaasTest {
     String accessKey;
     String secretKey;
 
+    String clusterId = "mytest";
     String endPoint = "ec2.ap-northeast-1.amazonaws.com";
     String instanceType = "t2.micro";
     String imageId = "ami-936d9d93";
@@ -36,7 +37,7 @@ public class IaasTest {
 
     @Test
     public void testEC2Launch() {
-        InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
         for(CommonInstance i : list) {
@@ -53,7 +54,7 @@ public class IaasTest {
     public void testEC2LaunchByCustomAMI() {
         String imageId = "ami-ba1fa3ba";
         int volumeSize = 10;
-        InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "slave", 1);
         for(CommonInstance i : list) {
@@ -68,7 +69,7 @@ public class IaasTest {
 
     @Test
     public void testEC2LaunchDescribeTerminate() {
-        InstanceRequest request = new InstanceRequest(instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
         for(CommonInstance i : list) {
