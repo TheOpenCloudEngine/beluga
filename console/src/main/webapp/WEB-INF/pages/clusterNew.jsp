@@ -5,8 +5,10 @@
 <%@include file="top.jsp" %>
 <script src="/resources/js/spin.min.js"></script>
 <script>
-    function createCluster(definitionId) {
+    var definitionId;
+    function createCluster(defId) {
         $("#createClusterModal").modal('show');
+        definitionId = defId;
     }
     $(function(){
        $("#createClusterButton").on("click", function() {
@@ -17,9 +19,25 @@
 
            $("#createClusterModal").modal('hide');
            showModalSpinner();
-           setTimeout(function(){
-               hideModalSpinner();
-           }, 5000);
+
+           $.ajax({
+               url: "/v1/clusters/",
+               type: "POST",
+               data: {
+                   id: clusterId,
+                   definition: definitionId,
+                   await: true
+               },
+               success: function() {
+                   hideModalSpinner();
+                   alert("Create Cluster '"+clusterId+"' Success!");
+               },
+               error: function(xhr) {
+                   hideModalSpinner();
+                    alert("Error : " + xhr.responseText);
+               }
+
+           })
 
        });
     });
@@ -75,10 +93,7 @@
             </div>
             <div class="modal-body">
                 <p>Cluster ID : </p>
-                <form>
-                    <input type="text" class="form-control" id="clusterId">
-                    <input type="hidden" name="definitionId">
-                </form>
+                <input type="text" class="form-control" id="clusterId">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
