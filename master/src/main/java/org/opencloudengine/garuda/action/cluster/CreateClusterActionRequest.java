@@ -11,9 +11,9 @@ public class CreateClusterActionRequest extends ActionRequest {
     private String definitionId;
     private String domainName;
 
-    public CreateClusterActionRequest(String clusterId, String definitionId) {
-        this(clusterId, definitionId, null);
-    }
+//    public CreateClusterActionRequest(String clusterId, String definitionId) {
+//        this(clusterId, definitionId, null);
+//    }
 
     public CreateClusterActionRequest(String clusterId, String definitionId, String domainName) {
         this.clusterId = clusterId;

@@ -5,7 +5,6 @@ import org.opencloudengine.garuda.action.ActionService;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.CreateClusterActionRequest;
 import org.opencloudengine.garuda.action.cluster.DestroyClusterActionRequest;
-import org.opencloudengine.garuda.api.RestAPIService;
 import org.opencloudengine.garuda.cloud.*;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -15,14 +14,17 @@ import org.opencloudengine.garuda.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.management.relation.RoleList;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 5. 11..
@@ -108,9 +110,15 @@ public class ClustersController {
             response.sendError(500, "Definition must be set.");
             return;
         }
+        String domainName = (String) data.get("domain");
+        if (domainName == null) {
+            response.sendError(500, "Domain must be set.");
+            return;
+        }
+
         Boolean await = (Boolean) data.get("await");
         try {
-            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId, domainName);
             ActionStatus actionStatus = ServiceManager.getInstance().getService(ActionService.class).request(request);
             if (await != null && await.booleanValue()) {
                 actionStatus.waitForDone();

@@ -16,6 +16,10 @@
            if(clusterId == "") {
                return;
            }
+           domainName = $("#domainName").val();
+           if(domainName == "") {
+               return;
+           }
 
            $("#createClusterModal").modal('hide');
            showModalSpinner();

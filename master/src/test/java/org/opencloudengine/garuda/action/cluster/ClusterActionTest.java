@@ -11,11 +11,12 @@ import org.opencloudengine.garuda.exception.GarudaException;
 public class ClusterActionTest extends BaseActionTest {
 
     String clusterId = "test-cluster";
+    String domainName = "fastcatsearch.com";
 
     @Test
     public void createEC2DevelopmentCluster() throws GarudaException, InterruptedException {
         String definitionId = "ec2-dev";
-        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId, domainName);
         CreateClusterAction action = new CreateClusterAction(request);
         ActionStatus status = action.getStatus();
         action.run();
@@ -26,7 +27,7 @@ public class ClusterActionTest extends BaseActionTest {
     public void createEC2RealCluster() throws GarudaException, InterruptedException {
         String definitionId = "ec2-real";
 
-        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+        CreateClusterActionRequest request = new CreateClusterActionRequest(clusterId, definitionId, domainName);
         CreateClusterAction action = new CreateClusterAction(request);
         ActionStatus status = action.getStatus();
         action.run();
