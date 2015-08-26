@@ -17,6 +17,7 @@ public class ClusterServiceTest {
     ClusterService clusterService;
 
     String clusterId = "test-cluster";
+    String domainName = "fastcatsearch.com";
 
     @Before
     public void init() throws GarudaException {
@@ -34,7 +35,7 @@ public class ClusterServiceTest {
     @Test
     public void testLaunch() throws GarudaException, UnknownIaasProviderException, ClusterExistException {
         String definitionId = "ec2-real";
-        clusterService.createCluster(definitionId, true);
+        clusterService.createCluster(definitionId, domainName, true);
     }
 
     @Test
