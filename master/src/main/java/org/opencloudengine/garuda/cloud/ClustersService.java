@@ -92,10 +92,10 @@ public class ClustersService extends AbstractService {
     }
 
     public void createCluster(String clusterId, String definitionId) throws GarudaException, ClusterExistException {
-        createCluster(clusterId, definitionId, false);
+        createCluster(clusterId, definitionId, null, false);
     }
 
-    public ClusterService createCluster(String clusterId, String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
+    public ClusterService createCluster(String clusterId, String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
 
         if(clusterMap.containsKey(clusterId) || isClusterIdExistInSetting(clusterId)) {
             throw new ClusterExistException(String.format("Cluster %s is already exists.", clusterId));
@@ -108,7 +108,7 @@ public class ClustersService extends AbstractService {
             throw new GarudaException(e);
         }
         if (clusterService.start()) {
-            addClusterIdToSetting(clusterId);
+            addClusterIdToSetting(clusterId, domainName);
         }
         clusterMap.put(clusterId, clusterService);
 
@@ -146,10 +146,11 @@ public class ClustersService extends AbstractService {
         return false;
     }
 
-    private void addClusterIdToSetting(String clusterId) {
+    private void addClusterIdToSetting(String clusterId, String domainName) {
         SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
         settings.addStringToArray(CLUSTERS_KEY, clusterId);
+        settings.properties().put(clusterId + "." + DOMAIN_KEY, domainName);
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
     }
@@ -157,6 +158,7 @@ public class ClustersService extends AbstractService {
         SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
         settings.removeStringFromArray(CLUSTERS_KEY, clusterId);
+        settings.properties().remove(clusterId + "." + DOMAIN_KEY);
         //clusters 설정파일을 저장한다.
         settingManager.storeClustersConfig(settings);
     }

@@ -37,9 +37,13 @@ public class ClustersAPI extends BaseAPI {
         if (definitionId == null) {
             return getErrorMessageOkResponse("Definition must be set.");
         }
+        String domainName = (String) data.get("domain");
+        if (domainName == null) {
+            return getErrorMessageOkResponse("Domain must be set.");
+        }
         Boolean await = (Boolean) data.get("await");
         try {
-            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId);
+            ActionRequest request = new CreateClusterActionRequest(clusterId, definitionId, domainName);
             ActionStatus actionStatus = actionService().request(request);
             if (await != null && await.booleanValue()) {
                 actionStatus.waitForDone();

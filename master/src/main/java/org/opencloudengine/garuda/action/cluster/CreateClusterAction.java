@@ -1,8 +1,6 @@
 package org.opencloudengine.garuda.action.cluster;
 
 import org.opencloudengine.garuda.action.RunnableAction;
-import org.opencloudengine.garuda.cloud.ClusterService;
-import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.mesos.MesosAPI;
 
@@ -25,6 +23,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         CreateClusterActionRequest request = getActionRequest();
         String clusterId = request.getClusterId();
         String definitionId = request.getDefinitionId();
+        String domainName = request.getDomainName();
 
         ClustersService clustersService = serviceManager.getService(ClustersService.class);
 
@@ -34,7 +33,7 @@ public class CreateClusterAction extends RunnableAction<CreateClusterActionReque
         //create instances and wait until available
         status.walkStep();
         logger.debug("Create Cluster..");
-        clustersService.createCluster(clusterId, definitionId, true);
+        clustersService.createCluster(clusterId, definitionId, domainName, true);
         logger.debug("Create Cluster.. Done.");
 
         logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);

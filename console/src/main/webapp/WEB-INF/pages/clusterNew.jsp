@@ -27,6 +27,7 @@
                data: JSON.stringify({
                    id:clusterId,
                    definition:definitionId,
+                   domain:domainName,
                    await:true
                }),
                success: function() {
@@ -94,8 +95,20 @@
                 <h4 class="modal-title">Create Cluster</h4>
             </div>
             <div class="modal-body">
-                <p>Cluster ID : </p>
-                <input type="text" class="form-control" id="clusterId">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="clusterId" class="col-sm-3 control-label">Cluster ID</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="clusterId">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="domainName" class="col-sm-3 control-label">Domain</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="domainName" placeholder="mydomain.com">
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

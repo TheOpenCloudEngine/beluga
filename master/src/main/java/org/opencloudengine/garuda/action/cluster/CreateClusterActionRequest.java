@@ -9,10 +9,17 @@ import org.opencloudengine.garuda.action.RunnableAction;
 public class CreateClusterActionRequest extends ActionRequest {
     private String clusterId;
     private String definitionId;
+    private String domainName;
 
     public CreateClusterActionRequest(String clusterId, String definitionId) {
+        this(clusterId, definitionId, null);
+    }
+
+    public CreateClusterActionRequest(String clusterId, String definitionId, String domainName) {
         this.clusterId = clusterId;
         this.definitionId = definitionId;
+        this.domainName = domainName;
+
     }
 
     public String getClusterId() {
@@ -21,6 +28,10 @@ public class CreateClusterActionRequest extends ActionRequest {
 
     public String getDefinitionId() {
         return definitionId;
+    }
+
+    public String getDomainName() {
+        return domainName;
     }
 
     @Override
