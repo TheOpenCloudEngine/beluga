@@ -23,6 +23,8 @@ import java.util.Properties;
 * Created by swsong on 2015. 7. 20..
 */
 public class ClusterService extends AbstractClusterService {
+    private static final String CLUSTERS_KEY = "clusters";
+    private static final String DOMAIN_KEY = "domain";
     private static final long PROXY_CHECK_PERIOD = 500;
     private static final long DEPLOY_CHECK_PERIOD = 500;
     private IaasProviderConfig iaasProviderConfig;
@@ -45,7 +47,7 @@ public class ClusterService extends AbstractClusterService {
         dockerAPI = new DockerAPI(environment);
         SettingManager settingManager = environment.settingManager();
         Settings clustersConfig = settingManager.getClustersConfig();
-        domainName = clustersConfig.getString(clusterId + ".domain");
+        domainName = clustersConfig.getString(clusterId + "." + DOMAIN_KEY);
     }
 
 
@@ -128,7 +130,8 @@ public class ClusterService extends AbstractClusterService {
         return true;
     }
 
-    protected ClusterService createCluster(String definitionId, boolean waitUntilInstanceAvailable) throws GarudaException, UnknownIaasProviderException {
+    protected ClusterService createCluster(String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws GarudaException, UnknownIaasProviderException {
+        this.domainName = domainName;
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
         String iaasProfile = clusterDefinition.getIaasProfile();
@@ -137,7 +140,18 @@ public class ClusterService extends AbstractClusterService {
         ClusterTopology clusterTopology = new ClusterTopology(clusterId, definitionId, iaasProfile);
         createInstances(clusterTopology, clusterDefinition, iaasProvider, waitUntilInstanceAvailable);
         storeClusterTopologyConfig();
+
+        addClusterIdToSetting(clusterId, domainName);
         return this;
+    }
+
+    private void addClusterIdToSetting(String clusterId, String domainName) {
+        SettingManager settingManager = environment.settingManager();
+        Settings settings = settingManager.getClustersConfig();
+        settings.addStringToArray(CLUSTERS_KEY, clusterId);
+        settings.properties().put(clusterId + "." + DOMAIN_KEY, domainName);
+        //clusters 설정파일을 저장한다.
+        settingManager.storeClustersConfig(settings);
     }
 
     private void createInstances(ClusterTopology clusterTopology, ClusterDefinition clusterDefinition, IaasProvider iaasProvider, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, GarudaException {

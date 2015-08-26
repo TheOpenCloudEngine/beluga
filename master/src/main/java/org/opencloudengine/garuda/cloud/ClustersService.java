@@ -9,7 +9,6 @@ import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
 import org.opencloudengine.garuda.service.common.ServiceManager;
 import org.opencloudengine.garuda.settings.ClusterDefinition;
-import org.opencloudengine.garuda.settings.IaasProviderConfig;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 * Created by swsong on 2015. 7. 20..
 */
 public class ClustersService extends AbstractService {
-
-
-    private IaasProviderConfig iaasProviderConfig;
 
     private static final String CLUSTERS_KEY = "clusters";
     private static final String DEFINITIONS_KEY = "defines";
@@ -36,7 +32,6 @@ public class ClustersService extends AbstractService {
     @Override
     protected boolean doStart() throws ServiceException {
 
-        iaasProviderConfig = environment.settingManager().getIaasProviderConfig();
         clusterMap = new ConcurrentHashMap<>();
         definitionMap = new ConcurrentHashMap<>();
 
@@ -95,14 +90,12 @@ public class ClustersService extends AbstractService {
 
         ClusterService clusterService = null;
         try {
-            clusterService = new ClusterService(clusterId, environment, settings).createCluster(definitionId, waitUntilInstanceAvailable);
+            clusterService = new ClusterService(clusterId, environment, settings).createCluster(definitionId, domainName, waitUntilInstanceAvailable);
         } catch (UnknownIaasProviderException e) {
             throw new GarudaException(e);
         }
-        if (clusterService.start()) {
-            addClusterIdToSetting(clusterId, domainName);
-        }
         clusterMap.put(clusterId, clusterService);
+        clusterService.start();
 
         return clusterService;
     }
@@ -138,14 +131,6 @@ public class ClustersService extends AbstractService {
         return false;
     }
 
-    private void addClusterIdToSetting(String clusterId, String domainName) {
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        settings.addStringToArray(CLUSTERS_KEY, clusterId);
-        settings.properties().put(clusterId + "." + DOMAIN_KEY, domainName);
-        //clusters 설정파일을 저장한다.
-        settingManager.storeClustersConfig(settings);
-    }
     public void removeClusterIdFromSetting(String clusterId) {
         SettingManager settingManager = environment.settingManager();
         Settings settings = settingManager.getClustersConfig();
