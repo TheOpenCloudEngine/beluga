@@ -7,3 +7,4 @@ production/.lock
 production/velocity.log
 production/logs/system.log
 production/console/temp/
+production/conf/topology.*.conf

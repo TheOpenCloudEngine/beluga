@@ -100,13 +100,10 @@ public class SshClient {
                 logger.debug("[{}] Send command {}", sshInfo.getHost(), command);
                 channel.setCommand(command);
                 tryConnect(channel);
-//                channel.setErrStream(System.err);
-//                channel.setOutputStream(System.out);
-//                InputStream stdIn = channel.getInputStream();
-//                InputStream errIn = channel.getErrStream();
-//                return consumeOutputStream(label, channel, stdIn, errIn);
-                return 0;
-
+                InputStream stdIn = channel.getInputStream();
+                InputStream errIn = channel.getErrStream();
+                return consumeOutputStream(label, channel, stdIn, errIn);
+//                return 0;
             } finally {
                 if (channel != null) {
                     channel.disconnect();
