@@ -43,6 +43,9 @@ public class ClusterService extends AbstractClusterService {
         mesosAPI = new MesosAPI(this, environment);
         marathonAPI = new MarathonAPI(this, environment);
         dockerAPI = new DockerAPI(environment);
+        SettingManager settingManager = environment.settingManager();
+        Settings clustersConfig = settingManager.getClustersConfig();
+        domainName = clustersConfig.getString(clusterId + ".domain");
     }
 
 
@@ -56,10 +59,6 @@ public class ClusterService extends AbstractClusterService {
 
     public String getDomainName() {
         return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
     }
 
     @Override

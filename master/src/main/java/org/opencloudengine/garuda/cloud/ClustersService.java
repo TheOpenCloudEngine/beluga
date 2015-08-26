@@ -47,8 +47,6 @@ public class ClustersService extends AbstractService {
             for (String clusterId : clusterList) {
                 try {
                     ClusterService cluster = new ClusterService(clusterId, environment, settings);
-                    String domainName = getClusterDomainName(clusterId);
-                    cluster.setDomainName(domainName);
                     cluster.start();
                     clusterMap.put(clusterId, cluster);
                 }catch(Throwable t) {
@@ -76,12 +74,6 @@ public class ClustersService extends AbstractService {
     protected boolean doClose() throws ServiceException {
         clusterMap = null;
         return true;
-    }
-
-    public String getClusterDomainName(String clusterId) {
-        SettingManager settingManager = environment.settingManager();
-        Settings settings = settingManager.getClustersConfig();
-        return settings.getString(clusterId + "." + DOMAIN_KEY);
     }
 
     public Set<String> getClusterIdSet() {
