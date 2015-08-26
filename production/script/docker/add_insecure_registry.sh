@@ -9,4 +9,4 @@ if [ $# -ne 1 ] ; then
     exit 1
 fi
 
-echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $1:5000\" | sudo tee -a /etc/default/docker && sudo /etc/init.d/docker restart
+echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $1:5000\" | sudo tee -a /etc/default/docker && sudo service docker restart

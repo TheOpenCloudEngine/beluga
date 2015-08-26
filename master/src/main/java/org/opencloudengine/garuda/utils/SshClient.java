@@ -99,11 +99,38 @@ public class SshClient {
                 }
                 logger.debug("[{}] Send command {}", sshInfo.getHost(), command);
                 channel.setCommand(command);
+                channel.setInputStream(null);
+                channel.setErrStream(System.err);
+                InputStream in = channel.getInputStream();
                 tryConnect(channel);
-                InputStream stdIn = channel.getInputStream();
-                InputStream errIn = channel.getErrStream();
-                return consumeOutputStream(label, channel, stdIn, errIn);
+//                InputStream stdIn = channel.getInputStream();
+//                InputStream errIn = channel.getErrStream();
+//                return consumeOutputStream(label, channel, stdIn, errIn);
+//                channel.start();
 //                return 0;
+                byte[] tmp = new byte[1024];
+                while (true) {
+                    while (in.available() > 0) {
+                        int i = in.read(tmp, 0, 1024);
+                        if (i < 0) {
+                            break;
+                        }
+                        logger.info("[{}] {}", label, new String(tmp, 0, i));
+                    }
+                    if (channel.isClosed()) {
+                        int exitStatus = channel.getExitStatus();
+                        if (label != null) {
+                            logger.info("[{}] Exit code {}", label, exitStatus);
+                        } else {
+                            logger.info("Exit code {}", exitStatus);
+                        }
+                        return exitStatus;
+                    }
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception ee) {
+                    }
+                }
             } finally {
                 if (channel != null) {
                     channel.disconnect();
@@ -128,54 +155,73 @@ public class SshClient {
     }
 
     private static int consumeOutputStream(String label, Channel channel, InputStream stdIn, InputStream errIn) {
-        BufferedReader stdReader = new BufferedReader(new InputStreamReader(stdIn));
-        BufferedReader errReader = new BufferedReader(new InputStreamReader(errIn));
-        while (true) {
-            while (true) {
-                try {
-                    String strLog = stdReader.readLine();
-                    String errLog = errReader.readLine();
+        try {
+            byte[] buf = new byte[128];
+            StringBuilder strLogBuilder = new StringBuilder();
+            StringBuilder errLogBuilder = new StringBuilder();
+
+            while(true) {
+                while (true) {
+                    int n = stdIn.read(buf);
+                    String strLog = null;
+                    String errLog = null;
+
+                    if (n > 0) {
+                        strLog = new String(buf, 0, n);
+                        strLogBuilder.append(strLog);
+                    }
+                    int n2 = errIn.read(buf);
+                    if (n > 0) {
+                        errLog = new String(buf, 0, n2);
+                        errLogBuilder.append(errLog);
+                    }
+
                     if (strLog == null && errLog == null) {
                         //EOF
                         break;
                     }
-                    if (strLog != null) {
-                        if (label != null) {
-                            logger.info("[{}] {}", label, strLog);
-                        } else {
-                            logger.info(strLog);
-                        }
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception ignore) {
                     }
-                    if (errLog != null) {
-                        if (label != null) {
-                            logger.error("[{}] {}", label, errLog);
-                        } else {
-                            logger.error(errLog);
-                        }
-                    }
-                } catch (Exception ex) {
+                }
+                String strLog = strLogBuilder.toString();
+                String errLog = errLogBuilder.toString();
+
+
+                if (strLog != null) {
                     if (label != null) {
-                        logger.error("[{}] {}", label, ex);
+                        logger.info("[{}] {}", label, strLog);
                     } else {
-                        logger.error("{}", ex.toString());
+                        logger.info(strLog);
                     }
-                    break;
+                }
+                if (errLog != null) {
+                    if (label != null) {
+                        logger.error("[{}] {}", label, errLog);
+                    } else {
+                        logger.error(errLog);
+                    }
+                }
+
+                if (channel.isClosed()) {
+                    int exitStatus = channel.getExitStatus();
+                    if (label != null) {
+                        logger.info("[{}] Exit code {}", label, exitStatus);
+                    } else {
+                        logger.info("Exit code {}", exitStatus);
+                    }
+                    return exitStatus;
                 }
             }
-            if (channel.isClosed()) {
-                int exitStatus = channel.getExitStatus();
-                if (label != null) {
-                    logger.info("[{}] Exit code {}", label, exitStatus);
-                } else {
-                    logger.info("Exit code {}", exitStatus);
-                }
-                return exitStatus;
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (Exception ignore) {
+        } catch (Exception ex) {
+            if (label != null) {
+                logger.error("[{}] {}", label, ex);
+            } else {
+                logger.error("{}", ex.toString());
             }
         }
+        return -1;
     }
 
     public void sendFile(String source, String dest, boolean executable) {
