@@ -23,7 +23,6 @@ public class Environment {
 	private String home = "";
 	private File homeFile;
 	private File logHomeFile;
-    private String domainName;
 
 	private SettingManager settingManager;
 	
@@ -47,8 +46,6 @@ public class Environment {
 	public Environment init() {
 		settingManager = new SettingManager(this);
 		settingManager.asSingleton();
-		domainName = settingManager.getSystemSettings().getString("domain");
-		logger.info("Domain Name = {}", domainName);
 		return this;
 	}
 	
@@ -72,7 +69,4 @@ public class Environment {
 		return new Path(homeFile);
 	}
 
-    public String domainName() {
-        return domainName;
-    }
 }

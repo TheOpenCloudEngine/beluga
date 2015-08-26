@@ -175,7 +175,7 @@ public class ClustersAPI extends BaseAPI {
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
         try {
-            return marathonAPI(clusterId).requestDeleteAPI("/deployments/"+deploymentsId);
+            return marathonAPI(clusterId).requestDeleteAPI("/deployments/" + deploymentsId);
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -192,5 +192,12 @@ public class ClustersAPI extends BaseAPI {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
         }
+    }
+
+    @GET
+    @Path("/{id}/domain")
+    public Response getDomainName(@PathParam("id") String clusterId) throws Exception {
+        String domain = clusterService(clusterId).getDomainName();
+        return Response.ok(domain).build();
     }
 }

@@ -34,6 +34,8 @@ $(function(){
                     <dd>${topology.clusterId}</dd>
                     <dt>Domain : </dt>
                     <dd>${domainName}</dd>
+                    <dt>Iaas Type : </dt>
+                    <dd>${iaasProvider.type}</dd>
                     <dt>Iaas Provider : </dt>
                     <dd>${iaasProvider.name}</dd>
                     <dt>Iaas Definition : </dt>

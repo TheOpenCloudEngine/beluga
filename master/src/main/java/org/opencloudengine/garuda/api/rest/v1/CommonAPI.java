@@ -1,7 +1,6 @@
 package org.opencloudengine.garuda.api.rest.v1;
 
 import org.opencloudengine.garuda.action.ActionStatus;
-import org.opencloudengine.garuda.env.SettingManager;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,10 +27,4 @@ public class CommonAPI extends BaseAPI {
         return Response.ok(actionStatus).build();
     }
 
-    @GET
-    @Path("/domain")
-    public Response getDomainName() throws Exception {
-        String domain = SettingManager.getInstance().getEnvironment().domainName();
-        return Response.ok(domain).build();
-    }
 }

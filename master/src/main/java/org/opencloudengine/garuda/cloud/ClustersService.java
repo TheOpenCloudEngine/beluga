@@ -4,7 +4,6 @@ import org.opencloudengine.garuda.env.Environment;
 import org.opencloudengine.garuda.env.SettingManager;
 import org.opencloudengine.garuda.env.Settings;
 import org.opencloudengine.garuda.exception.GarudaException;
-import org.opencloudengine.garuda.exception.InvalidRoleException;
 import org.opencloudengine.garuda.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.service.AbstractService;
 import org.opencloudengine.garuda.service.ServiceException;
@@ -25,6 +24,7 @@ public class ClustersService extends AbstractService {
 
     private static final String CLUSTERS_KEY = "clusters";
     private static final String DEFINITIONS_KEY = "defines";
+    private static final String DOMAIN_KEY = "domain";
 
     private Map<String, ClusterService> clusterMap;
     private Map<String, ClusterDefinition> definitionMap;
@@ -47,6 +47,8 @@ public class ClustersService extends AbstractService {
             for (String clusterId : clusterList) {
                 try {
                     ClusterService cluster = new ClusterService(clusterId, environment, settings);
+                    String domainName = getClusterDomainName(clusterId);
+                    cluster.setDomainName(domainName);
                     cluster.start();
                     clusterMap.put(clusterId, cluster);
                 }catch(Throwable t) {
@@ -74,6 +76,12 @@ public class ClustersService extends AbstractService {
     protected boolean doClose() throws ServiceException {
         clusterMap = null;
         return true;
+    }
+
+    public String getClusterDomainName(String clusterId) {
+        SettingManager settingManager = environment.settingManager();
+        Settings settings = settingManager.getClustersConfig();
+        return settings.getString(clusterId + "." + DOMAIN_KEY);
     }
 
     public Set<String> getClusterIdSet() {
