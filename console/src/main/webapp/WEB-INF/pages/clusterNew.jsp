@@ -11,15 +11,44 @@
         definitionId = defId;
     }
     $(function(){
+        $("#cluster-new-form").validate({
+            onkeyup: function(element) {
+                var element_id = $(element).attr('id');
+                if (this.settings.rules[element_id] && this.settings.rules[element_id].onkeyup != false) {
+                    $.validator.defaults.onkeyup.apply(this, arguments);
+                }
+            },
+            rules: {
+                clusterId: {
+                    idExists: true,
+                    onkeyup: false
+                }
+            }
+        });
+
+        $.validator.addMethod("idExists", function(value, element) {
+            var ret = true;
+            $.ajax({
+                url : "/clusters/" + value,
+                async: false,
+                type : "HEAD",
+                success : function(response) {
+                    ret = false;
+                },
+                error : function() {
+                    ret = true;
+                }
+            });
+            return ret;
+        }, "This cluster id already exists.");
+
        $("#createClusterButton").on("click", function() {
+           if(! $("#cluster-new-form").valid()) {
+               return;
+           }
+
            clusterId = $("#clusterId").val();
-           if(clusterId == "") {
-               return;
-           }
            domainName = $("#domainName").val();
-           if(domainName == "") {
-               return;
-           }
 
            $("#createClusterModal").modal('hide');
            showModalSpinner();
@@ -99,17 +128,17 @@
                 <h4 class="modal-title">Create Cluster</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal">
+                <form id="cluster-new-form" class="form-horizontal">
                     <div class="form-group">
                         <label for="clusterId" class="col-sm-3 control-label">Cluster ID</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="clusterId">
+                            <input type="text" class="form-control required" id="clusterId" name="clusterId">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="domainName" class="col-sm-3 control-label">Domain</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="domainName" placeholder="mydomain.com">
+                            <input type="text" class="form-control required" id="domainName" name="domainName" placeholder="mydomain.com">
                         </div>
                     </div>
                 </form>

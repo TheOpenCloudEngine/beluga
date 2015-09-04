@@ -3,6 +3,7 @@ package org.opencloudengine.garuda.api.rest.v1;
 import org.opencloudengine.garuda.action.ActionRequest;
 import org.opencloudengine.garuda.action.ActionStatus;
 import org.opencloudengine.garuda.action.cluster.*;
+import org.opencloudengine.garuda.cloud.ClusterService;
 import org.opencloudengine.garuda.cloud.ClusterTopology;
 import org.opencloudengine.garuda.cloud.ClustersService;
 import org.opencloudengine.garuda.service.common.ServiceManager;
@@ -124,10 +125,11 @@ public class ClustersAPI extends BaseAPI {
     @Path("/{id}")
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
-            ClusterTopology topology = clusterService(clusterId).getClusterTopology();
-            if (topology == null) {
+            ClusterService clusterService = clusterService(clusterId);
+            if (clusterService == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
+            ClusterTopology topology = clusterService.getClusterTopology();
             return Response.ok(topology).build();
         } catch (Throwable t) {
             logger.error("", t);

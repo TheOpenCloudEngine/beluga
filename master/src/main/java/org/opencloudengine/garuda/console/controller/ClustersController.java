@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map;
@@ -145,4 +146,14 @@ public class ClustersController {
         }
     }
 
+    @RequestMapping(value = "/{clusterId}", method = RequestMethod.HEAD)
+    public void isExist(@PathVariable String clusterId, HttpServletResponse response) throws Exception {
+        ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
+        ClusterService clusterService = clustersService.getClusterService(clusterId);
+        if(clusterService != null) {
+            response.setStatus(200);
+        } else {
+            response.setStatus(404);
+        }
+    }
 }
