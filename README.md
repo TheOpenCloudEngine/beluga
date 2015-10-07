@@ -18,7 +18,7 @@ ec2-ap.endPoint=ec2.ap-northeast-1.amazonaws.com
 ```
 
 3 . define설정파일에 keyPair을 설정한다.
-
+인스턴스 관리에 사용할 keyPair는 반드시 먼저 하나 만들어두도록 한다.
 beluga-aws라는 이름의 key pair를 만들었다면 beluga-aws.pem파일을 특정위치에 복사하고, `define.XXX.conf` 파일을 아래와 같이 수정한다.
 
 ```
