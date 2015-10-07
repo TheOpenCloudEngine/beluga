@@ -1,11 +1,27 @@
 # Beluga
+
+## 준비사항
+
+1 . java 설치.
+```
+$ cd script/component/install_oracle_jdk7.sh
+```
+
+2 . docker 설치.
+
+```
+$ cd script/cluster/install_docker_daemon.sh
+```
+
 ## 설정사항
 
 1 . beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
 
 ```
-echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry <IP Address>:5000\" | sudo tee -a /etc/default/docker && sudo service docker restart
+$ cd bin
+$ ./add_insecure_registry.sh <Management 아이피>
 ```
+
 2 . Credential 입력
 
 `conf/iaas.profile.conf` 에 `accessKey`, `credentialKey`, `endPoint` 를 입력한다.
