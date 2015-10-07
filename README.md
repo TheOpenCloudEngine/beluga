@@ -1,4 +1,9 @@
 # Beluga
+## 설치시 주의점
+beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
+```
+echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry <IP Address>:5000\" | sudo tee -a /etc/default/docker && sudo service docker restart
+```
 
 ## API
 
