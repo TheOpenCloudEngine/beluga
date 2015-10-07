@@ -160,7 +160,9 @@ public class SettingManager {
         String includeFilepath = properties.getProperty("@include");
         if(includeFilepath != null) {
             Properties includeProperties = getProperties(includeFilepath);
-            properties.putAll(includeProperties);
+            if(includeProperties != null) {
+                properties.putAll(includeProperties);
+            }
         }
 
 		Settings settings = new Settings(properties);
