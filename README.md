@@ -4,13 +4,15 @@
 
 1 . java 설치.
 ```
-$ cd script/component/install_oracle_jdk7.sh
+$ cd script/component
+$ ./install_oracle_jdk7.sh
 ```
 
 2 . docker 설치.
 
 ```
-$ cd script/cluster/install_docker_daemon.sh
+$ cd script/cluster
+$ ./install_docker_daemon.sh
 ```
 
 ## 설정사항
