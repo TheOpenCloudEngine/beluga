@@ -3,7 +3,7 @@ package org.opencloudengine.garuda.beluga.cloud;
 import org.opencloudengine.garuda.beluga.env.Environment;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.env.Settings;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.beluga.service.AbstractService;
 import org.opencloudengine.garuda.beluga.service.ServiceException;
@@ -78,11 +78,11 @@ public class ClustersService extends AbstractService {
         return clusterMap.get(clusterId);
     }
 
-    public void createCluster(String clusterId, String definitionId) throws GarudaException, ClusterExistException {
+    public void createCluster(String clusterId, String definitionId) throws BelugaException, ClusterExistException {
         createCluster(clusterId, definitionId, null, false);
     }
 
-    public ClusterService createCluster(String clusterId, String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws GarudaException, ClusterExistException {
+    public ClusterService createCluster(String clusterId, String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws BelugaException, ClusterExistException {
 
         if(clusterMap.containsKey(clusterId) || isClusterIdExistInSetting(clusterId)) {
             throw new ClusterExistException(String.format("Cluster %s is already exists.", clusterId));
@@ -92,7 +92,7 @@ public class ClustersService extends AbstractService {
         try {
             clusterService = new ClusterService(clusterId, environment, settings).createCluster(definitionId, domainName, waitUntilInstanceAvailable);
         } catch (UnknownIaasProviderException e) {
-            throw new GarudaException(e);
+            throw new BelugaException(e);
         }
         clusterMap.put(clusterId, clusterService);
         clusterService.start();
@@ -100,7 +100,7 @@ public class ClustersService extends AbstractService {
         return clusterService;
     }
 
-    public void destroyCluster(String clusterId) throws GarudaException {
+    public void destroyCluster(String clusterId) throws BelugaException {
         checkIfClusterExists(clusterId);
         ClusterService clusterService = clusterMap.get(clusterId);
         clusterService.destroyCluster();
@@ -111,9 +111,9 @@ public class ClustersService extends AbstractService {
         removeClusterIdFromSetting(clusterId);
     }
 
-    private void checkIfClusterExists(String clusterId) throws GarudaException {
+    private void checkIfClusterExists(String clusterId) throws BelugaException {
         if(! clusterMap.containsKey(clusterId)) {
-            throw new GarudaException("Cluster not found : " + clusterId);
+            throw new BelugaException("Cluster not found : " + clusterId);
         }
     }
 

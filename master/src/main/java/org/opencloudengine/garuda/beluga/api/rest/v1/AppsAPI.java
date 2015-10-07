@@ -8,7 +8,7 @@ import org.opencloudengine.garuda.beluga.action.webapp.DeployWebAppActionRequest
 import org.opencloudengine.garuda.beluga.action.webapp.WebAppContextFile;
 import org.opencloudengine.garuda.beluga.common.util.JsonUtils;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.proxy.HAProxyAPI;
 
 import javax.ws.rs.*;
@@ -68,7 +68,7 @@ public class AppsAPI extends BaseAPI {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
                                @FormDataParam("file") InputStream uploadedInputStream,
-                               @FormDataParam("file") FormDataContentDisposition fileDetail) throws GarudaException {
+                               @FormDataParam("file") FormDataContentDisposition fileDetail) throws BelugaException {
         String tempDir = SettingManager.getInstance().getSystemSettings().getString("temp.dir.path");
         org.opencloudengine.garuda.beluga.env.Path uploadPath = SettingManager.getInstance().getEnvironment().filePaths().path(tempDir);
         File fileHome = uploadPath.path(clusterId, appId).file();
@@ -98,7 +98,7 @@ public class AppsAPI extends BaseAPI {
             out.flush();
         } catch (Throwable t) {
             logger.error("", t);
-            throw new GarudaException("File upload failed. ");
+            throw new BelugaException("File upload failed. ");
         } finally {
             if (out != null) {
                 try {

@@ -24,7 +24,7 @@ public class SshClientTest {
         int port = 22;
 
         sshInfo = new SshInfo().withHost(host).withUser(user).withPort(port).withPassword(password);
-        sshInfo = sshInfo.withHost("52.69.134.3").withPemFile("/Users/swsong/Dropbox/System/auth/aws-garuda.pem");
+        sshInfo = sshInfo.withHost("52.69.134.3").withPemFile("/Users/swsong/Dropbox/System/auth/beluga-aws.pem");
     }
     @Test
     public void testSingleCommand() {

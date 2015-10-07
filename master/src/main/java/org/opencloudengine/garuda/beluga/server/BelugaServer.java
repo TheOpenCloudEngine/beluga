@@ -6,7 +6,7 @@ import org.opencloudengine.garuda.beluga.cloud.ClustersService;
 import org.opencloudengine.garuda.beluga.common.util.VersionConfigurer;
 import org.opencloudengine.garuda.beluga.console.WebConsoleService;
 import org.opencloudengine.garuda.beluga.env.Environment;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.service.common.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +19,16 @@ import java.nio.channels.FileLock;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Garuda Server
+ * Beluga Server
  *
  * @author Sang Wook, Song
  * @since 1.0
  */
-public class GarudaServer {
+public class BelugaServer {
 
 	private ServiceManager serviceManager;
 	public static long startTime;
-	public static GarudaServer instance;
+	public static BelugaServer instance;
 	private static Logger logger;
 	private boolean isRunning;
 
@@ -41,13 +41,13 @@ public class GarudaServer {
 	private FileLock fileLock;
 	private File lockFile;
 
-	public static void main(String... args) throws GarudaException {
+	public static void main(String... args) throws BelugaException {
 		if (args.length < 1) {
 			usage();
 			return;
 		}
 
-		GarudaServer server = new GarudaServer(args[0]);
+		BelugaServer server = new BelugaServer(args[0]);
 		if (server.load(args)) {
 			server.start();
 		}
@@ -65,14 +65,14 @@ public class GarudaServer {
 		return isRunning;
 	}
 
-	public static GarudaServer getInstance() {
+	public static BelugaServer getInstance() {
 		return instance;
 	}
 
-	public GarudaServer() {
+	public BelugaServer() {
 	}
 
-	public GarudaServer(String serverHome) {
+	public BelugaServer(String serverHome) {
 		this.serverHome = serverHome;
 	}
 
@@ -105,11 +105,11 @@ public class GarudaServer {
 
 	protected static void usage() {
 
-		System.out.println("usage: java " + GarudaServer.class.getName() + " [ -help -config ]" + " {HomePath}");
+		System.out.println("usage: java " + BelugaServer.class.getName() + " [ -help -config ]" + " {HomePath}");
 
 	}
 
-	public void start() throws GarudaException {
+	public void start() throws BelugaException {
 		// 초기화 및 서비스시작을 start로 옮김.
 		// 초기화로직이 init에 존재할 경우, 관리도구에서 검색엔진을 재시작할때, init을 호출하지 않으므로, 초기화를 건너뛰게
 		// 됨.
@@ -139,7 +139,7 @@ public class GarudaServer {
 			}
 
 			if (fileLock == null) {
-				System.err.println("Error! Another instance of GarudaServer is running at home path = " + serverHome);
+				System.err.println("Error! Another instance of BelugaServer is running at home path = " + serverHome);
 				System.exit(1);
 			}
 		}
@@ -151,7 +151,7 @@ public class GarudaServer {
         serviceManager.registerService("cluster", ClustersService.class);
         serviceManager.registerService("action", ActionService.class);
 		serviceManager.registerService("console", WebConsoleService.class);
-		logger = LoggerFactory.getLogger(GarudaServer.class);
+		logger = LoggerFactory.getLogger(BelugaServer.class);
 		logger.info("File lock > {}", lockFile.getAbsolutePath());
 
 		/*
@@ -189,14 +189,14 @@ public class GarudaServer {
 						// bail out
 					}
 				}
-			}, "GarudaServer[keepAlive]");
+			}, "BelugaServer[keepAlive]");
 			keepAliveThread.setDaemon(false);
 			keepAliveThread.start();
 		}
 	}
 
-	public void restart() throws GarudaException {
-		logger.info("Restart GarudaServer!");
+	public void restart() throws BelugaException {
+		logger.info("Restart BelugaServer!");
 
 		stop();
 		try {
@@ -212,29 +212,29 @@ public class GarudaServer {
 
 	}
 
-	public void stop() throws GarudaException {
+	public void stop() throws BelugaException {
 		/*
 		* Stop services
 		* */
 		serviceManager.stopServices();
 
-		logger.info("GarudaServer shutdown!");
+		logger.info("BelugaServer shutdown!");
 		isRunning = false;
 	}
 
-	public void close() throws GarudaException {
+	public void close() throws BelugaException {
 
 		/*
 		* Close services
 		* */
 		serviceManager.closeServices();
-        logger.info("GarudaServer close!");
+        logger.info("BelugaServer close!");
         isRunning = false;
 
 		if (fileLock != null) {
 			try {
 				fileLock.release();
-				logger.info("GarudaServer Lock Release! {}", fileLock);
+				logger.info("BelugaServer Lock Release! {}", fileLock);
 			} catch (IOException e) {
 				logger.error("", e);
 			}
@@ -260,16 +260,16 @@ public class GarudaServer {
 		@Override
 		public void run() {
 			try {
-				logger.info("GarudaServer Shutdown Requested!");
-				GarudaServer.this.stop();
-				GarudaServer.this.close();
+				logger.info("BelugaServer Shutdown Requested!");
+				BelugaServer.this.stop();
+				BelugaServer.this.close();
 				if (keepAliveLatch != null) {
 					keepAliveLatch.countDown();
 				}
 			} catch (Throwable ex) {
-				logger.error("GarudaServer.shutdownHookFail", ex);
+				logger.error("BelugaServer.shutdownHookFail", ex);
 			} finally {
-				logger.info("GarudaServer Shutdown Complete!");
+				logger.info("BelugaServer Shutdown Complete!");
 			}
 		}
 	}

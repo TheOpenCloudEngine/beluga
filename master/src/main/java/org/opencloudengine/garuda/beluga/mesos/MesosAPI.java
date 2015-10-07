@@ -8,7 +8,7 @@ import org.opencloudengine.garuda.beluga.cloud.ClusterTopology;
 import org.opencloudengine.garuda.beluga.cloud.CommonInstance;
 import org.opencloudengine.garuda.beluga.env.Environment;
 import org.opencloudengine.garuda.beluga.env.ScriptFileNames;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.settings.AccessInfo;
 import org.opencloudengine.garuda.beluga.utils.SshClient;
 import org.opencloudengine.garuda.beluga.utils.SshInfo;
@@ -37,7 +37,7 @@ public class MesosAPI {
         return size / 2 + 1; //과반수.
     }
 
-    public void configureMesosMasterInstances(String definitionId) throws GarudaException {
+    public void configureMesosMasterInstances(String definitionId) throws BelugaException {
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             if (topology.getMesosMasterList().size() > 0) {
@@ -104,11 +104,11 @@ public class MesosAPI {
                 }
             }
         } catch (Exception e) {
-            throw new GarudaException("error while configure mesos master.", e);
+            throw new BelugaException("error while configure mesos master.", e);
         }
     }
 
-    public void configureMesosSlaveInstances(String definitionId) throws GarudaException {
+    public void configureMesosSlaveInstances(String definitionId) throws BelugaException {
         try {
             ClusterTopology topology = clusterService.getClusterTopology();
             //
@@ -174,7 +174,7 @@ public class MesosAPI {
             }
         } catch (Exception e) {
             logger.error("", e);
-            throw new GarudaException("error while configure mesos slave.", e);
+            throw new BelugaException("error while configure mesos slave.", e);
         }
     }
 }

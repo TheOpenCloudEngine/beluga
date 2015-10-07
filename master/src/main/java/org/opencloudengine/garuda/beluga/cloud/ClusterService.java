@@ -3,7 +3,7 @@ package org.opencloudengine.garuda.beluga.cloud;
 import org.opencloudengine.garuda.beluga.env.Environment;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.env.Settings;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.exception.InvalidRoleException;
 import org.opencloudengine.garuda.beluga.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.beluga.mesos.MesosAPI;
@@ -130,7 +130,7 @@ public class ClusterService extends AbstractClusterService {
         return true;
     }
 
-    protected ClusterService createCluster(String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws GarudaException, UnknownIaasProviderException {
+    protected ClusterService createCluster(String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws BelugaException, UnknownIaasProviderException {
         this.domainName = domainName;
         SettingManager settingManager = environment.settingManager();
         ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
@@ -154,7 +154,7 @@ public class ClusterService extends AbstractClusterService {
         settingManager.storeClustersConfig(settings);
     }
 
-    private void createInstances(ClusterTopology clusterTopology, ClusterDefinition clusterDefinition, IaasProvider iaasProvider, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, GarudaException {
+    private void createInstances(ClusterTopology clusterTopology, ClusterDefinition clusterDefinition, IaasProvider iaasProvider, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, BelugaException {
         String keyPair = clusterDefinition.getKeyPair();
         String clusterId = clusterTopology.getClusterId();
         Iaas iaas = null;
@@ -177,7 +177,7 @@ public class ClusterService extends AbstractClusterService {
         } catch (Exception e) {
             logger.error("", e);
             terminateInstances();
-            throw new GarudaException(e);
+            throw new BelugaException(e);
         } finally {
             iaas.close();
         }
@@ -331,10 +331,10 @@ public class ClusterService extends AbstractClusterService {
         }
     }
 
-    public void loadClusterTopology() throws UnknownIaasProviderException, InvalidRoleException, GarudaException {
+    public void loadClusterTopology() throws UnknownIaasProviderException, InvalidRoleException, BelugaException {
         Settings settings = environment.settingManager().getClusterTopologyConfig(clusterId);
         if(settings == null) {
-            throw new GarudaException("Cluster topology config not found : " + clusterId);
+            throw new BelugaException("Cluster topology config not found : " + clusterId);
         }
         String definitionId = settings.getString(ClusterTopology.DEFINITION_ID_KEY);
         if(definitionId == null) {

@@ -7,7 +7,7 @@ package org.opencloudengine.garuda.beluga.env;
  *
  */
 public class SettingFileNames {
-	public static final String systemProperties = "garuda.conf";
+	public static final String systemProperties = "beluga.conf";
     public static final String clustersConfig = "clusters.conf";
     public static final String iaasProfileConfig = "iaas.profile.conf";
 

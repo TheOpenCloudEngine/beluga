@@ -12,7 +12,7 @@ public class HAProxyAPITest extends BaseActionTest {
 
     @Test
     public void makeConfigWithTopology() {
-        String homePath = "/Users/swsong/Projects/garuda/production";
+        String homePath = "/Users/swsong/Projects/beluga/production";
         String clusterId = "test-cluster";
         Environment environment = new Environment(homePath);
         ClusterService clusterService = new ClusterService(clusterId, environment, environment.settingManager().getSystemSettings().getSubSettings("cluster"));

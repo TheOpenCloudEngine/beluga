@@ -32,7 +32,7 @@ public class VersionConfigurer {
         System.setProperty("PID", SystemUtils.getPid());
 
         Properties properties = new Properties();
-	    properties.setProperty("name", "GarudaServer");
+	    properties.setProperty("name", "BelugaServer");
 
 //        InputStream inputStream = null;
 //        try {
@@ -44,15 +44,15 @@ public class VersionConfigurer {
 //            IOUtils.closeQuietly(inputStream);
 //        }
 
-        // See : http://patorjk.com/software/taag/#p=display&f=Slant&t=Garuda%20PaaS
+        // See : http://patorjk.com/software/taag/#p=display&f=Slant&t=Beluga
         StringBuilder builder = new StringBuilder();
 	    builder.append("\n" +
-			    "   ______                     __     \n" +
-			    "  / ____/___ ________  ______/ /___ _\n" +
-			    " / / __/ __ `/ ___/ / / / __  / __ `/\n" +
-			    "/ /_/ / /_/ / /  / /_/ / /_/ / /_/ / \n" +
-			    "\\____/\\__,_/_/   \\__,_/\\__,_/\\__,_/  \n" +
-			    "                                     ");
+			    "    ____       __                 \n" +
+                "   / __ )___  / /_  ______ _____ _\n" +
+                "  / __  / _ \\/ / / / / __ `/ __ `/\n" +
+                " / /_/ /  __/ / /_/ / /_/ / /_/ / \n" +
+                "/_____/\\___/_/\\__,_/\\__, /\\__,_/  \n" +
+                "                   /____/         ");
         printHeader(builder, "Application Information");
         Properties appProps = new Properties();
         appProps.put("Instance", StringUtils.isEmpty(System.getProperty("instance")) ? "** UNKNOWN **" : System.getProperty("instance"));

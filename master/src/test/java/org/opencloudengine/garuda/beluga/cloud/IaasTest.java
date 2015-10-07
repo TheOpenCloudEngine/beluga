@@ -21,12 +21,12 @@ public class IaasTest {
     String secretKey;
 
     String clusterId = "mytest";
-    String endPoint = "ec2.ap-northeast-1.amazonaws.com";
+    String endPoint = "ec2.ap-southeast-1.amazonaws.com";
     String instanceType = "t2.micro";
     String imageId = "ami-936d9d93";
     int volumeSize = 13;
     String group = "default";
-    String keyPair = "aws-garuda";
+    String keyPair = "beluga-aws";
 
     @Before
     public void setUp() throws IOException {

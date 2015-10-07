@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * Daemon Bootstrap
- * 내부적으로 GarudaServer class 를 구동시키며, /lib/ 하위의 jar 파일들을 모아서 classpath로 만들어준다.
+ * 내부적으로 BelugaServer class 를 구동시키며, /lib/ 하위의 jar 파일들을 모아서 classpath로 만들어준다.
  *
  * @author Sang Wook, Song
  * @since 1.0
@@ -22,7 +22,7 @@ public class Bootstrap {
 	private Object serverDaemon = null;
 
 	protected ClassLoader serverLoader = null;
-	private final String serverClass = "org.opencloudengine.garuda.server.GarudaServer";
+	private final String serverClass = "org.opencloudengine.garuda.beluga.server.BelugaServer";
 
 	private String serverHome;
 	private final String LIB_PATH = "/lib/";

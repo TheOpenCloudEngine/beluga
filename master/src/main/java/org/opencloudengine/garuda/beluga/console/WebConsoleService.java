@@ -44,11 +44,11 @@ public class WebConsoleService extends AbstractService {
 		if(files != null && files.length > 0){
 			//하나만 사용한다.
 			warFile = files[0];
-			logger.info("Garuda console war = {}", warFile.getAbsolutePath());
+			logger.info("Beluga console war = {}", warFile.getAbsolutePath());
 		}else{
 			//war파일을 찾지못했다면 개발환경 경로를 확인한다.
 			File devWebApp = new File("../console/src/main/webapp");
-			logger.info("Garuda console dir = {}", devWebApp.getAbsolutePath());
+			logger.info("Beluga console dir = {}", devWebApp.getAbsolutePath());
 			if(devWebApp.exists()){
 				warFile = devWebApp;
 			}else{

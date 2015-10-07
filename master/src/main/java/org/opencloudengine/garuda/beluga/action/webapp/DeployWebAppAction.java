@@ -6,7 +6,7 @@ import org.opencloudengine.garuda.beluga.cloud.ClusterService;
 import org.opencloudengine.garuda.beluga.cloud.ClusterTopology;
 import org.opencloudengine.garuda.beluga.cloud.ClustersService;
 import org.opencloudengine.garuda.beluga.env.DockerWebAppPorts;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.beluga.mesos.marathon.MarathonAPI;
 
@@ -47,12 +47,12 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         ClusterTopology topology = clusterService.getClusterTopology();
         if(topology == null) {
             // 그런 클러스터가 없다.
-            throw new GarudaException("No such cluster: "+ clusterId);
+            throw new BelugaException("No such cluster: "+ clusterId);
         }
 
         String registryAddress = topology.getRegistryAddressPort();
         if(registryAddress == null) {
-            throw new GarudaException("No registry instance in " + clusterId);
+            throw new BelugaException("No registry instance in " + clusterId);
         }
 
         DockerAPI dockerAPI = clusterService.getDockerAPI();
@@ -65,7 +65,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         if(needImageBuild) {
             int exitValue = dockerAPI.buildWebAppDockerImage(imageName, webAppType, webAppFileList, memory);
             if(exitValue != 0) {
-                throw new GarudaException(String.format("Error while build docker image : %s, %s", imageName, webAppType));
+                throw new BelugaException(String.format("Error while build docker image : %s, %s", imageName, webAppType));
             }
         }
 
@@ -76,7 +76,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         if(needImageBuild) {
             int exitValue = dockerAPI.pushDockerImageToRegistry(imageName);
             if(exitValue != 0) {
-                throw new GarudaException(String.format("Error while push docker image : %s", imageName));
+                throw new BelugaException(String.format("Error while push docker image : %s", imageName));
             }
         }
 

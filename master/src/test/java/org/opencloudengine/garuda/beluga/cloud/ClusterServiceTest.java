@@ -3,7 +3,7 @@ package org.opencloudengine.garuda.beluga.cloud;
 import org.junit.Before;
 import org.junit.Test;
 import org.opencloudengine.garuda.beluga.env.Environment;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.exception.UnknownIaasProviderException;
 import org.opencloudengine.garuda.beluga.service.common.ServiceManager;
 
@@ -20,7 +20,7 @@ public class ClusterServiceTest {
     String domainName = "fastcatsearch.com";
 
     @Before
-    public void init() throws GarudaException {
+    public void init() throws BelugaException {
         String home = "production";
         environment = new Environment(home);
         environment.init();
@@ -33,7 +33,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testLaunch() throws GarudaException, UnknownIaasProviderException, ClusterExistException {
+    public void testLaunch() throws BelugaException, UnknownIaasProviderException, ClusterExistException {
         String definitionId = "ec2-real";
         clusterService.createCluster(definitionId, domainName, true);
     }

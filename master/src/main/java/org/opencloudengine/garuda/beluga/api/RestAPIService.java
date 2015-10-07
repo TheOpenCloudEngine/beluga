@@ -25,7 +25,7 @@ public class RestAPIService extends AbstractService {
 	private int servicePort;
 
 	private static final String jersey_provider_class = "jersey.config.server.provider.classnames";
-	private static final String garuda_rest_api_package = "org.opencloudengine.garuda.api.rest";
+	private static final String beluga_rest_api_package = "org.opencloudengine.garuda.beluga.api.rest";
 
 	public RestAPIService(Environment environment, Settings settings, ServiceManager serviceManager) {
 		super(environment, settings, serviceManager);
@@ -46,7 +46,7 @@ public class RestAPIService extends AbstractService {
 		context.setContextPath("/");
 
 		ResourceConfig resourceConfig = new ResourceConfig();
-		resourceConfig.packages(true, garuda_rest_api_package);
+		resourceConfig.packages(true, beluga_rest_api_package);
 		resourceConfig.registerClasses(JacksonFeature.class, MultiPartFeature.class);
 		ServletContainer servletContainer = new ServletContainer(resourceConfig);
 		ServletHolder sh = new ServletHolder(servletContainer);

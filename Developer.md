@@ -1,8 +1,8 @@
-# Garuda Developer
+# Beluga Developer
 
 ## REST API 구현
 
-Garuda는 외부에 REST API를 제공함으로써 원격으로 각종 제어가 가능하다.
+Beluga는 외부에 REST API를 제공함으로써 원격으로 각종 제어가 가능하다.
 REST API는 각종 요청의 진입점이 되며, Controller(API)가 그 역할을 담당한다.
 API는 요청에 필요한 사항들을 모아놓은 BaseAPI 를 상속받아서 구현되며, JAXRS를 사용하였다.
 아래는 AppsAPI에 구현되어 있는 App을 디플로이 하는 코드이다.

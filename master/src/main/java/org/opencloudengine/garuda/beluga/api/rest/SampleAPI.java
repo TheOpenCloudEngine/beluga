@@ -2,7 +2,7 @@ package org.opencloudengine.garuda.beluga.api.rest;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.opencloudengine.garuda.beluga.exception.GarudaException;
+import org.opencloudengine.garuda.beluga.exception.BelugaException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -29,7 +29,7 @@ public class SampleAPI {
     @Path("/uploadFile")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
-                               @FormDataParam("file") FormDataContentDisposition fileDetail) throws GarudaException {
+                               @FormDataParam("file") FormDataContentDisposition fileDetail) throws BelugaException {
         File fileHome = new File("");
         String fileName = URLDecoder.decode(fileDetail.getFileName());
         String filePath = "/tmp/" + fileDetail.getFileName();
@@ -51,7 +51,7 @@ public class SampleAPI {
             }
             out.flush();
         } catch (IOException e) {
-            throw new GarudaException("File upload failed. ");
+            throw new BelugaException("File upload failed. ");
         } finally {
             if (out != null) {
                 try {

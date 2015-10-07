@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Garuda Console</title>
+    <title>Beluga Console</title>
     <!-- Favicon -->
     <link rel="shortcut icon" href="/resources/favicon.ico">
     <link rel="stylesheet" media="screen" href="/resources/bootstrap/css/bootstrap.min.css" />
@@ -12,7 +12,7 @@
 </head>
 <body class='login'>
 
-    <img class="logo" src="/resources/css/oce.png" alt="Garuda logo" />
+    <img class="logo" src="/resources/css/oce.png" alt="OCE logo" />
     <form class="vertical-form" id="login-form" action="/login" accept-charset="UTF-8" method="post">
         <legend>Log In</legend>
         <input placeholder="Email Address" label="false" type="text" value="" name="userId"/>

@@ -24,7 +24,6 @@ public class ClusterTopology {
     public static final String DEFINITION_ID_KEY = "definitionId";
     public static final String CLUSTER_ID_KEY = "clusterId";
 
-    public static final String GARUDA_MASTER_ROLE = "garuda-master";
     public static final String PROXY_ROLE = "proxy";
     public static final String MESOS_MASTER_ROLE = "mesos-master";
     public static final String MESOS_SLAVE_ROLE = "mesos-slave";
@@ -38,7 +37,6 @@ public class ClusterTopology {
     private String definitionId;
     private String iaasProfile;
 
-    private List<CommonInstance> garudaMasterList;
     private List<CommonInstance> proxyList;
     private List<CommonInstance> mesosMasterList;
     private List<CommonInstance> mesosSlaveList;
@@ -52,7 +50,6 @@ public class ClusterTopology {
         this.definitionId = definitionId;
         this.iaasProfile = iaasProfile;
 
-        garudaMasterList = new ArrayList<>();
         proxyList = new ArrayList<>();
         mesosMasterList = new ArrayList<>();
         mesosSlaveList = new ArrayList<>();
@@ -76,7 +73,6 @@ public class ClusterTopology {
     @XmlTransient
     public List<CommonInstance> getAllNodeList() {
         List<CommonInstance> list = new ArrayList<>();
-        list.addAll(garudaMasterList);
         list.addAll(proxyList);
         list.addAll(mesosMasterList);
         list.addAll(mesosSlaveList);
@@ -84,10 +80,6 @@ public class ClusterTopology {
         list.addAll(serviceNodeList);
         list.addAll(noRoleNodeList);
         return list;
-    }
-
-    public List<CommonInstance> getGarudaMasterList() {
-        return garudaMasterList;
     }
 
     public List<CommonInstance> getProxyList() {
@@ -112,8 +104,6 @@ public class ClusterTopology {
 
     public List<CommonInstance> getInstancesByRole(String role) throws InvalidRoleException {
         switch (role) {
-            case GARUDA_MASTER_ROLE:
-                return garudaMasterList;
             case PROXY_ROLE:
                 return proxyList;
             case MESOS_MASTER_ROLE:
@@ -131,9 +121,6 @@ public class ClusterTopology {
 
     public void addNode(String role, CommonInstance commonInstance) throws InvalidRoleException {
         switch (role) {
-            case GARUDA_MASTER_ROLE:
-                garudaMasterList.add(commonInstance);
-                break;
             case PROXY_ROLE:
                 proxyList.add(commonInstance);
                 break;
@@ -156,7 +143,6 @@ public class ClusterTopology {
     }
 
     public void loadRoles(Settings settings, Iaas iaas) throws InvalidRoleException {
-        loadRole(ClusterTopology.GARUDA_MASTER_ROLE, settings, iaas);
         loadRole(ClusterTopology.PROXY_ROLE, settings, iaas);
         loadRole(ClusterTopology.MESOS_MASTER_ROLE, settings, iaas);
         loadRole(ClusterTopology.MESOS_SLAVE_ROLE, settings, iaas);
@@ -189,7 +175,6 @@ public class ClusterTopology {
         props.setProperty(CLUSTER_ID_KEY, clusterId);
         props.setProperty(DEFINITION_ID_KEY, definitionId);
         props.setProperty(IAAS_PROFILE_KEY, iaasProfile);
-        putProps(props, GARUDA_MASTER_ROLE, garudaMasterList);
         putProps(props, PROXY_ROLE, proxyList);
         putProps(props, MESOS_MASTER_ROLE, mesosMasterList);
         putProps(props, MESOS_SLAVE_ROLE, mesosSlaveList);
