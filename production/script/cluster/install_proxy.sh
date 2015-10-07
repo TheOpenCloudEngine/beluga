@@ -15,5 +15,5 @@ listen stats :1900
     stats hide-version
     stats realm Haproxy\ Statistics
     stats uri /
-    stats auth garuda:garuda123:)
+    stats auth beluga:beluga123:)
 EndOfStatConfig
