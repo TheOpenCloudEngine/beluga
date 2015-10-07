@@ -20,7 +20,7 @@ $ ./install_docker_daemon.sh
 1 . beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
 
 ```
-$ cd bin
+$ cd script/docker
 $ ./add_insecure_registry.sh <Management 아이피>
 ```
 
