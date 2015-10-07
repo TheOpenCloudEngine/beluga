@@ -1,4 +1,4 @@
-# Garuda
+# Beluga
 
 ## API
 
@@ -45,7 +45,7 @@ GET /v1/clusters/$CLUSTER_ID
   "clusterId": "test-cluster",
   "definitionId": "ec2-dev",
   "iaasProfile": "ec2-ap",
-  "garudaMasterList": [],
+  "belugaMasterList": [],
   "proxyList": [
     {
       "instanceId": "i-a1119e53",
