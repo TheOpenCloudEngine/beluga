@@ -49,6 +49,23 @@ keyPairFile=/home/ubuntu/beluga-aws.pem
 
 $ chmod 400 /home/ubuntu/beluga-aws.pem
 
+## 서비스시작/종료
+
+### 시작
+```
+$cd bin
+$ ./beluga start
+```
+### 종료
+```
+$cd bin
+$ ./beluga stop
+```
+
+## 로그보기
+```
+$ tail -f logs/system.log
+```
 
 
 ## API
