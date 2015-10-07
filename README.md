@@ -1,12 +1,12 @@
 # Beluga
-## 설치후 설정사항
+## 설정사항
 
-1. beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
+1 . beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
 
 ```
 echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry <IP Address>:5000\" | sudo tee -a /etc/default/docker && sudo service docker restart
 ```
-2. Credential 입력
+2 . Credential 입력
 `conf/iaas.profile.conf` 에 `accessKey`, `credentialKey`, `endPoint` 를 입력한다.
 
 예)
@@ -16,6 +16,19 @@ ec2-ap.accessKey=AAAAIAT4ZAAAAH4BBBBA
 ec2-ap.credentialKey=wwww7DDDDDDamMNNJJJJJJJ7paksldjflajsfowfwh
 ec2-ap.endPoint=ec2.ap-northeast-1.amazonaws.com
 ```
+
+3 . define설정파일에 keyPair을 설정한다.
+
+beluga-aws라는 이름의 key pair를 만들었다면 beluga-aws.pem파일을 특정위치에 복사하고, `define.XXX.conf` 파일을 아래와 같이 수정한다.
+
+```
+userId=ubuntu
+keyPair=beluga-aws
+keyPairFile=/home/ubuntu/beluga-aws.pem
+```
+
+$ chmod 400 /home/ubuntu/beluga-aws.pem
+
 
 
 ## API
