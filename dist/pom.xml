@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.opencloudengine.garuda</groupId>
-	<artifactId>garuda-dist</artifactId>
-	<name>garuda-dist</name>
-	<description>garuda/dist</description>
+    <groupId>org.opencloudengine.garuda.beluga</groupId>
+	<artifactId>beluga-dist</artifactId>
+	<name>beluga-dist</name>
+	<description>beluga/dist</description>
 	<packaging>pom</packaging>
 	<parent>
-        <groupId>org.opencloudengine</groupId>
-        <artifactId>garuda</artifactId>
+        <groupId>org.opencloudengine.garuda</groupId>
+        <artifactId>beluga</artifactId>
         <version>1.1</version>
 	</parent>
 	<properties>

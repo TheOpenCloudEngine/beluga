@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.opencloudengine</groupId>
-    <artifactId>garuda</artifactId>
+    <groupId>org.opencloudengine.garuda</groupId>
+    <artifactId>beluga</artifactId>
     <version>1.1</version>
     <modules>
         <module>console</module>
@@ -808,7 +808,7 @@
                 <version>2.5</version>
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
-                    <tagBase>https://github.com/TheOpenCloudEngine/garuda/tags</tagBase>
+                    <tagBase>https://github.com/TheOpenCloudEngine/beluga/tags</tagBase>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <goals>deploy</goals>
                 </configuration>
@@ -817,9 +817,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/TheOpenCloudEngine/garuda</connection>
-        <developerConnection>scm:git:https://github.com/TheOpenCloudEngine/garuda</developerConnection>
-        <url>scm:git:https://github.com/TheOpenCloudEngine/garuda</url>
+        <connection>scm:git:https://github.com/TheOpenCloudEngine/beluga</connection>
+        <developerConnection>scm:git:https://github.com/TheOpenCloudEngine/beluga</developerConnection>
+        <url>scm:git:https://github.com/TheOpenCloudEngine/beluga</url>
         <tag>HEAD</tag>
     </scm>
 
