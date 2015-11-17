@@ -1,5 +1,15 @@
 # Beluga
 
+## Demo videos
+
+1 . Provisioning
+
+https://vimeo.com/145980366
+
+2 . Scaling in / out
+
+https://vimeo.com/145980080
+
 ## 준비사항
 
 1 . java 설치.
