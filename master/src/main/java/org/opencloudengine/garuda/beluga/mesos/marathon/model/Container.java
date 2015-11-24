@@ -20,8 +20,6 @@ public class Container {
 	private Docker docker;
 	@JsonProperty("volumes")
 	private List<Volume> volumes;
-	@JsonIgnore
-	private Map<String, Object> additionalProperties;
 
 	/**
 	 * @return The type
@@ -69,16 +67,6 @@ public class Container {
 	@JsonProperty("volumes")
 	public void setVolumes(List<Volume> volumes) {
 		this.volumes = volumes;
-	}
-
-	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-
-	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
 	}
 
 }

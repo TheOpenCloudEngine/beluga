@@ -27,8 +27,6 @@ public class Group {
 	private String id;
 	@JsonProperty("version")
 	private String version;
-	@JsonIgnore
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
 	@JsonProperty("apps")
 	public List<App> getApps() {
@@ -80,16 +78,6 @@ public class Group {
 		this.version = version;
 	}
 
-	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-
-	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -102,8 +90,6 @@ public class Group {
 		if (groups != null ? !groups.equals(group.groups) : group.groups != null) return false;
 		if (id != null ? !id.equals(group.id) : group.id != null) return false;
 		if (version != null ? !version.equals(group.version) : group.version != null) return false;
-		if (additionalProperties != null ? !additionalProperties.equals(group.additionalProperties) : group.additionalProperties != null)
-			return false;
 
 		return true;
 	}
@@ -115,7 +101,6 @@ public class Group {
 		result = 31 * result + (groups != null ? groups.hashCode() : 0);
 		result = 31 * result + (id != null ? id.hashCode() : 0);
 		result = 31 * result + (version != null ? version.hashCode() : 0);
-		result = 31 * result + (additionalProperties != null ? additionalProperties.hashCode() : 0);
 		return result;
 	}
 
@@ -127,7 +112,6 @@ public class Group {
 			", groups=" + groups +
 			", id='" + id + '\'' +
 			", version='" + version + '\'' +
-			", additionalProperties=" + additionalProperties +
 			'}';
 	}
 }

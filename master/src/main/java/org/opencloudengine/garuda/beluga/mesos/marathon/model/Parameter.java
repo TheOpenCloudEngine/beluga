@@ -17,8 +17,6 @@ public class Parameter {
     private String key;
     @JsonProperty("value")
     private String value;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
@@ -58,16 +56,6 @@ public class Parameter {
     @JsonProperty("value")
     public void setValue(String value) {
         this.value = value;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }
