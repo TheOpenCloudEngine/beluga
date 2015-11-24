@@ -4,6 +4,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.beluga.action.ActionException;
 import org.opencloudengine.garuda.beluga.action.ActionStatus;
+import org.opencloudengine.garuda.beluga.action.serviceApp.DeployDockerImageActionRequest;
 import org.opencloudengine.garuda.beluga.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.beluga.action.webapp.WebAppContextFile;
 import org.opencloudengine.garuda.beluga.common.util.JsonUtils;
@@ -191,8 +192,11 @@ public class AppsAPI extends BaseAPI {
         }
     }
 
-
     private Response deployOrUpdateApp(String clusterId, String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
+        if(!isUpdate) {
+            deployResourceApp(clusterId, appId, data);
+        }
+
         try {
 //            Integer port = (Integer) data.get("port");
             /*
@@ -223,7 +227,7 @@ public class AppsAPI extends BaseAPI {
             if(webAppContext2 != null && webAppFile2 != null) {
                 webAppFileList.add(new WebAppContextFile(webAppFile2, webAppContext2));
             }
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, isUpdate);
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, null, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
@@ -239,6 +243,71 @@ public class AppsAPI extends BaseAPI {
             logger.error("", t);
             throw t;
         }
+    }
+
+
+    @POST
+    @Path("/")
+    public Response deployResourceApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
+        String appId = (String) data.get("id");
+        if(deployResourceApp(clusterId, appId, data)) {
+            return Response.ok().build();
+        }
+        return null;
+    }
+
+    private boolean deployResourceApp(String clusterId, String appId, Map<String, Object> data) throws Exception {
+        /*
+         * 서비스 DB와 같은 리소스 앱들을 미리 구동한다.
+         */
+
+
+        boolean useDB1 = (Boolean) data.get("useDB1");
+
+        if(useDB1) {
+            String db1AppId = appId + "-db1";
+            //1. 이미 존재하는지 확인
+            //TODO
+            //
+            int scale = 1; //1로 고정.
+            String db1ImageName = (String) data.get("db1ImageName");
+            String db1ImageTag = (String) data.get("db1ImageTag");
+            Float cpus = null;
+            if (data.get("db1Cpus") != null) {
+                cpus = Float.parseFloat(data.get("db1Cpus").toString());
+            }
+            Float memory = null;
+            if (data.get("db1Memory") != null) {
+                memory = Float.parseFloat(data.get("db1Memory").toString());
+            }
+            String db1RootPassword = (String) data.get("db1RootPassword");
+            Map<String, String> env = new HashMap<>();
+            env.put("MYSQL_ROOT_PASSWORD", db1RootPassword);
+
+            //2.생성
+            DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, db1AppId, db1ImageName, db1ImageTag, null, cpus, memory, scale, env);
+            ActionStatus actionStatus = actionService().request(request);
+            actionStatus.waitForDone();
+
+            Object result = actionStatus.getResult();
+            if(result instanceof Response) {
+                Map<String, Object> entity = parseMarathonResponse((Response) result);
+
+                //3. 생성 결과(IP, port 등 접속정보)를 설정에 저장.
+                // app이 인식해야 한다.
+                saveResourceInfo(clusterId, entity);
+            }
+        }
+
+        return true;
+    }
+
+    private void saveResourceInfo(String clusterId, Map<String, Object> entity) {
+        //TODO
+
+
+
+
     }
 
     @POST

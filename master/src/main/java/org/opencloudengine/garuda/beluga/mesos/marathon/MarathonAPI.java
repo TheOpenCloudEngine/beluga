@@ -60,29 +60,21 @@ public class MarathonAPI {
         return client.target(chooseMarathonEndPoint()).path(path);
     }
 
-    public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, getDefaultUpgradeStrategy());
+    public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, getDefaultUpgradeStrategy());
 
         WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
     }
 
-    public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, null);
+    public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+        App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, null);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
     }
 
-//    public Response scaleApp(String appId, Integer scale) {
-//        App appScaleRequest = new App();
-//        appScaleRequest.setId(appId);
-//        appScaleRequest.setInstances(scale);
-//        WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
-//        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appScaleRequest));
-//    }
-
-    private App createDockerTypeApp(String imageId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, UpgradeStrategy upgradeStrategy) {
+    private App createDockerTypeApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env, UpgradeStrategy upgradeStrategy) {
         List<PortMapping> portMappings = null;
         if(usedPorts != null) {
             portMappings = new ArrayList<>();
@@ -108,7 +100,7 @@ public class MarathonAPI {
         }
 
         App app = new App();
-        app.setId(imageId);
+        app.setId(appId);
         app.setContainer(container);
         app.setInstances(scale);
         app.setCpus(cpus);

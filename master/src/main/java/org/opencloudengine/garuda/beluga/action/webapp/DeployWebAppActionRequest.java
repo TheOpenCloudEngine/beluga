@@ -4,6 +4,7 @@ import org.opencloudengine.garuda.beluga.action.ActionRequest;
 import org.opencloudengine.garuda.beluga.action.RunnableAction;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 8. 6..
@@ -19,10 +20,11 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Float cpus;
     private Float memory;
     private Integer scale;
+    private Map<String, String> env;
     private Boolean isUpdate;
 
 
-    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, String> env) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.revision = revision;
@@ -32,10 +34,11 @@ public class DeployWebAppActionRequest extends ActionRequest {
         this.cpus = cpus;
         this.memory = memory;
         this.scale = scale;
+        this.env = env;
         isUpdate = false;
     }
 
-    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Boolean isUpdate) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, String> env, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.revision = revision;
@@ -45,6 +48,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
         this.cpus = cpus;
         this.memory = memory;
         this.scale = scale;
+        this.env = env;
         this.isUpdate = isUpdate;
     }
 
@@ -82,6 +86,10 @@ public class DeployWebAppActionRequest extends ActionRequest {
 
     public Integer getScale() {
         return scale;
+    }
+
+    public Map<String, String> getEnv() {
+        return env;
     }
 
     /**

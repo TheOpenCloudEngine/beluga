@@ -12,6 +12,7 @@ import org.opencloudengine.garuda.beluga.mesos.marathon.MarathonAPI;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swsong on 2015. 8. 6..
@@ -41,7 +42,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         Float memory = request.getMemory();
         Integer scale = request.getScale();
         Boolean isUpdate = request.getIsUpdate();
-
+        Map<String, String> env = request.getEnv();
         // clusterId를 통해 인스턴스 주소를 받아온다.
         ClusterService clusterService = serviceManager.getService(ClustersService.class).getClusterService(clusterId);
         ClusterTopology topology = clusterService.getClusterTopology();
@@ -88,9 +89,9 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         MarathonAPI marathonAPI = clusterService.getMarathonAPI();
         Response response = null;
         if(isUpdate) {
-            response = marathonAPI.updateDockerApp(appId, imageName, usedPort, cpus, memory, scale);
+            response = marathonAPI.updateDockerApp(appId, imageName, usedPort, cpus, memory, scale, env);
         } else {
-            response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale);
+            response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale, env);
         }
         if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             setResult(response);
