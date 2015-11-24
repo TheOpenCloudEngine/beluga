@@ -55,8 +55,6 @@ public class DeployDockerImageAction extends RunnableAction<DeployDockerImageAct
 
         String dockerImageName = imageName +  ":" + (imageTag == null ? "latest" : imageTag);
 
-        DockerAPI dockerAPI = clusterService.getDockerAPI();
-
         /*
         * Deploy to Marathon
         * */

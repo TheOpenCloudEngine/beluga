@@ -247,9 +247,8 @@ public class AppsAPI extends BaseAPI {
 
 
     @POST
-    @Path("/")
-    public Response deployResourceApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
-        String appId = (String) data.get("id");
+    @Path("/{id}/resources")
+    public Response deployResourceAppListen(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
         if(deployResourceApp(clusterId, appId, data)) {
             return Response.ok().build();
         }

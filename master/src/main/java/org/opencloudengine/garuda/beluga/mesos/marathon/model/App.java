@@ -4,6 +4,7 @@ package org.opencloudengine.garuda.beluga.mesos.marathon.model;
 import com.fasterxml.jackson.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -38,7 +39,7 @@ public class App {
 	private Float cpus;
 	private Float mem;
 	private List<Deployment> deployments;
-	private Env env;
+	private String env;
 	private String executor;
 	private List<List<String>> constraints;
 	private List<HealthCheck> healthChecks;
@@ -175,7 +176,7 @@ public class App {
 	 * @return The env
 	 */
 	@JsonProperty("env")
-	public Env getEnv() {
+	public String getEnv() {
 		return env;
 	}
 
@@ -183,7 +184,7 @@ public class App {
 	 * @param env The env
 	 */
 	@JsonProperty("env")
-	public void setEnv(Env env) {
+	public void setEnv(String env) {
 		this.env = env;
 	}
 

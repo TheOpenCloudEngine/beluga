@@ -102,6 +102,7 @@ public class MarathonAPI {
         App app = new App();
         app.setId(appId);
         app.setContainer(container);
+//        app.setEnv("{\"MYSQL_ROOT_PASSWORD\":\"1111\"}");
         app.setInstances(scale);
         app.setCpus(cpus);
         app.setMem(memory);
