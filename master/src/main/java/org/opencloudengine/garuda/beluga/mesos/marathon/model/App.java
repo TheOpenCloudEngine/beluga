@@ -39,7 +39,7 @@ public class App {
 	private Float cpus;
 	private Float mem;
 	private List<Deployment> deployments;
-	private String env;
+	private Map<String, String> env;
 	private String executor;
 	private List<List<String>> constraints;
 	private List<HealthCheck> healthChecks;
@@ -176,7 +176,7 @@ public class App {
 	 * @return The env
 	 */
 	@JsonProperty("env")
-	public String getEnv() {
+	public Map<String, String> getEnv() {
 		return env;
 	}
 
@@ -184,7 +184,7 @@ public class App {
 	 * @param env The env
 	 */
 	@JsonProperty("env")
-	public void setEnv(String env) {
+	public void setEnv(Map<String, String> env) {
 		this.env = env;
 	}
 

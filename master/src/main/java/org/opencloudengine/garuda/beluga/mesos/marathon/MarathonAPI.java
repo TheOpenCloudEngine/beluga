@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.beluga.mesos.marathon;
 
+import com.google.gson.Gson;
 import org.opencloudengine.garuda.beluga.cloud.ClusterService;
 import org.opencloudengine.garuda.beluga.cloud.ClusterTopology;
 import org.opencloudengine.garuda.beluga.env.Environment;
@@ -60,18 +61,24 @@ public class MarathonAPI {
         return client.target(chooseMarathonEndPoint()).path(path);
     }
 
+    private String toJson(Object obj) {
+        String jsonString = new Gson().toJson(obj);
+        logger.info("jsonString > {}", jsonString);
+        return jsonString;
+    }
+
     public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, getDefaultUpgradeStrategy());
 
         WebTarget target = getWebTarget(API_PATH_APPS);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
+        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
     public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, null);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
+        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(toJson(appRequest)));
     }
 
     private App createDockerTypeApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env, UpgradeStrategy upgradeStrategy) {
@@ -102,7 +109,7 @@ public class MarathonAPI {
         App app = new App();
         app.setId(appId);
         app.setContainer(container);
-//        app.setEnv("{\"MYSQL_ROOT_PASSWORD\":\"1111\"}");
+        app.setEnv(env);
         app.setInstances(scale);
         app.setCpus(cpus);
         app.setMem(memory);
@@ -117,14 +124,14 @@ public class MarathonAPI {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
 
         WebTarget target = getWebTarget(API_PATH_APPS);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(appRequest));
+        return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
     public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(appRequest));
+        return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(toJson(appRequest)));
     }
 
     private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
