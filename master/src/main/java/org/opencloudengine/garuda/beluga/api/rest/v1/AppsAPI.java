@@ -260,6 +260,9 @@ public class AppsAPI extends BaseAPI {
         return null;
     }
 
+    private String getResourceGroupId(String appId) {
+        return appId + "-resources";
+    }
     private boolean deployResourceApp(String clusterId, String appId, Map<String, Object> data) throws Exception {
         /*
          * 서비스 DB와 같은 리소스 앱들을 미리 구동한다.
@@ -271,7 +274,7 @@ public class AppsAPI extends BaseAPI {
             for(String resourceKey : resourceList) {
                 boolean isRunning = false;
                 Resources.Resource resource = Resources.get(resourceKey);
-                String resourceAppId = appId + "/" + resource.getId();
+                String resourceAppId = getResourceGroupId(appId) + "/" + resource.getId();
                 //app정보를 받아온다.
                 Response response = getApp(clusterId, resourceAppId);
                 try {
@@ -372,8 +375,12 @@ public class AppsAPI extends BaseAPI {
 
         Response response = null;
         try {
-            // 삭제되었으면 haproxy에서 지워준다.
             response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId);
+            //하위 서비스 노드 삭제
+            response = marathonAPI(clusterId).requestDeleteAPI("/groups/" + getResourceGroupId(appId));
+            //response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + getMainAppId(appId));
+
+            // 삭제되었으면 haproxy에서 지워준다.
             Map<String, Object> entity = parseMarathonResponse(response);
             notifyDeployment(clusterId, entity);
             return Response.ok().build();
