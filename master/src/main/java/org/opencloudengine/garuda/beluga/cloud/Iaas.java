@@ -8,7 +8,7 @@ import java.util.List;
  */
 public interface Iaas {
 
-    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale);
+    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex);
 
     public void terminateInstance(String id);
 

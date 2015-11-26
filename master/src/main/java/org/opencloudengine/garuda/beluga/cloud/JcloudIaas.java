@@ -56,7 +56,7 @@ public abstract class JcloudIaas implements Iaas {
 
 
     @Override
-    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale) {
+    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
         Template template = initTemplate(request);
         try {
             computeService.createNodesInGroup(name, scale, template);

@@ -73,7 +73,7 @@ public class ClustersAPI extends BaseAPI {
         String type = (String) data.get("type");
 
         if (type == null) {
-            return getErrorMessageOkResponse("Type must be set among 'start | stop | restart | destroy'");
+            return getErrorMessageOkResponse("Type must be set among 'start | stop | restart | destroy | add | remove'");
         }
 
         Boolean await = (Boolean) data.get("await");
@@ -88,11 +88,17 @@ public class ClustersAPI extends BaseAPI {
             } else if (type.equalsIgnoreCase("destroy")) {
                 request = new DestroyClusterActionRequest(clusterId);
             } else if (type.equalsIgnoreCase("add")) {
-                int incrementSize = (int) data.get("size");
-                request = new AddSlaveNodeActionRequest(clusterId, incrementSize);
+                int size = (int) data.get("size");
+                String role = (String) data.get("role");
+                if(role.equalsIgnoreCase("mesos-slave")) {
+                    request = new AddSlaveNodeActionRequest(clusterId, size);
+                }
             } else if (type.equalsIgnoreCase("remove")) {
-                int decrementSize = (int) data.get("size");
-                request = new RemoveSlaveNodeActionRequest(clusterId, decrementSize);
+                int size = (int) data.get("size");
+                String role = (String) data.get("role");
+                if(role.equalsIgnoreCase("mesos-slave")) {
+                    request = new RemoveSlaveNodeActionRequest(clusterId, size);
+                }
             } else {
                 return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'start | stop | restart | destroy | add | remove'");
             }
