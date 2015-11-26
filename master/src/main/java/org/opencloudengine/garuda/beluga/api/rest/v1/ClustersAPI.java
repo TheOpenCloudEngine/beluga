@@ -87,8 +87,14 @@ public class ClustersAPI extends BaseAPI {
                 request = new RestartClusterActionRequest(clusterId);
             } else if (type.equalsIgnoreCase("destroy")) {
                 request = new DestroyClusterActionRequest(clusterId);
+            } else if (type.equalsIgnoreCase("add")) {
+                int incrementSize = (int) data.get("size");
+                request = new AddSlaveNodeActionRequest(clusterId, incrementSize);
+            } else if (type.equalsIgnoreCase("remove")) {
+                int decrementSize = (int) data.get("size");
+                request = new RemoveSlaveNodeActionRequest(clusterId, decrementSize);
             } else {
-                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'start | stop | restart | destroy'");
+                return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'start | stop | restart | destroy | add | remove'");
             }
             ActionStatus actionStatus = actionService().request(request);
             if (await != null && await.booleanValue()) {

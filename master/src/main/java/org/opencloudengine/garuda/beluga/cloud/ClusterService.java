@@ -77,8 +77,6 @@ public class ClusterService extends AbstractClusterService {
 
             //configure Mesos with new IP
             String definitionId = clusterTopology.getDefinitionId();
-//            mesosAPI.configureMesosMasterInstances(definitionId);
-//            mesosAPI.configureMesosSlaveInstances(definitionId);
 
             //TODO 다시 store to topology...
 
@@ -192,6 +190,63 @@ public class ClusterService extends AbstractClusterService {
         this.clusterTopology = clusterTopology;
     }
 
+    public List<CommonInstance> addSlaveNode(int incrementSize) throws BelugaException {
+        String SLAVE_ROLE = "mesos-slave";
+        SettingManager settingManager = environment.settingManager();
+        String definitionId = clusterTopology.getDefinitionId();
+        ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
+        String iaasProfile = clusterDefinition.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = null;
+        List<CommonInstance> instanceList = null;
+        try {
+            iaas = iaasProvider.getIaas();
+            List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
+            String keyPair = clusterDefinition.getKeyPair();
+            ClusterDefinition.RoleDefinition roleDefinition = null;
+            for (ClusterDefinition.RoleDefinition definition : roleDefinitions) {
+                if (definition.getRole().equalsIgnoreCase(SLAVE_ROLE)) {
+                    roleDefinition = definition;
+                    break;
+                }
+            }
+
+            InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
+                    , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
+            instanceList = iaas.launchInstance(request, SLAVE_ROLE, incrementSize);
+            for (CommonInstance instance : instanceList) {
+                //토폴로지에 넣어준다.
+                clusterTopology.addNode(SLAVE_ROLE, instance);
+            }
+            storeClusterTopologyConfig();
+        } catch (Exception e) {
+            logger.error("", e);
+            throw new BelugaException(e);
+        } finally {
+            iaas.close();
+        }
+
+        //Wait until available
+        iaas.waitUntilInstancesRunning(instanceList);
+        //Fetch latest instance information
+        iaas.updateInstancesInfo(instanceList);
+
+        return instanceList;
+    }
+
+    public List<CommonInstance> removeSlaveNode(int decrementSize) throws BelugaException {
+
+        //TODO
+
+
+
+
+
+
+
+        return null;
+    }
+
     private void startInstances() throws UnknownIaasProviderException {
         String iaasProfile = clusterTopology.getIaasProfile();
         IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
@@ -264,6 +319,27 @@ public class ClusterService extends AbstractClusterService {
         Iaas iaas = iaasProvider.getIaas();
         try {
             List<CommonInstance> instanceList = clusterTopology.getInstancesByRole(role);
+            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+            sleep(5);
+            if(waitUntilInstanceAvailable) {
+                //Wait until available
+                iaas.waitUntilInstancesRunning(instanceList);
+                //Fetch latest instance information
+                iaas.updateInstancesInfo(instanceList);
+            }
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
+
+    //특정 인스턴스만 재부팅한다.
+    public void rebootInstances(List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, InvalidRoleException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = iaasProvider.getIaas();
+        try {
             iaas.rebootInstances(IaasUtils.getIdList(instanceList));
             sleep(5);
             if(waitUntilInstanceAvailable) {
