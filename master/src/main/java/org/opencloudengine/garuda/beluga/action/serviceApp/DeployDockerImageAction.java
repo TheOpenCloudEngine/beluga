@@ -11,6 +11,7 @@ import org.opencloudengine.garuda.beluga.mesos.docker.DockerAPI;
 import org.opencloudengine.garuda.beluga.mesos.marathon.MarathonAPI;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class DeployDockerImageAction extends RunnableAction<DeployDockerImageAct
         //
         String appId = request.getAppId();
         String imageName = request.getImageName();
-        String imageTag = request.getImageTag();
+        Integer port = request.getPort();
         Float cpus = request.getCpus();
         Float memory = request.getMemory();
         Integer scale = 1;
@@ -53,14 +54,13 @@ public class DeployDockerImageAction extends RunnableAction<DeployDockerImageAct
             throw new BelugaException("No registry instance in " + clusterId);
         }
 
-        String dockerImageName = imageName +  ":" + (imageTag == null ? "latest" : imageTag);
-
-        /*
-        * Deploy to Marathon
-        * */
-        List<Integer> usedPort = DockerWebAppPorts.getPortsByStackId(imageName);
+        List<Integer> usedPort = null;
+        if(port != null) {
+            usedPort = new ArrayList<>();
+            usedPort.add(port);
+        }
         MarathonAPI marathonAPI = clusterService.getMarathonAPI();
-        Response response = marathonAPI.deployDockerApp(appId, dockerImageName, usedPort, cpus, memory, scale, env);
+        Response response = marathonAPI.deployDockerApp(appId, imageName, usedPort, cpus, memory, scale, env);
         if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             setResult(response);
         } else if(response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {

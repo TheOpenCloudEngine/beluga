@@ -15,7 +15,6 @@ public class DockerWebAppPorts {
     public static final String JAVA7_TOMCAT7 = "java7_tomcat7";
     public static final String JAVA7_WILDFLY8_2 = "java7_wildfly8.2";
     public static final String PHP5_APACHE2 = "php5_apache2";
-    public static final String MYSQL = "mysql";
     static {
         appPortsMap = new HashMap<>();
         /* java7 wildfly8.2 */
@@ -35,12 +34,6 @@ public class DockerWebAppPorts {
             List<Integer> ports = new ArrayList<>();
             ports.add(80);
             appPortsMap.put(PHP5_APACHE2, ports);
-        }
-        /* Mysql */
-        {
-            List<Integer> ports = new ArrayList<>();
-            ports.add(3306);
-            appPortsMap.put(MYSQL, ports);
         }
     }
 

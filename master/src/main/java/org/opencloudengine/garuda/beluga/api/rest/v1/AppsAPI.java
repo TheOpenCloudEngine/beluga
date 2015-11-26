@@ -1,5 +1,7 @@
 package org.opencloudengine.garuda.beluga.api.rest.v1;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.opencloudengine.garuda.beluga.action.ActionException;
@@ -11,6 +13,8 @@ import org.opencloudengine.garuda.beluga.common.util.JsonUtils;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.proxy.HAProxyAPI;
+import org.opencloudengine.garuda.beluga.settings.Resources;
+import org.opencloudengine.garuda.beluga.utils.JsonUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -218,6 +222,7 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("memory").toString());
             }
             Integer scale = (Integer) data.get("scale");
+            Map<String, String> env = (Map<String, String>) data.get("beluga_env");
 
             List<WebAppContextFile> webAppFileList = new ArrayList<>();
 
@@ -227,7 +232,7 @@ public class AppsAPI extends BaseAPI {
             if(webAppContext2 != null && webAppFile2 != null) {
                 webAppFileList.add(new WebAppContextFile(webAppFile2, webAppContext2));
             }
-            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, null, isUpdate);
+            DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, env, isUpdate);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
@@ -259,54 +264,89 @@ public class AppsAPI extends BaseAPI {
         /*
          * 서비스 DB와 같은 리소스 앱들을 미리 구동한다.
          */
+        Map<String, String> env = new HashMap<>();
 
+        List<String> resourceList = (List<String>) data.get("resourceList");
+        if(resourceList != null) {
+            for(String resourceKey : resourceList) {
+                boolean isRunning = false;
+                Resources.Resource resource = Resources.get(resourceKey);
+                String resourceAppId = appId + "/" + resource.getId();
+                //app정보를 받아온다.
+                Response response = getApp(clusterId, resourceAppId);
+                try {
+                    if (response.getStatus() == 200) {
+                        String json = response.readEntity(String.class);
+                        JsonNode entity = JsonUtil.toJsonNode(json);
+                        isRunning = true;
+                    }
+                }catch (Throwable t) {
+                    logger.error("", t);
+                }
 
-        boolean useDB1 = (Boolean) data.get("useDB1");
+                //실행중이 아니면 구동한다.
+                if(!isRunning) {
+                    DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceAppId, resource.getImage(), resource.getPort()
+                            , resource.getCpus(), resource.getMem(), 1, resource.getEnv());
+                    ActionStatus actionStatus = actionService().request(request);
+                    actionStatus.waitForDone();
+                }
 
-        if(useDB1) {
-            String db1AppId = appId + "-db1";
-            //1. 이미 존재하는지 확인
-            //TODO
-            //
-            int scale = 1; //1로 고정.
-            String db1ImageName = (String) data.get("db1ImageName");
-            String db1ImageTag = (String) data.get("db1ImageTag");
-            Float cpus = null;
-            if (data.get("db1Cpus") != null) {
-                cpus = Float.parseFloat(data.get("db1Cpus").toString());
-            }
-            Float memory = null;
-            if (data.get("db1Memory") != null) {
-                memory = Float.parseFloat(data.get("db1Memory").toString());
-            }
-            String db1RootPassword = (String) data.get("db1RootPassword");
-            Map<String, String> env = new HashMap<>();
-            env.put("MYSQL_ROOT_PASSWORD", db1RootPassword);
+                //정보를 받아온다.
+                String host = "";
+                String port = "";
+                response = getApp(clusterId, resourceAppId);
+                try {
+                    if (response.getStatus() == 200) {
+                        String json = response.readEntity(String.class);
+                        JsonNode root = JsonUtil.toJsonNode(json);
+                        JsonNode app = root.get("app");
+                        ArrayNode tasks = (ArrayNode) app.get("tasks");
+                        if(tasks != null) {
+                            JsonNode task = tasks.get(0);
+                            if(task != null) {
+                                host = task.get("host").asText();
+                                ArrayNode ports = (ArrayNode) task.get("ports");
+                                if (ports.size() > 0) {
+                                    port = String.valueOf(ports.get(0).asInt());
+                                }
+                            }
+                        }
+                        isRunning = true;
+                    }
+                }catch (Throwable t) {
+                    logger.error("", t);
+                }
 
-            //2.생성
-            DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, db1AppId, db1ImageName, db1ImageTag, null, cpus, memory, scale, env);
-            ActionStatus actionStatus = actionService().request(request);
-            actionStatus.waitForDone();
+                if(!isRunning) {
+                    continue;
+                }
 
-            Object result = actionStatus.getResult();
-            if(result instanceof Response) {
-                Map<String, Object> entity = parseMarathonResponse((Response) result);
+                //환경변수셋팅.
+                String envHostKey = resource.getHostPropertyKey();
+                String envPortKey = resource.getPortPropertyKey();
 
-                //3. 생성 결과(IP, port 등 접속정보)를 설정에 저장.
-                // app이 인식해야 한다.
-                saveResourceInfo(clusterId, entity);
+                env.put(envHostKey, host);
+                env.put(envPortKey, port);
+
+                String webAppType = (String) data.get("type");
+                if(webAppType != null && webAppType.startsWith("java")) {
+                    //java opts
+                    String javaOptsString = env.get("JAVA_OPTS");
+                    if(javaOptsString == null) {
+                        javaOptsString = "";
+                    }
+                    if(javaOptsString.length() > 0){
+                        javaOptsString += " ";
+                    }
+                    javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
+                    env.put("JAVA_OPTS", javaOptsString);
+                }
             }
         }
 
+        data.put("beluga_env", env);
         return true;
-    }
-
-    private void saveResourceInfo(String clusterId, Map<String, Object> entity) {
-        //TODO
-
-
-
-
     }
 
     @POST
