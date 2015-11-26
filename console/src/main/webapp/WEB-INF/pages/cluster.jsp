@@ -208,6 +208,16 @@ $(function(){
 
         <div class="col-md-12">
             <div class="box" >
+                <button type="button" class="btn btn-lg btn-primary outline" data-toggle="modal" data-target="#addSlaveModal"><i class="glyphicon glyphicon-plus"></i> Add Slave Worker</button>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-lg btn-danger outline" data-toggle="modal" data-target="#removeSlaveModal"><i class="glyphicon glyphicon-minus"></i> Remove Slave Worker</button>
+                </div>
+                <h2>Modify Cluster</h2>
+                <p>This will increase or decrease slave worker size in the cluster.</p>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="box" >
                 <div class="pull-right">
                     <button type="button" class="btn btn-lg btn-danger outline" data-toggle="modal" data-target="#deleteModal"><i class="glyphicon glyphicon-trash"></i> Delete Cluster</button>
                 </div>

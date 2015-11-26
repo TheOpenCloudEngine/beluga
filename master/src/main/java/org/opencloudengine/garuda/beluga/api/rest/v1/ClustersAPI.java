@@ -94,10 +94,10 @@ public class ClustersAPI extends BaseAPI {
                     request = new AddSlaveNodeActionRequest(clusterId, size);
                 }
             } else if (type.equalsIgnoreCase("remove")) {
-                int size = (int) data.get("size");
                 String role = (String) data.get("role");
+                String instanceId = (String) data.get("instanceId");
                 if(role.equalsIgnoreCase("mesos-slave")) {
-                    request = new RemoveSlaveNodeActionRequest(clusterId, size);
+                    request = new RemoveSlaveNodeActionRequest(clusterId, instanceId);
                 }
             } else {
                 return getErrorMessageOkResponse("Unknown type " + type + ". Choose type among 'start | stop | restart | destroy | add | remove'");

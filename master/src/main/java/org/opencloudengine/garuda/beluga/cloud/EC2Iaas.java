@@ -65,7 +65,7 @@ public class EC2Iaas implements Iaas {
                 for (Instance instance : runInstancesResult.getReservation().getInstances()) {
                     CreateTagsRequest createTagsRequest = new CreateTagsRequest();
                     String tagName = null;
-                    if (scale > 1) {
+                    if (startIndex > 1) {
                         tagName = String.format("%s/%s-%d", clusterId, name, startIndex);
                     } else {
                         tagName = String.format("%s/%s", clusterId, name);
