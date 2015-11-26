@@ -25,7 +25,7 @@ public class RemoveSlaveNodeAction extends RunnableAction<RemoveSlaveNodeActionR
     protected void doAction() throws Exception {
         RemoveSlaveNodeActionRequest request = getActionRequest();
         String clusterId = request.getClusterId();
-        Integer decrementSize = request.getDecrementSize();
+        String instanceId = request.getInstanceId();
 
         ClustersService clustersService = serviceManager.getService(ClustersService.class);
 
@@ -33,20 +33,10 @@ public class RemoveSlaveNodeAction extends RunnableAction<RemoveSlaveNodeActionR
         * Prepare instances
         * */
         status.walkStep();
-        logger.debug("Remove Node..");
+        logger.debug("Remove Node..{} / {}", clusterId, instanceId);
         ClusterService clusterService = clustersService.getClusterService(clusterId);
-        List<CommonInstance> instanceList = clusterService.removeSlaveNode(decrementSize);
+        CommonInstance instance = clusterService.removeSlaveNode(instanceId);
         logger.debug("Remove Node.. Done.");
-
-        logger.debug("Wait {} secs before configuration", DELAY_BEFORE_CONFIGURATION);
-        Thread.sleep(DELAY_BEFORE_CONFIGURATION);
-
-        MesosAPI mesosAPI = clusterService.getMesosAPI();
-        //
-        // Configure mesos-slave
-        //
-        status.walkStep();
-        mesosAPI.configureMesosSlaveInstances(instanceList);
     }
 
 }

@@ -8,12 +8,12 @@ import org.opencloudengine.garuda.beluga.action.RunnableAction;
  */
 public class RemoveSlaveNodeActionRequest extends ActionRequest {
     private String clusterId;
-    private Integer decrementSize;
+    private String instanceId;
 
 
-    public RemoveSlaveNodeActionRequest(String clusterId, Integer decrementSize) {
+    public RemoveSlaveNodeActionRequest(String clusterId, String instanceId) {
         this.clusterId = clusterId;
-        this.decrementSize = decrementSize;
+        this.instanceId = instanceId;
     }
 
     @Override
@@ -34,12 +34,12 @@ public class RemoveSlaveNodeActionRequest extends ActionRequest {
         return clusterId;
     }
 
-    public Integer getDecrementSize() {
-        return decrementSize;
+    public String getInstanceId() {
+        return instanceId;
     }
 
     @Override
     public String toString() {
-        return String.format("%s:%s:%s", getClass().getSimpleName(), clusterId, decrementSize);
+        return String.format("%s:%s:%s", getClass().getSimpleName(), clusterId, instanceId);
     }
 }

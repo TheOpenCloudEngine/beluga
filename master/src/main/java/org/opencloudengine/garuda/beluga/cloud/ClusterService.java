@@ -16,6 +16,7 @@ import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
 import org.opencloudengine.garuda.beluga.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.beluga.utils.SshInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -219,7 +220,6 @@ public class ClusterService extends AbstractClusterService {
                 //토폴로지에 넣어준다.
                 clusterTopology.addNode(SLAVE_ROLE, instance);
             }
-            storeClusterTopologyConfig();
         } catch (Exception e) {
             logger.error("", e);
             throw new BelugaException(e);
@@ -232,20 +232,24 @@ public class ClusterService extends AbstractClusterService {
         //Fetch latest instance information
         iaas.updateInstancesInfo(instanceList);
 
+        storeClusterTopologyConfig();
         return instanceList;
     }
 
-    public List<CommonInstance> removeSlaveNode(int decrementSize) throws BelugaException {
-
-        //TODO
-
-
-
-
-
-
-
-        return null;
+    public CommonInstance removeSlaveNode(String instanceId) throws BelugaException, UnknownIaasProviderException {
+        List<CommonInstance> list = clusterTopology.getMesosSlaveList();
+        List<String> instanceIdList = new ArrayList<>();
+        CommonInstance obj = null;
+        for(CommonInstance instance : list) {
+            if(instance.getInstanceId().equalsIgnoreCase(instanceId)) {
+                instanceIdList.add(instanceId);
+                obj = instance;
+            }
+        }
+        list.remove(obj);
+        terminateInstance(instanceIdList);
+        storeClusterTopologyConfig();
+        return obj;
     }
 
     private void startInstances() throws UnknownIaasProviderException {
@@ -367,6 +371,24 @@ public class ClusterService extends AbstractClusterService {
         Iaas iaas = iaasProvider.getIaas();
         try {
             iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
+
+    protected void terminateInstance(List<String> instanceIdList) throws UnknownIaasProviderException {
+        if(clusterTopology == null) {
+            return;
+        }
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        Iaas iaas = iaasProvider.getIaas();
+        try {
+            iaas.terminateInstances(instanceIdList);
         } finally {
             if(iaas != null) {
                 iaas.close();
