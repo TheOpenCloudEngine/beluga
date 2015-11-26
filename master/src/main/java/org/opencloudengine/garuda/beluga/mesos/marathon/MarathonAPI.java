@@ -188,6 +188,6 @@ public class MarathonAPI {
     * */
     public Response requestDeleteAPI(String path) {
         WebTarget target = getWebTarget(API_PATH_VERSION + path);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).delete();
+        return target.queryParam("force", "true").request(MediaType.APPLICATION_JSON_TYPE).delete();
     }
 }

@@ -16,7 +16,7 @@ public class Resources {
         resourceMap.put("mysql5", new Resource("mysql5", "MySQL 5.7.9", "mysql:5.7.9", 3306, 0.2f, 500f, mysqlEnv));
         resourceMap.put("postgresql9", new Resource("postgresql9", "PostgreSQL 9.4.5", "postgres:9.4.5", 5432, 0.2f, 500f));
         resourceMap.put("oraclexe11g", new Resource("oraclexe11g", "Oracle XE 11g", "wnameless/oracle-xe-11g", 1521, 0.2f, 1000f));
-        resourceMap.put("mongodb3", new Resource("mongodb3", "MongoDB 3.0", "mongodb:3.0", 27017, 0.2f, 500f));
+        resourceMap.put("mongodb3", new Resource("mongodb3", "MongoDB 3.0", "mongo:3.0", 27017, 0.2f, 500f));
         resourceMap.put("redis3", new Resource("redis3", "Redis 3.0.5", "redis:3.0.5", 6379, 0.2f, 500f));
         resourceMap.put("sftp", new Resource("sftp", "SFTP", "luzifer/sftp-share", 22, 0.1f, 200f));
         resourceMap.put("ftp", new Resource("ftp", "FTP", "mcreations/ftp", 21, 0.1f, 200f));

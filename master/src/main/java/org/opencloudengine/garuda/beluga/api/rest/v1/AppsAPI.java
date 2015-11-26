@@ -55,6 +55,18 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
+    @Path("/{id}/resources/{resourceId}")
+    public Response getResourceApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, @PathParam("resourceId") String resourceId) throws Exception {
+        try {
+            return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "-resources/" + resourceId);
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
+
+    @GET
     @Path("/{id}/tasks")
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
@@ -260,9 +272,6 @@ public class AppsAPI extends BaseAPI {
         return null;
     }
 
-    private String getResourceGroupId(String appId) {
-        return appId + "-resources";
-    }
     private boolean deployResourceApp(String clusterId, String appId, Map<String, Object> data) throws Exception {
         /*
          * 서비스 DB와 같은 리소스 앱들을 미리 구동한다.
@@ -274,7 +283,7 @@ public class AppsAPI extends BaseAPI {
             for(String resourceKey : resourceList) {
                 boolean isRunning = false;
                 Resources.Resource resource = Resources.get(resourceKey);
-                String resourceAppId = getResourceGroupId(appId) + "/" + resource.getId();
+                String resourceAppId = appId + "-resources/" + resource.getId();
                 //app정보를 받아온다.
                 Response response = getApp(clusterId, resourceAppId);
                 try {
@@ -283,42 +292,52 @@ public class AppsAPI extends BaseAPI {
                         JsonNode entity = JsonUtil.toJsonNode(json);
                         isRunning = true;
                     }
-                }catch (Throwable t) {
+                } catch (Throwable t) {
                     logger.error("", t);
                 }
 
                 //실행중이 아니면 구동한다.
-                if(!isRunning) {
+                if (!isRunning) {
                     DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceAppId, resource.getImage(), resource.getPort()
                             , resource.getCpus(), resource.getMem(), 1, resource.getEnv());
                     ActionStatus actionStatus = actionService().request(request);
                     actionStatus.waitForDone();
                 }
+            }
 
+            //실행한 노드들에서 host, port를 얻을 때까지 최대 1분씩 기다린다.
+            for(String resourceKey : resourceList) {
+                boolean isRunning = false;
+                Resources.Resource resource = Resources.get(resourceKey);
+                String resourceAppId = appId + "-resources/" + resource.getId();
                 //정보를 받아온다.
                 String host = "";
                 String port = "";
-                response = getApp(clusterId, resourceAppId);
-                try {
-                    if (response.getStatus() == 200) {
-                        String json = response.readEntity(String.class);
-                        JsonNode root = JsonUtil.toJsonNode(json);
-                        JsonNode app = root.get("app");
-                        ArrayNode tasks = (ArrayNode) app.get("tasks");
-                        if(tasks != null) {
-                            JsonNode task = tasks.get(0);
-                            if(task != null) {
-                                host = task.get("host").asText();
-                                ArrayNode ports = (ArrayNode) task.get("ports");
-                                if (ports.size() > 0) {
-                                    port = String.valueOf(ports.get(0).asInt());
+                for (int i = 0; i < 60; i++) {
+                    Response response = getApp(clusterId, resourceAppId);
+                    try {
+                        if (response.getStatus() == 200) {
+                            String json = response.readEntity(String.class);
+                            JsonNode root = JsonUtil.toJsonNode(json);
+                            JsonNode app = root.get("app");
+                            ArrayNode tasks = (ArrayNode) app.get("tasks");
+                            if (tasks != null) {
+                                JsonNode task = tasks.get(0);
+                                if (task != null) {
+                                    host = task.get("host").asText();
+                                    ArrayNode ports = (ArrayNode) task.get("ports");
+                                    if (ports.size() > 0) {
+                                        port = String.valueOf(ports.get(0).asInt());
+                                    }
+                                    isRunning = true;
+                                    break;
                                 }
                             }
                         }
-                        isRunning = true;
+                    } catch (Throwable t) {
+                        logger.error("", t);
                     }
-                }catch (Throwable t) {
-                    logger.error("", t);
+                    Thread.sleep(1000);
                 }
 
                 if(!isRunning) {
@@ -375,10 +394,9 @@ public class AppsAPI extends BaseAPI {
 
         Response response = null;
         try {
+            //App 및 하위 서비스 노드 삭제
             response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId);
-            //하위 서비스 노드 삭제
-            response = marathonAPI(clusterId).requestDeleteAPI("/groups/" + getResourceGroupId(appId));
-            //response = marathonAPI(clusterId).requestDeleteAPI("/apps/" + getMainAppId(appId));
+            response = marathonAPI(clusterId).requestDeleteAPI("/groups/" + appId + "-resources");
 
             // 삭제되었으면 haproxy에서 지워준다.
             Map<String, Object> entity = parseMarathonResponse(response);
