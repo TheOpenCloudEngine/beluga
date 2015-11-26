@@ -209,9 +209,9 @@ public class AppsAPI extends BaseAPI {
     }
 
     private Response deployOrUpdateApp(String clusterId, String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
-        if(!isUpdate) {
-            deployResourceApp(clusterId, appId, data);
-        }
+//        if(!isUpdate) {
+        deployResourceApp(clusterId, appId, data);
+//        }
 
         try {
 //            Integer port = (Integer) data.get("port");
@@ -279,8 +279,13 @@ public class AppsAPI extends BaseAPI {
         Map<String, String> env = new HashMap<>();
 
         List<String> resourceList = (List<String>) data.get("resourceList");
-        if(resourceList != null) {
-            for(String resourceKey : resourceList) {
+
+        if(resourceList == null) {
+            resourceList = new ArrayList<>();
+        }
+
+        for(String resourceKey : Resources.keys()) {
+            if(resourceList.contains(resourceKey)) {
                 boolean isRunning = false;
                 Resources.Resource resource = Resources.get(resourceKey);
                 String resourceAppId = appId + "-resources/" + resource.getId();
@@ -303,67 +308,71 @@ public class AppsAPI extends BaseAPI {
                     ActionStatus actionStatus = actionService().request(request);
                     actionStatus.waitForDone();
                 }
+            } else {
+                //없는 것이면 실행이 안되는건지 확인한다.
+                //조회보다는 그냥 삭제명령을 내린다.
+                marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId + "-resources/" + resourceKey);
             }
+        }
 
-            //실행한 노드들에서 host, port를 얻을 때까지 최대 1분씩 기다린다.
-            for(String resourceKey : resourceList) {
-                boolean isRunning = false;
-                Resources.Resource resource = Resources.get(resourceKey);
-                String resourceAppId = appId + "-resources/" + resource.getId();
-                //정보를 받아온다.
-                String host = "";
-                String port = "";
-                for (int i = 0; i < 60; i++) {
-                    Response response = getApp(clusterId, resourceAppId);
-                    try {
-                        if (response.getStatus() == 200) {
-                            String json = response.readEntity(String.class);
-                            JsonNode root = JsonUtil.toJsonNode(json);
-                            JsonNode app = root.get("app");
-                            ArrayNode tasks = (ArrayNode) app.get("tasks");
-                            if (tasks != null) {
-                                JsonNode task = tasks.get(0);
-                                if (task != null) {
-                                    host = task.get("host").asText();
-                                    ArrayNode ports = (ArrayNode) task.get("ports");
-                                    if (ports.size() > 0) {
-                                        port = String.valueOf(ports.get(0).asInt());
-                                    }
-                                    isRunning = true;
-                                    break;
+        //실행한 노드들에서 host, port를 얻을 때까지 최대 1분씩 기다린다.
+        for(String resourceKey : resourceList) {
+            boolean isRunning = false;
+            Resources.Resource resource = Resources.get(resourceKey);
+            String resourceAppId = appId + "-resources/" + resource.getId();
+            //정보를 받아온다.
+            String host = "";
+            String port = "";
+            for (int i = 0; i < 60; i++) {
+                Response response = getApp(clusterId, resourceAppId);
+                try {
+                    if (response.getStatus() == 200) {
+                        String json = response.readEntity(String.class);
+                        JsonNode root = JsonUtil.toJsonNode(json);
+                        JsonNode app = root.get("app");
+                        ArrayNode tasks = (ArrayNode) app.get("tasks");
+                        if (tasks != null) {
+                            JsonNode task = tasks.get(0);
+                            if (task != null) {
+                                host = task.get("host").asText();
+                                ArrayNode ports = (ArrayNode) task.get("ports");
+                                if (ports.size() > 0) {
+                                    port = String.valueOf(ports.get(0).asInt());
                                 }
+                                isRunning = true;
+                                break;
                             }
                         }
-                    } catch (Throwable t) {
-                        logger.error("", t);
                     }
-                    Thread.sleep(1000);
+                } catch (Throwable t) {
+                    logger.error("", t);
                 }
+                Thread.sleep(1000);
+            }
 
-                if(!isRunning) {
-                    continue;
+            if(!isRunning) {
+                continue;
+            }
+
+            //환경변수셋팅.
+            String envHostKey = resource.getHostPropertyKey();
+            String envPortKey = resource.getPortPropertyKey();
+
+            env.put(envHostKey, host);
+            env.put(envPortKey, port);
+
+            String webAppType = (String) data.get("type");
+            if(webAppType != null && webAppType.startsWith("java")) {
+                //java opts
+                String javaOptsString = env.get("JAVA_OPTS");
+                if(javaOptsString == null) {
+                    javaOptsString = "";
                 }
-
-                //환경변수셋팅.
-                String envHostKey = resource.getHostPropertyKey();
-                String envPortKey = resource.getPortPropertyKey();
-
-                env.put(envHostKey, host);
-                env.put(envPortKey, port);
-
-                String webAppType = (String) data.get("type");
-                if(webAppType != null && webAppType.startsWith("java")) {
-                    //java opts
-                    String javaOptsString = env.get("JAVA_OPTS");
-                    if(javaOptsString == null) {
-                        javaOptsString = "";
-                    }
-                    if(javaOptsString.length() > 0){
-                        javaOptsString += " ";
-                    }
-                    javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
-                    env.put("JAVA_OPTS", javaOptsString);
+                if(javaOptsString.length() > 0){
+                    javaOptsString += " ";
                 }
+                javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
+                env.put("JAVA_OPTS", javaOptsString);
             }
         }
 
