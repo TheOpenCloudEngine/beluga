@@ -15,10 +15,12 @@ import org.opencloudengine.garuda.beluga.service.ServiceException;
 import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
 import org.opencloudengine.garuda.beluga.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.beluga.utils.SshInfo;
+import org.opencloudengine.garuda.beluga.watcher.AutoScaleRule;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
 * Created by swsong on 2015. 7. 20..
@@ -39,6 +41,8 @@ public class ClusterService extends AbstractClusterService {
     private DeploymentsCheckWorker deploymentsCheckWorker;
 
     private String domainName;
+    private Set<String> runningAppIdSet;
+    private AutoScaleRule autoScaleRule;
 
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
@@ -498,6 +502,37 @@ public class ClusterService extends AbstractClusterService {
 
     public DockerAPI getDockerAPI() {
         return dockerAPI;
+    }
+
+    public Set<String> getRunningAppIdSet() {
+
+
+        //TODO 파일로 기록하고 로드할 수 있도록 구현.
+
+        // 클러스터별 appId와 auto scale 설정을 xml 또는 json 파일로 기록해서 가지고 있도록 한다.
+        // 시작할때 로딩..
+
+
+        return runningAppIdSet;
+    }
+
+    public AutoScaleRule getAutoScaleRule() {
+
+        //TODO 구현.
+
+
+        //
+
+
+
+
+
+
+
+
+
+
+        return autoScaleRule;
     }
 
     class ProxyUpdateWorker extends Thread {
