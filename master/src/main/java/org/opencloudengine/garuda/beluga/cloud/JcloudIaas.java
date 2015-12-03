@@ -7,14 +7,19 @@ import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.Hardware;
+import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
+import org.jclouds.openstack.cinder.v1.CinderApi;
+import org.jclouds.openstack.cinder.v1.CinderApiMetadata;
+import org.jclouds.openstack.keystone.v2_0.KeystoneApi;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -35,12 +40,9 @@ public abstract class JcloudIaas implements Iaas {
                 .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(),
                         new SshjSshClientModule()))
                 .buildView(ComputeServiceContext.class);
-        computeService = context.getComputeService();
 
-        Set<? extends Hardware> profiles = computeService.listHardwareProfiles();
-        for(Hardware h : profiles) {
-            logger.debug("###### {}", h);
-        }
+
+        computeService = context.getComputeService();
     }
 
     private Template initTemplate(InstanceRequest request) {
@@ -57,14 +59,94 @@ public abstract class JcloudIaas implements Iaas {
 
     @Override
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
+
+        //instanceType을 가리킴.
+        Set<? extends Hardware> profiles = computeService.listHardwareProfiles();
+        for(Hardware h : profiles) {
+            logger.debug("###### {}", h);
+        }
+
         Template template = initTemplate(request);
         try {
-            computeService.createNodesInGroup(name, scale, template);
+            Set<? extends NodeMetadata> intanceSet = null;
+            if (scale > 0) {
+                intanceSet = computeService.createNodesInGroup(name, scale, template);
+            }
+
         } catch (RunNodesException e) {
 
         }
+        String endpoint = "";
+        String tenantName = "";
+        String userName = "";
+        String password = "";
+        String provider = "openstack-keystone";
+        String identity = tenantName + ":"  + userName;
+        Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
 
-        return null;
+        KeystoneApi keystoneApi = ContextBuilder.newBuilder(provider)
+                .endpoint(endpoint)
+                .credentials(identity, password)
+                .modules(modules)
+                .buildApi(KeystoneApi.class);
+
+        CinderApi cinderApi = ContextBuilder.newBuilder(provider)
+                .endpoint(endpoint)
+                .credentials(identity, password)
+                .modules(modules)
+                .buildApi(CinderApi.class);
+
+
+        List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
+
+        String clusterId = request.getClusterId();
+//        RunInstancesResult runInstancesResult = null;
+//        if (scale > 0) {
+//            RunInstancesRequest runRequest = new RunInstancesRequest();
+//            runRequest.setImageId(request.getImageId());
+//            runRequest.setInstanceType(request.getInstanceType());
+//            runRequest.setKeyName(request.getKeyPair());
+//            runRequest.setMaxCount(scale);
+//            runRequest.setMinCount(scale);
+//            runRequest.setSecurityGroups(request.getGroups());
+//            EbsBlockDevice ebs = new EbsBlockDevice().withVolumeSize(request.getVolumeSize()).withVolumeType(VolumeType.Gp2);
+//            BlockDeviceMapping m = new BlockDeviceMapping().withDeviceName(DEVICE_NAME).withEbs(ebs);
+//            List<BlockDeviceMapping> blockDeviceMappingList = new ArrayList<>();
+//            blockDeviceMappingList.add(m);
+//            runRequest.setBlockDeviceMappings(blockDeviceMappingList);
+//            runInstancesResult = client.runInstances(runRequest);
+//        }
+//
+//        if (runInstancesResult != null) {
+//            if(name != null) {
+//                //tag request전에 1초정도 대기.
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException ignore) {
+//                }
+//
+//                for (Instance instance : runInstancesResult.getReservation().getInstances()) {
+//                    CreateTagsRequest createTagsRequest = new CreateTagsRequest();
+//                    String tagName = null;
+//                    if (startIndex > 1) {
+//                        tagName = String.format("%s/%s-%d", clusterId, name, startIndex);
+//                    } else {
+//                        tagName = String.format("%s/%s", clusterId, name);
+//                    }
+//
+//                    createTagsRequest.withResources(instance.getInstanceId()).withTags(new Tag("Name", tagName));
+//                    client.createTags(createTagsRequest);
+//                    newInstances.add(new CommonInstance(instance));
+//                    startIndex++;
+//                }
+//            }
+//        }
+
+        return newInstances;
+
+
+
+//        return null;
     }
 
     @Override

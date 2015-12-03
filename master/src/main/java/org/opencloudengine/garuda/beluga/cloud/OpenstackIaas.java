@@ -61,6 +61,6 @@ public class OpenstackIaas extends JcloudIaas {
 
     @Override
     public String provider() {
-        return null;
+        return IaasProvider.OPENSTACK_TYPE;
     }
 }
