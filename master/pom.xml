@@ -119,7 +119,11 @@
             <artifactId>aws-java-sdk-ec2</artifactId>
             <version>${aws.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.jclouds.labs</groupId>
+            <artifactId>openstack-neutron</artifactId>
+            <version>1.9.1</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-all</artifactId>

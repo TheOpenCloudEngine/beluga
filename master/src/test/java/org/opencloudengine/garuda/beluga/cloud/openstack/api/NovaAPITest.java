@@ -45,7 +45,6 @@ public class NovaApiTest {
 
         for (String region : regions) {
             ServerApi serverApi = novaApi.getServerApi(region);
-
             System.out.println("Servers in " + region);
 
             for (Server server : serverApi.listInDetail().concat()) {
