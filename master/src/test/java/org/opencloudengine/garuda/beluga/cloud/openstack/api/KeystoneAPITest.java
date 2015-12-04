@@ -14,7 +14,7 @@ import org.junit.Test;
 /**
  * Created by swsong on 2015. 12. 3..
  */
-public class KeystoneAPITest {
+public class KeystoneApiTest {
 
     @Test
     public void test1() {

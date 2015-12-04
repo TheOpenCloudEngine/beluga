@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Created by swsong on 2015. 12. 3..
  */
-public class CinderAPITest {
+public class CinderApiTest {
 
     @Test
     public void test1() {
