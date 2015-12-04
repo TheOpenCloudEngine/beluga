@@ -16,6 +16,7 @@ import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -35,22 +36,28 @@ public class OpenstackIaas implements Iaas {
         this.endpoint = endpoint;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
-        this.overrides = overrides;
+        if(overrides != null) {
+            this.overrides = overrides;
+        } else {
+            this.overrides = new Properties();
+        }
     }
 
     @Override
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
+        List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
+
         String clusterId = request.getClusterId();
-        String region = "RegionOne";
-        //String region = request.getRegion();
-        ServerApi serverApi = openNovaApi().getServerApi(region);
-        String imageRef = request.getImageId(); //"44c83f44-f95d-41f1-9d14-06639de892fa";//ubuntu14_04_3
-        String flavorRef = request.getInstanceType(); //3 = m1.medium
+        String region = request.getRegion();
+        String imageRef = request.getImageId();
+        String flavorRef = request.getInstanceType();
         String[] securityGroups = request.getGroups().toArray(new String[0]);
         String keyPair = request.getKeyPair();
-        String networks = "ff2e5579-2cfa-4a67-832f-4fc2a6085de9";//demo-net
-//      Set<String> netwoks = request.getNetworks();
+        String[] networks = request.getNetworks();
         CreateServerOptions options = new CreateServerOptions().securityGroupNames(securityGroups).keyPairName(keyPair).networks(networks);
+
+        NovaApi novaApi = openNovaApi();
+        ServerApi serverApi = novaApi.getServerApi(region);
         int index = startIndex;
         for(int i = 0; i < scale; i++, index++){
             String tagName = null;
@@ -61,10 +68,17 @@ public class OpenstackIaas implements Iaas {
             }
             ServerCreated serverCreated = serverApi.create(tagName, imageRef, flavorRef, options);
             System.out.println(serverCreated);
+            newInstances.add(new CommonInstance(serverCreated));
+
         }
 
+        ///TODO 정보받아온다.
 
-        return null;
+
+
+        closeApi(novaApi);
+
+        return newInstances;
     }
 
     @Override
@@ -84,7 +98,9 @@ public class OpenstackIaas implements Iaas {
 
     @Override
     public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList) {
+        NovaApi novaApi = openNovaApi();
 
+        closeApi(novaApi);
     }
 
     @Override

@@ -13,8 +13,8 @@ public class InstanceRequest {
     private String imageId;
     private int volumeSize;
     private Set<String> groups;
-    private Set<String> networks;
     private String keyPair;
+    private String[] networks;
     private String region;
 
     public InstanceRequest(String clusterId, String instanceType, String imageId, int volumeSize, String group
@@ -26,10 +26,7 @@ public class InstanceRequest {
         this.groups = new HashSet<>();
         groups.add(group);
         this.keyPair = keyPair;
-        this.networks = new HashSet<>();
-        for(String network : networks) {
-            this.networks.add(network);
-        }
+        this.networks = networks;
         this.region = region;
     }
 
@@ -89,11 +86,11 @@ public class InstanceRequest {
         this.region = region;
     }
 
-    public Set<String> getNetworks() {
+    public String[] getNetworks() {
         return networks;
     }
 
-    public void setNetworks(Set<String> networks) {
+    public void setNetworks(String[] networks) {
         this.networks = networks;
     }
 }
