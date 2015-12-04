@@ -2,6 +2,7 @@ package org.opencloudengine.garuda.beluga.cloud;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by swsong on 2015. 7. 15..
@@ -11,17 +12,25 @@ public class InstanceRequest {
     private String instanceType;
     private String imageId;
     private int volumeSize;
-    private HashSet<String> groups;
+    private Set<String> groups;
+    private Set<String> networks;
     private String keyPair;
+    private String region;
 
-    public InstanceRequest(String clusterId, String instanceType, String imageId, int volumeSize, String group, String keyPair) {
+    public InstanceRequest(String clusterId, String instanceType, String imageId, int volumeSize, String group
+            , String keyPair, String[] networks, String region) {
         this.clusterId = clusterId;
         this.instanceType = instanceType;
         this.imageId = imageId;
         this.volumeSize = volumeSize;
-        this.groups = new HashSet<String>();
+        this.groups = new HashSet<>();
         groups.add(group);
         this.keyPair = keyPair;
+        this.networks = new HashSet<>();
+        for(String network : networks) {
+            this.networks.add(network);
+        }
+        this.region = region;
     }
 
     public String getClusterId() {
@@ -70,5 +79,21 @@ public class InstanceRequest {
 
     public void setKeyPair(String keyPair) {
         this.keyPair = keyPair;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public Set<String> getNetworks() {
+        return networks;
+    }
+
+    public void setNetworks(Set<String> networks) {
+        this.networks = networks;
     }
 }

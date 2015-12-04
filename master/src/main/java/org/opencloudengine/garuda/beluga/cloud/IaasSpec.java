@@ -26,6 +26,11 @@ public class IaasSpec {
         awsMap.put("t2.small", new IaasSpec(1, 2, 0));
         awsMap.put("t2.medium", new IaasSpec(2, 4, 0));
         awsMap.put("t2.large", new IaasSpec(2, 8, 0));
+
+        openstackMap.put("m1.small", new IaasSpec(1, 2, 0));
+        openstackMap.put("m1.medium", new IaasSpec(2, 4, 0));
+        openstackMap.put("m1.large", new IaasSpec(4, 8, 0));
+        openstackMap.put("m1.xlarge", new IaasSpec(8, 16, 0));
     }
     public static IaasSpec getSpec(String iaasType, String instanceType) {
         Map<String, IaasSpec> map = iaasSpecMap.get(iaasType);
