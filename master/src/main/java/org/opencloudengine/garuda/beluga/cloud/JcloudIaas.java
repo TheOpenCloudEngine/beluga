@@ -31,8 +31,8 @@ public abstract class JcloudIaas implements Iaas {
     private static final Logger logger = LoggerFactory.getLogger(JcloudIaas.class);
     private ComputeServiceContext context;
     private ComputeService computeService;
-
-    public JcloudIaas(String providerType, String accessKey, String secretKey, Properties overrides) {
+    private String endPoint;
+    public JcloudIaas(String providerType, String endPoint, String accessKey, String secretKey, Properties overrides) {
 
         context = ContextBuilder.newBuilder(providerType)
                 .credentials(accessKey, secretKey)
@@ -40,7 +40,6 @@ public abstract class JcloudIaas implements Iaas {
                 .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(),
                         new SshjSshClientModule()))
                 .buildView(ComputeServiceContext.class);
-
 
         computeService = context.getComputeService();
     }
@@ -76,25 +75,14 @@ public abstract class JcloudIaas implements Iaas {
         } catch (RunNodesException e) {
 
         }
-        String endpoint = "";
-        String tenantName = "";
-        String userName = "";
-        String password = "";
-        String provider = "openstack-keystone";
+        String endpoint = "http://10.0.1.251:5000/v2.0";
+        String tenantName = "demo";
+        String userName = "demo";
         String identity = tenantName + ":"  + userName;
+        String password = "demopass";
+        String provider = "openstack-nova";
         Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
 
-        KeystoneApi keystoneApi = ContextBuilder.newBuilder(provider)
-                .endpoint(endpoint)
-                .credentials(identity, password)
-                .modules(modules)
-                .buildApi(KeystoneApi.class);
-
-        CinderApi cinderApi = ContextBuilder.newBuilder(provider)
-                .endpoint(endpoint)
-                .credentials(identity, password)
-                .modules(modules)
-                .buildApi(CinderApi.class);
 
 
         List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
