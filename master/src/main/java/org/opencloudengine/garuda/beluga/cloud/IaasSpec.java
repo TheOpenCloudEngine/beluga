@@ -15,6 +15,7 @@ public class IaasSpec {
     public static final String EC2_TYPE = "ec2";
     public static final String OPENSTACK_TYPE = "openstack";
 
+    private static IaasSpec nullIaasSpec = new IaasSpec(0, 0, 0);
     private static Map<String, Map<String, IaasSpec>> iaasSpecMap = new HashMap<>();
     private static Map<String, IaasSpec> awsMap = new HashMap<>();
     private static Map<String, IaasSpec> openstackMap = new HashMap<>();
@@ -38,7 +39,14 @@ public class IaasSpec {
         if(map == null) {
             return null;
         }
-        return map.get(instanceType);
+
+        // unkown.....
+        IaasSpec iaasSpec = map.get(instanceType);
+
+        if(iaasSpec == null) {
+            return nullIaasSpec;
+        }
+        return iaasSpec;
     }
 
     public IaasSpec(int cpu, int memory, int ephemeralDisk) {

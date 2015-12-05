@@ -59,6 +59,7 @@ public class CommonInstance {
         } else if(instance instanceof Server) {
             Server s = (Server) instance;
             instanceId = s.getId();
+            name = s.getName();
             Multimap<String, Address> addressMultimap = s.getAddresses();
             Collection<Address> addressCollection = addressMultimap.values();
             if(addressCollection.size() > 0) {
@@ -69,7 +70,7 @@ public class CommonInstance {
             }
             state = s.getStatus().value();
 
-            instanceType = s.getFlavor().getName();
+            instanceType = s.getFlavor().getId();
             iaasSpec = IaasSpec.getSpec(IaasSpec.OPENSTACK_TYPE, instanceType);
             groupList = new ArrayList<>();
             //FIXME

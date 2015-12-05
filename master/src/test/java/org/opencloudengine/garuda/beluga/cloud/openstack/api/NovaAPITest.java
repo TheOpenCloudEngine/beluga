@@ -17,6 +17,7 @@ import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.junit.Test;
+import org.opencloudengine.garuda.beluga.cloud.CommonInstance;
 
 import java.io.IOException;
 import java.util.Set;
@@ -82,8 +83,9 @@ public class NovaApiTest {
 
         boolean isFail = false;
         Server.Status status = Server.Status.BUILD;
+        Server server = null;
         while(status != Server.Status.ACTIVE) {
-            Server server = serverApi.get(serverId);
+            server = serverApi.get(serverId);
             System.out.println(server.toString());
             try {
                 Thread.sleep(300);
@@ -91,7 +93,7 @@ public class NovaApiTest {
                 e.printStackTrace();
             }
             status = server.getStatus();
-            System.out.println("### status : " + status);
+            System.out.println("### status : " + status + ", " + status.ordinal());
             if(status.ordinal() > Server.Status.BUILD.ordinal() ) {
                 //문제발생.
                 isFail = true;
@@ -100,15 +102,13 @@ public class NovaApiTest {
         }
 
         if(isFail) {
-            System.out.println("Server is Active now! :-)");
-        } else {
             System.out.println("Server launch Failed! :-(");
+        } else {
+            CommonInstance instance = new CommonInstance(server);
+            System.out.println("Server is Active now! :-)");
+            System.out.println(instance);
         }
-//        Optional<FloatingIPApi> floatingIPApiOptional = novaApi.getFloatingIPApi(region);
-//        FloatingIPApi floatingIPApi = floatingIPApiOptional.get();
-//        FloatingIP floatingIP = floatingIPApi.create();
-//        System.out.println("### " + floatingIP);
-//        floatingIPApi.addToServer(floatingIP.getIp(), serverId);
+
         Closeables.close(novaApi, true);
     }
 
