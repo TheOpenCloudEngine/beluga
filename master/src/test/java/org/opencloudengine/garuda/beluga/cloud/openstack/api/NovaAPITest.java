@@ -88,7 +88,7 @@ public class NovaApiTest {
             server = serverApi.get(serverId);
             System.out.println(server.toString());
             try {
-                Thread.sleep(300);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
