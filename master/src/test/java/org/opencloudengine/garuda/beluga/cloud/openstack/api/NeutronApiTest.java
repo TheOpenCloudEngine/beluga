@@ -29,7 +29,7 @@ public class NeutronApiTest {
 
 
     @Test
-    public void test1() throws IOException {
+    public void testAssociateFloatingIP() throws IOException {
         Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
         NeutronApi neutronApi = ContextBuilder.newBuilder(provider)
                 .endpoint(endpoint)
@@ -43,6 +43,8 @@ public class NeutronApiTest {
         for(FloatingIP ip : floatingIPApi.list().concat()) {
             System.out.println(ip);
         }
+
+//        floatingIPApi.
 
         Closeables.close(neutronApi, true);
     }

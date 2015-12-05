@@ -10,7 +10,7 @@ public class IaasSpec {
 
     private int cpu;
     private int memory;
-    private int disk;
+    private int ephemeralDisk;
 
     public static final String EC2_TYPE = "ec2";
     public static final String OPENSTACK_TYPE = "openstack";
@@ -27,6 +27,7 @@ public class IaasSpec {
         awsMap.put("t2.medium", new IaasSpec(2, 4, 0));
         awsMap.put("t2.large", new IaasSpec(2, 8, 0));
 
+        openstackMap.put("m1.micro", new IaasSpec(1, 1, 0));
         openstackMap.put("m1.small", new IaasSpec(1, 2, 0));
         openstackMap.put("m1.medium", new IaasSpec(2, 4, 0));
         openstackMap.put("m1.large", new IaasSpec(4, 8, 0));
@@ -40,10 +41,10 @@ public class IaasSpec {
         return map.get(instanceType);
     }
 
-    public IaasSpec(int cpu, int memory, int disk) {
+    public IaasSpec(int cpu, int memory, int ephemeralDisk) {
         this.cpu = cpu;
         this.memory = memory;
-        this.disk = disk;
+        this.ephemeralDisk = ephemeralDisk;
     }
 
     public int getCpu() {
@@ -54,12 +55,12 @@ public class IaasSpec {
         return memory;
     }
 
-    public int getDisk() {
-        return disk;
+    public int getEphemeralDisk() {
+        return ephemeralDisk;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " cpu[" + cpu + "] memory[" + memory + " GB] disk[" + disk + " GB]";
+        return getClass().getSimpleName() + " cpu[" + cpu + "] memory[" + memory + " GB] ephemeralDisk[" + ephemeralDisk + " GB]";
     }
 }

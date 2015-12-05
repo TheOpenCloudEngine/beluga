@@ -75,7 +75,6 @@ public class OpenstackIaas implements Iaas {
         ///TODO 정보받아온다.
 
 
-
         closeApi(novaApi);
 
         return newInstances;
