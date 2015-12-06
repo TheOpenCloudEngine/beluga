@@ -4,15 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Closeables;
 import com.google.inject.Module;
 import org.jclouds.ContextBuilder;
-import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.cinder.v1.CinderApi;
 import org.jclouds.openstack.keystone.v2_0.KeystoneApi;
 import org.jclouds.openstack.neutron.v2.NeutronApi;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -25,6 +27,9 @@ import java.util.Properties;
  * Created by swsong on 2015. 8. 4..
  */
 public class OpenstackIaas implements Iaas {
+
+    private static final Logger logger = LoggerFactory.getLogger(OpenstackIaas.class);
+
     private String endpoint;
     private String accessKey;
     private String secretKey;
@@ -72,12 +77,40 @@ public class OpenstackIaas implements Iaas {
 
         }
 
-        ///TODO 정보받아온다.
+        List<CommonInstance> newList = new ArrayList<>();
+        for(CommonInstance i : newInstances) {
+            String serverId = i.getInstanceId();
 
+            boolean isFail = false;
+            Server.Status status = Server.Status.BUILD;
+            Server server = null;
+            while (status != Server.Status.ACTIVE) {
+                server = serverApi.get(serverId);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+                status = server.getStatus();
+                if (status.ordinal() > Server.Status.BUILD.ordinal()) {
+                    //문제발생.
+                    isFail = true;
+                    break;
+                }
+            }
+
+            if (isFail) {
+                logger.error("Server launch Failed! :-( >> {}", server);
+            } else {
+                CommonInstance instance = new CommonInstance(server);
+                logger.info("Server is Active now! :-) >> {}", instance);
+                newList.add(instance);
+            }
+        }
 
         closeApi(novaApi);
 
-        return newInstances;
+        return newList;
     }
 
     @Override

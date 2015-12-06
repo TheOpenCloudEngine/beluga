@@ -38,13 +38,21 @@ $ ./add_insecure_registry.sh <Management 아이피>
 
 `conf/iaas.profile.conf` 에 `accessKey`, `credentialKey`, `endPoint` 를 입력한다.
 
-예)
+예1)AWS
 
 ```
 ec2-ap.accessKey=AAAAIAT4ZAAAAH4BBBBA
 ec2-ap.credentialKey=wwww7DDDDDDamMNNJJJJJJJ7paksldjflajsfowfwh
 ec2-ap.endPoint=ec2.ap-northeast-1.amazonaws.com
 ```
+
+예2)Openstack
+```
+openstack1.accessKey=demo:demo
+openstack1.credentialKey=demopass
+openstack1.endPoint=http://10.0.1.11:5000/v2.0
+```
+
 
 3 . define설정파일에 keyPair을 설정한다.
 
@@ -58,6 +66,13 @@ keyPairFile=/home/ubuntu/beluga-aws.pem
 ```
 
 $ chmod 400 /home/ubuntu/beluga-aws.pem
+
+4 . hosts 파일. (Optional)
+
+오픈스택을 설치시 설정파일에 controller의 IP 주소대신 `controller`라는 이름을 넣었다면 Beluga에서 접근시 `controller`라는 이름으로 접근하게 된다. 그러므로 `/etc/hosts`파일에 아래 항목을 추가한다.
+```
+10.0.1.11  controller
+```
 
 ## 서비스시작/종료
 
