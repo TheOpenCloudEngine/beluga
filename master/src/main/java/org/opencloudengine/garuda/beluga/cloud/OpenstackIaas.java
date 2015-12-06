@@ -50,8 +50,7 @@ public class OpenstackIaas implements Iaas {
 
     @Override
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
-        List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
-
+        List<String> ids = new ArrayList<>();
         String clusterId = request.getClusterId();
         String region = request.getRegion();
         String imageRef = request.getImageId();
@@ -72,14 +71,12 @@ public class OpenstackIaas implements Iaas {
                 tagName = String.format("%s/%s", clusterId, name);
             }
             ServerCreated serverCreated = serverApi.create(tagName, imageRef, flavorRef, options);
-            System.out.println(serverCreated);
-            newInstances.add(new CommonInstance(serverCreated));
+            logger.debug("{}", serverCreated);
+            ids.add(serverCreated.getId());
 
         }
-
-        List<CommonInstance> newList = new ArrayList<>();
-        for(CommonInstance i : newInstances) {
-            String serverId = i.getInstanceId();
+        List<CommonInstance> newInstances = new ArrayList<>();
+        for(String serverId : ids) {
 
             boolean isFail = false;
             Server.Status status = Server.Status.BUILD;
@@ -104,13 +101,13 @@ public class OpenstackIaas implements Iaas {
             } else {
                 CommonInstance instance = new CommonInstance(server);
                 logger.info("Server is Active now! :-) >> {}", instance);
-                newList.add(instance);
+                newInstances.add(instance);
             }
         }
 
         closeApi(novaApi);
 
-        return newList;
+        return newInstances;
     }
 
     @Override
