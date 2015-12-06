@@ -3,8 +3,12 @@ package org.opencloudengine.garuda.beluga.cloud;
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
+import com.google.common.collect.Multimap;
+import org.jclouds.openstack.nova.v2_0.domain.Address;
+import org.jclouds.openstack.nova.v2_0.domain.Server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,6 +56,26 @@ public class CommonInstance {
             for(GroupIdentifier id : i.getSecurityGroups()) {
                 groupList.add(id.getGroupName());
             }
+        } else if(instance instanceof Server) {
+            Server s = (Server) instance;
+            instanceId = s.getId();
+            name = s.getName();
+            Multimap<String, Address> addressMultimap = s.getAddresses();
+            Collection<Address> addressCollection = addressMultimap.values();
+            if(addressCollection.size() > 0) {
+                privateIpAddress = addressCollection.iterator().next().getAddr();
+                //FIXME
+                // floating ip 를 연결해준다
+                publicIpAddress = privateIpAddress;
+            }
+            state = s.getStatus().value();
+
+            instanceType = s.getFlavor().getId();
+            iaasSpec = IaasSpec.getSpec(IaasSpec.OPENSTACK_TYPE, instanceType);
+            groupList = new ArrayList<>();
+            //FIXME
+            // 실제 그룹을 넣어준다.
+            groupList.add("default");
         }
         this.instance = instance;
     }

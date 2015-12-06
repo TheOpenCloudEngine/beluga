@@ -12,6 +12,7 @@
 
     <properties>
         <jclouds.version>1.9.0</jclouds.version>
+        <openstack.version>1.9.1</openstack.version>
         <aws.version>1.9.39</aws.version>
     </properties>
 
@@ -119,11 +120,25 @@
             <artifactId>aws-java-sdk-ec2</artifactId>
             <version>${aws.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-all</artifactId>
-            <version>${jclouds.version}</version>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>openstack-nova</artifactId>
+            <version>${openstack.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.labs</groupId>
+            <artifactId>openstack-neutron</artifactId>
+            <version>${openstack.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>openstack-cinder</artifactId>
+            <version>${openstack.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>openstack-keystone</artifactId>
+            <version>${openstack.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>

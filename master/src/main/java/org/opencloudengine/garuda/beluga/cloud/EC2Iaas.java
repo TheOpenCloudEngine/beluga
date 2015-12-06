@@ -33,7 +33,7 @@ public class EC2Iaas implements Iaas {
     }
 
     @Override
-    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale) {
+    public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
         List<CommonInstance> newInstances = new ArrayList<CommonInstance>();
 
         String clusterId = request.getClusterId();
@@ -62,12 +62,11 @@ public class EC2Iaas implements Iaas {
                 } catch (InterruptedException ignore) {
                 }
 
-                int idx = 1;
                 for (Instance instance : runInstancesResult.getReservation().getInstances()) {
                     CreateTagsRequest createTagsRequest = new CreateTagsRequest();
                     String tagName = null;
-                    if (scale > 1) {
-                        tagName = String.format("%s/%s-%d", clusterId, name, idx);
+                    if (startIndex > 1) {
+                        tagName = String.format("%s/%s-%d", clusterId, name, startIndex);
                     } else {
                         tagName = String.format("%s/%s", clusterId, name);
                     }
@@ -75,7 +74,7 @@ public class EC2Iaas implements Iaas {
                     createTagsRequest.withResources(instance.getInstanceId()).withTags(new Tag("Name", tagName));
                     client.createTags(createTagsRequest);
                     newInstances.add(new CommonInstance(instance));
-                    idx++;
+                    startIndex++;
                 }
             }
         }

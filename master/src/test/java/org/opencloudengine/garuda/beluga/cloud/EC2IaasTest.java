@@ -14,9 +14,9 @@ import java.util.Properties;
 /**
  * Created by swsong on 2015. 7. 22..
  */
-public class IaasTest {
+public class EC2IaasTest {
 
-    private static Logger logger = LoggerFactory.getLogger(IaasTest.class);
+    private static Logger logger = LoggerFactory.getLogger(EC2IaasTest.class);
     String accessKey;
     String secretKey;
 
@@ -37,9 +37,9 @@ public class IaasTest {
 
     @Test
     public void testEC2Launch() {
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, null ,null);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
-        List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
+        List<CommonInstance> list = iaas.launchInstance(request, "sang", 2, 1);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
             logger.debug("-- {}", i.as(Instance.class));
@@ -54,9 +54,9 @@ public class IaasTest {
     public void testEC2LaunchByCustomAMI() {
         String imageId = "ami-ba1fa3ba";
         int volumeSize = 10;
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, null ,null);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
-        List<CommonInstance> list = iaas.launchInstance(request, "slave", 1);
+        List<CommonInstance> list = iaas.launchInstance(request, "slave", 1, 1);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
             logger.debug("-- {}", i.as(Instance.class));
@@ -69,9 +69,9 @@ public class IaasTest {
 
     @Test
     public void testEC2LaunchDescribeTerminate() {
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, null ,null);
         EC2Iaas iaas = new EC2Iaas(endPoint, accessKey, secretKey, null);
-        List<CommonInstance> list = iaas.launchInstance(request, "sang", 2);
+        List<CommonInstance> list = iaas.launchInstance(request, "sang", 2, 1);
         for(CommonInstance i : list) {
             logger.debug("- {}", i.getInstanceId());
             logger.debug("-- {}", i.as(Instance.class));

@@ -15,9 +15,12 @@ import org.opencloudengine.garuda.beluga.service.ServiceException;
 import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
 import org.opencloudengine.garuda.beluga.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.beluga.utils.SshInfo;
+import org.opencloudengine.garuda.beluga.watcher.AutoScaleRule;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
 * Created by swsong on 2015. 7. 20..
@@ -38,6 +41,8 @@ public class ClusterService extends AbstractClusterService {
     private DeploymentsCheckWorker deploymentsCheckWorker;
 
     private String domainName;
+    private Set<String> runningAppIdSet;
+    private AutoScaleRule autoScaleRule;
 
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
@@ -77,8 +82,6 @@ public class ClusterService extends AbstractClusterService {
 
             //configure Mesos with new IP
             String definitionId = clusterTopology.getDefinitionId();
-//            mesosAPI.configureMesosMasterInstances(definitionId);
-//            mesosAPI.configureMesosSlaveInstances(definitionId);
 
             //TODO 다시 store to topology...
 
@@ -166,8 +169,8 @@ public class ClusterService extends AbstractClusterService {
                 String role = roleDefinition.getRole();
                 int size = roleDefinition.getDefaultSize();
                 InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
-                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair);
-                List<CommonInstance> instanceList = iaas.launchInstance(request, role, size);
+                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks(), roleDefinition.getRegion());
+                List<CommonInstance> instanceList = iaas.launchInstance(request, role, size, 1);
 
                 for (CommonInstance instance : instanceList) {
                     //토폴로지에 넣어준다.
@@ -190,6 +193,67 @@ public class ClusterService extends AbstractClusterService {
             iaas.updateInstancesInfo(list);
         }
         this.clusterTopology = clusterTopology;
+    }
+
+    public List<CommonInstance> addSlaveNode(int incrementSize) throws BelugaException {
+        String SLAVE_ROLE = "mesos-slave";
+        SettingManager settingManager = environment.settingManager();
+        String definitionId = clusterTopology.getDefinitionId();
+        ClusterDefinition clusterDefinition = settingManager.getClusterDefinition(definitionId);
+        String iaasProfile = clusterDefinition.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = null;
+        int startIndex = clusterTopology.getMesosSlaveList().size() + 1;
+        List<CommonInstance> instanceList = null;
+        try {
+            iaas = iaasProvider.getIaas();
+            List<ClusterDefinition.RoleDefinition> roleDefinitions = clusterDefinition.getRoleList();
+            String keyPair = clusterDefinition.getKeyPair();
+            ClusterDefinition.RoleDefinition roleDefinition = null;
+            for (ClusterDefinition.RoleDefinition definition : roleDefinitions) {
+                if (definition.getRole().equalsIgnoreCase(SLAVE_ROLE)) {
+                    roleDefinition = definition;
+                    break;
+                }
+            }
+
+            InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
+                    , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks(), roleDefinition.getRegion());
+            instanceList = iaas.launchInstance(request, SLAVE_ROLE, incrementSize, startIndex);
+            for (CommonInstance instance : instanceList) {
+                //토폴로지에 넣어준다.
+                clusterTopology.addNode(SLAVE_ROLE, instance);
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+            throw new BelugaException(e);
+        } finally {
+            iaas.close();
+        }
+
+        //Wait until available
+        iaas.waitUntilInstancesRunning(instanceList);
+        //Fetch latest instance information
+        iaas.updateInstancesInfo(instanceList);
+
+        storeClusterTopologyConfig();
+        return instanceList;
+    }
+
+    public CommonInstance removeSlaveNode(String instanceId) throws BelugaException, UnknownIaasProviderException {
+        List<CommonInstance> list = clusterTopology.getMesosSlaveList();
+        List<String> instanceIdList = new ArrayList<>();
+        CommonInstance obj = null;
+        for(CommonInstance instance : list) {
+            if(instance.getInstanceId().equalsIgnoreCase(instanceId)) {
+                instanceIdList.add(instanceId);
+                obj = instance;
+            }
+        }
+        list.remove(obj);
+        terminateInstance(instanceIdList);
+        storeClusterTopologyConfig();
+        return obj;
     }
 
     private void startInstances() throws UnknownIaasProviderException {
@@ -279,6 +343,27 @@ public class ClusterService extends AbstractClusterService {
         }
     }
 
+    //특정 인스턴스만 재부팅한다.
+    public void rebootInstances(List<CommonInstance> instanceList, boolean waitUntilInstanceAvailable) throws UnknownIaasProviderException, InvalidRoleException {
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+        Iaas iaas = iaasProvider.getIaas();
+        try {
+            iaas.rebootInstances(IaasUtils.getIdList(instanceList));
+            sleep(5);
+            if(waitUntilInstanceAvailable) {
+                //Wait until available
+                iaas.waitUntilInstancesRunning(instanceList);
+                //Fetch latest instance information
+                iaas.updateInstancesInfo(instanceList);
+            }
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
+
     protected void terminateInstances() throws UnknownIaasProviderException {
         if(clusterTopology == null) {
             return;
@@ -290,6 +375,24 @@ public class ClusterService extends AbstractClusterService {
         Iaas iaas = iaasProvider.getIaas();
         try {
             iaas.terminateInstances(IaasUtils.getIdList(clusterTopology.getAllNodeList()));
+        } finally {
+            if(iaas != null) {
+                iaas.close();
+            }
+        }
+    }
+
+    protected void terminateInstance(List<String> instanceIdList) throws UnknownIaasProviderException {
+        if(clusterTopology == null) {
+            return;
+        }
+        String iaasProfile = clusterTopology.getIaasProfile();
+        IaasProvider iaasProvider = iaasProviderConfig.getIaasProvider(iaasProfile);
+
+        //clusterTopology 내에 해당하는 살아있는 모든 노드 삭제.
+        Iaas iaas = iaasProvider.getIaas();
+        try {
+            iaas.terminateInstances(instanceIdList);
         } finally {
             if(iaas != null) {
                 iaas.close();
@@ -399,6 +502,37 @@ public class ClusterService extends AbstractClusterService {
 
     public DockerAPI getDockerAPI() {
         return dockerAPI;
+    }
+
+    public Set<String> getRunningAppIdSet() {
+
+
+        //TODO 파일로 기록하고 로드할 수 있도록 구현.
+
+        // 클러스터별 appId와 auto scale 설정을 xml 또는 json 파일로 기록해서 가지고 있도록 한다.
+        // 시작할때 로딩..
+
+
+        return runningAppIdSet;
+    }
+
+    public AutoScaleRule getAutoScaleRule() {
+
+        //TODO 구현.
+
+
+        //
+
+
+
+
+
+
+
+
+
+
+        return autoScaleRule;
     }
 
     class ProxyUpdateWorker extends Thread {

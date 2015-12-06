@@ -69,8 +69,8 @@ public class MarathonAPI {
 
     public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, getDefaultUpgradeStrategy());
-
         WebTarget target = getWebTarget(API_PATH_APPS);
+        logger.info("{} {}", target.getUri(), toJson(appRequest));
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
@@ -188,6 +188,6 @@ public class MarathonAPI {
     * */
     public Response requestDeleteAPI(String path) {
         WebTarget target = getWebTarget(API_PATH_VERSION + path);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).delete();
+        return target.queryParam("force", "true").request(MediaType.APPLICATION_JSON_TYPE).delete();
     }
 }

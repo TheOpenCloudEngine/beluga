@@ -132,7 +132,9 @@ public class ClusterDefinition extends PropertyConfig {
             int diskSize = diskSize(p, role);
             String group = groupId(p, role);
             int defaultSize = defaultSize(p, role);
-            RoleDefinition roleDef = new RoleDefinition(role, imageId, instanceType, diskSize, group, defaultSize);
+            String[] networks = networks(p, role);
+            String region = region(p, role);
+            RoleDefinition roleDef = new RoleDefinition(role, imageId, instanceType, diskSize, group, defaultSize, networks, region);
             roleList.add(roleDef);
         }
 
@@ -177,6 +179,20 @@ public class ClusterDefinition extends PropertyConfig {
         return Integer.parseInt(value);
     }
 
+    private String[] networks(Properties p, String role) {
+        String key = String.format("%s.networks", role);
+        String value = p.getProperty(key);
+        if(value != null) {
+            return value.split(",");
+        }
+        return new String[0];
+    }
+
+    private String region(Properties p, String role) {
+        return p.getProperty(String.format("%s.region", role));
+    }
+
+
     public static class Group {
         private String name;
         private int[] inboundPortList;
@@ -202,14 +218,19 @@ public class ClusterDefinition extends PropertyConfig {
         private int diskSize;
         private String group;
         private int defaultSize;
+        private String[] networks;
+        private String region;
 
-        public RoleDefinition(String role, String imageId, String instanceType, int diskSize, String group, int defaultSize) {
+        public RoleDefinition(String role, String imageId, String instanceType, int diskSize, String group
+                , int defaultSize, String[] networks, String region) {
             this.role = role;
             this.imageId = imageId;
             this.instanceType = instanceType;
             this.diskSize = diskSize;
             this.group = group;
             this.defaultSize = defaultSize;
+            this.networks = networks;
+            this.region = region;
         }
 
         public String getRole() {
@@ -242,6 +263,14 @@ public class ClusterDefinition extends PropertyConfig {
 
         public void setIaasSpec(IaasSpec iaasSpec) {
             this.iaasSpec = iaasSpec;
+        }
+
+        public String[] getNetworks() {
+            return networks;
+        }
+
+        public String getRegion() {
+            return region;
         }
     }
 }

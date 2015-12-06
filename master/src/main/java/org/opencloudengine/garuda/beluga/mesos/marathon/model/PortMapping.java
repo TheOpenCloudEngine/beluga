@@ -18,11 +18,11 @@ public class PortMapping {
     @JsonProperty("containerPort")
     private Integer containerPort;
     @JsonProperty("hostPort")
-    private Integer hostPort;
+    private Integer hostPort = 0;
     @JsonProperty("servicePort")
-    private Integer servicePort;
+    private Integer servicePort = 0;
     @JsonProperty("protocol")
-    private String protocol;
+    private String protocol = "tcp";
 
     /**
      * 

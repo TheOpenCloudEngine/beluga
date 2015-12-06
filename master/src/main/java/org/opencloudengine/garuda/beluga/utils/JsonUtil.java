@@ -1,6 +1,7 @@
 package org.opencloudengine.garuda.beluga.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -29,5 +30,10 @@ public class JsonUtil {
         ObjectMapper mapper = new ObjectMapper();
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return mapper.writer(sdf).writeValueAsString(object);
+    }
+
+    public static JsonNode toJsonNode(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(json);
     }
 }
