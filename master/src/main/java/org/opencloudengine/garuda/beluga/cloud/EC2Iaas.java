@@ -154,7 +154,7 @@ public class EC2Iaas implements Iaas {
                 List<Instance> instances = reservation.getInstances();
                 for(Instance instance : instances) {
                     InstanceState state = instance.getState();
-                    logger.debug("Instance status [{}] {}/{}/{}", instance.getInstanceId(), state.getName(), state.getCode(), instance.getStateReason());
+                    logger.debug("Check Instance status [{}] {}/{}/{}", instance.getInstanceId(), state.getName(), state.getCode(), instance.getStateReason());
                     //완료되지 않았고, 실행중으로 변했다면.
                     if (!statusSet.get(i) && state.getCode() == stateCode) {
                         statusSet.set(i);

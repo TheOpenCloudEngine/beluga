@@ -34,6 +34,7 @@ public class IaasProviderConfig extends PropertyConfig {
                 String accessKey = getAttribute(p, profile, "accessKey");
                 String credentialKey = getAttribute(p, profile, "credentialKey");
                 String endPoint = getAttribute(p, profile, "endPoint");
+                String region = getAttribute(p, profile, "region");
                 Properties overrides = new Properties();
                 for(String key : OVERRIDES_PARAMS) {
                     String value = getAttribute(p, profile, key);
@@ -41,7 +42,7 @@ public class IaasProviderConfig extends PropertyConfig {
                         overrides.put(key, value);
                     }
                 }
-                IaasProvider iaasProvider = new IaasProvider(provider, name, accessKey, credentialKey, endPoint, overrides);
+                IaasProvider iaasProvider = new IaasProvider(provider, name, accessKey, credentialKey, endPoint, region, overrides);
                 logger.debug("{}", iaasProvider);
                 profileMap.put(profile, iaasProvider);
             }

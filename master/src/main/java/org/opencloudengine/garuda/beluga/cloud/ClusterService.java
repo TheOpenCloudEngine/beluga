@@ -169,7 +169,7 @@ public class ClusterService extends AbstractClusterService {
                 String role = roleDefinition.getRole();
                 int size = roleDefinition.getDefaultSize();
                 InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
-                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks(), roleDefinition.getRegion());
+                        , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks());
                 List<CommonInstance> instanceList = iaas.launchInstance(request, role, size, 1);
 
                 for (CommonInstance instance : instanceList) {
@@ -218,7 +218,7 @@ public class ClusterService extends AbstractClusterService {
             }
 
             InstanceRequest request = new InstanceRequest(clusterId, roleDefinition.getInstanceType(), roleDefinition.getImageId()
-                    , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks(), roleDefinition.getRegion());
+                    , roleDefinition.getDiskSize(), roleDefinition.getGroup(), keyPair, roleDefinition.getNetworks());
             instanceList = iaas.launchInstance(request, SLAVE_ROLE, incrementSize, startIndex);
             for (CommonInstance instance : instanceList) {
                 //토폴로지에 넣어준다.

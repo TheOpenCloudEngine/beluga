@@ -133,8 +133,7 @@ public class ClusterDefinition extends PropertyConfig {
             String group = groupId(p, role);
             int defaultSize = defaultSize(p, role);
             String[] networks = networks(p, role);
-            String region = region(p, role);
-            RoleDefinition roleDef = new RoleDefinition(role, imageId, instanceType, diskSize, group, defaultSize, networks, region);
+            RoleDefinition roleDef = new RoleDefinition(role, imageId, instanceType, diskSize, group, defaultSize, networks);
             roleList.add(roleDef);
         }
 
@@ -219,10 +218,9 @@ public class ClusterDefinition extends PropertyConfig {
         private String group;
         private int defaultSize;
         private String[] networks;
-        private String region;
 
         public RoleDefinition(String role, String imageId, String instanceType, int diskSize, String group
-                , int defaultSize, String[] networks, String region) {
+                , int defaultSize, String[] networks) {
             this.role = role;
             this.imageId = imageId;
             this.instanceType = instanceType;
@@ -230,7 +228,6 @@ public class ClusterDefinition extends PropertyConfig {
             this.group = group;
             this.defaultSize = defaultSize;
             this.networks = networks;
-            this.region = region;
         }
 
         public String getRole() {
@@ -269,8 +266,5 @@ public class ClusterDefinition extends PropertyConfig {
             return networks;
         }
 
-        public String getRegion() {
-            return region;
-        }
     }
 }

@@ -15,10 +15,9 @@ public class InstanceRequest {
     private Set<String> groups;
     private String keyPair;
     private String[] networks;
-    private String region;
 
     public InstanceRequest(String clusterId, String instanceType, String imageId, int volumeSize, String group
-            , String keyPair, String[] networks, String region) {
+            , String keyPair, String[] networks) {
         this.clusterId = clusterId;
         this.instanceType = instanceType;
         this.imageId = imageId;
@@ -27,7 +26,6 @@ public class InstanceRequest {
         groups.add(group);
         this.keyPair = keyPair;
         this.networks = networks;
-        this.region = region;
     }
 
     public String getClusterId() {
@@ -76,14 +74,6 @@ public class InstanceRequest {
 
     public void setKeyPair(String keyPair) {
         this.keyPair = keyPair;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
     }
 
     public String[] getNetworks() {

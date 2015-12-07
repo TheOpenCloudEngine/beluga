@@ -1,5 +1,8 @@
 package org.opencloudengine.garuda.beluga.cloud;
 
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceState;
+import com.amazonaws.services.ec2.model.Reservation;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Closeables;
 import com.google.inject.Module;
@@ -9,6 +12,7 @@ import org.jclouds.openstack.cinder.v1.CinderApi;
 import org.jclouds.openstack.keystone.v2_0.KeystoneApi;
 import org.jclouds.openstack.neutron.v2.NeutronApi;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.domain.RebootType;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
@@ -18,10 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by swsong on 2015. 8. 4..
@@ -52,7 +53,6 @@ public class OpenstackIaas implements Iaas {
     public List<CommonInstance> launchInstance(InstanceRequest request, String name, int scale, int startIndex) {
         List<String> ids = new ArrayList<>();
         String clusterId = request.getClusterId();
-        String region = request.getRegion();
         String imageRef = request.getImageId();
         String flavorRef = request.getInstanceType();
         String[] securityGroups = request.getGroups().toArray(new String[0]);
@@ -61,6 +61,7 @@ public class OpenstackIaas implements Iaas {
         CreateServerOptions options = new CreateServerOptions().securityGroupNames(securityGroups).keyPairName(keyPair).networks(networks);
 
         NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
         ServerApi serverApi = novaApi.getServerApi(region);
         int index = startIndex;
         for(int i = 0; i < scale; i++, index++){
@@ -75,14 +76,18 @@ public class OpenstackIaas implements Iaas {
             ids.add(serverCreated.getId());
 
         }
+
+        /*
+        * Active 상태가 될때까지 대기한다
+        * */
         List<CommonInstance> newInstances = new ArrayList<>();
-        for(String serverId : ids) {
+        for(String instanceId : ids) {
 
             boolean isFail = false;
             Server.Status status = Server.Status.BUILD;
             Server server = null;
             while (status != Server.Status.ACTIVE) {
-                server = serverApi.get(serverId);
+                server = serverApi.get(instanceId);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -117,44 +122,126 @@ public class OpenstackIaas implements Iaas {
 
     @Override
     public void updateInstancesInfo(List<CommonInstance> instanceList) {
-
-    }
-
-    @Override
-    public List<CommonInstance> getInstances(Collection<String> instanceList) {
-        return null;
-    }
-
-    @Override
-    public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList) {
         NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(CommonInstance instance : instanceList) {
 
+            String instanceId = instance.getInstanceId();
+            Server server = serverApi.get(instanceId);
+            if(server.getStatus() != Server.Status.ACTIVE) {
+                //TODO
+            }
+            instance.update(server);
+        }
         closeApi(novaApi);
     }
 
     @Override
+    public List<CommonInstance> getInstances(Collection<String> instanceList) {
+        List<CommonInstance> newInstances = new ArrayList<>();
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(String instanceId : instanceList) {
+            Server server = serverApi.get(instanceId);
+            if(server.getStatus() != Server.Status.ACTIVE) {
+                //TODO
+            }
+            newInstances.add(new CommonInstance(server));
+        }
+        closeApi(novaApi);
+        return newInstances;
+    }
+
+    @Override
+    public void waitUntilInstancesRunning(Collection<CommonInstance> instanceList) {
+        waitUntilInstancesState(instanceList, Server.Status.ACTIVE);
+    }
+
+    @Override
     public void waitUntilInstancesStopped(Collection<CommonInstance> instanceList) {
+        waitUntilInstancesState(instanceList, Server.Status.SHUTOFF);
+    }
+
+    private void waitUntilInstancesState(Collection<CommonInstance> instanceList, Server.Status stateCode) {
+        int size = instanceList.size();
+        BitSet statusSet = new BitSet(size);
+
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+
+        while(true) {
+
+            int i = 0;
+            for(CommonInstance instance : instanceList) {
+                Server server = serverApi.get(instance.getInstanceId());
+                Server.Status status = server.getStatus();
+                logger.debug("Check Instance status [{}] {}/{}", instance.getInstanceId(), instance.getName(), status);
+                //완료되지 않았고, 실행중으로 변했다면.
+                if (status == stateCode) {
+                    statusSet.set(i);
+                }
+                i++;
+            }
+
+            if(statusSet.cardinality() < size) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+            } else {
+                break;
+            }
+        }
+
+        closeApi(novaApi);
 
     }
 
     @Override
     public void terminateInstances(Collection<String> instanceIdList) {
-
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(String instanceId : instanceIdList) {
+            serverApi.delete(instanceId);
+        }
+        closeApi(novaApi);
     }
 
     @Override
     public void stopInstances(Collection<String> instanceIdList) {
-
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(String instanceId : instanceIdList) {
+            serverApi.stop(instanceId);
+        }
+        closeApi(novaApi);
     }
 
     @Override
     public void startInstances(Collection<String> instanceIdList) {
-
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(String instanceId : instanceIdList) {
+            serverApi.start(instanceId);
+        }
+        closeApi(novaApi);
     }
 
     @Override
     public void rebootInstances(Collection<String> instanceIdList) {
-
+        NovaApi novaApi = openNovaApi();
+        String region = novaApi.getConfiguredRegions().iterator().next();
+        ServerApi serverApi = novaApi.getServerApi(region);
+        for(String instanceId : instanceIdList) {
+            serverApi.reboot(instanceId, RebootType.HARD);
+        }
+        closeApi(novaApi);
     }
 
     @Override

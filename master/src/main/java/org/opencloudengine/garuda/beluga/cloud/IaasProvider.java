@@ -16,17 +16,19 @@ public class IaasProvider {
     private String identity;
     private String credential;
     private String endPoint;
+    private String region;
     private Properties overrides;
 
-    public IaasProvider(String type, String name, String identity, String credential, String endPoint) {
-        this(type, name, identity, credential, endPoint, new Properties());
+    public IaasProvider(String type, String name, String identity, String credential, String region, String endPoint) {
+        this(type, name, identity, credential, endPoint, region, new Properties());
     }
-    public IaasProvider(String type, String name, String identity, String credential, String endPoint, Properties overrides) {
+    public IaasProvider(String type, String name, String identity, String credential, String endPoint, String region, Properties overrides) {
         this.type = type;
         this.name = name;
         this.identity = identity;
         this.credential = credential;
         this.endPoint = endPoint;
+        this.region = region;
         this.overrides = overrides;
     }
 
@@ -68,6 +70,14 @@ public class IaasProvider {
 
     public void setEndPoint(String endPoint) {
         this.endPoint = endPoint;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public Properties getOverrides() {

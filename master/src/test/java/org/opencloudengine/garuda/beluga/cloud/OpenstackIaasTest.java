@@ -28,13 +28,12 @@ public class OpenstackIaasTest {
     String group = "default";
     String keyPair = "beluga-openstack";
     String[] networks = new String[] {"ff2e5579-2cfa-4a67-832f-4fc2a6085de9"};
-    String region = "RegionOne";
     String nodeName = "ndoe";
 
     @Test
     public void testLaunch() {
 
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks ,region);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks);
         OpenstackIaas iaas = new OpenstackIaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, nodeName, 2, 1);
         for(CommonInstance i : list) {
@@ -50,7 +49,7 @@ public class OpenstackIaasTest {
     @Test
     public void testLaunchByCustomAMI() {
         int volumeSize = 10;
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks ,region);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks);
         OpenstackIaas iaas = new OpenstackIaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, nodeName, 1, 1);
         for(CommonInstance i : list) {
@@ -65,7 +64,7 @@ public class OpenstackIaasTest {
 
     @Test
     public void testLaunchDescribeTerminate() {
-        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks ,region);
+        InstanceRequest request = new InstanceRequest(clusterId, instanceType, imageId, volumeSize, group, keyPair, networks);
         OpenstackIaas iaas = new OpenstackIaas(endPoint, accessKey, secretKey, null);
         List<CommonInstance> list = iaas.launchInstance(request, nodeName, 2, 1);
         for(CommonInstance i : list) {

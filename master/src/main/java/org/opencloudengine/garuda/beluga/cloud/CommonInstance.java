@@ -22,6 +22,7 @@ public class CommonInstance {
     private String privateIpAddress;
     private String state;
     private Object instance;
+    private String region;
 
     private String instanceType;
     private List<String> groupList;
@@ -69,7 +70,6 @@ public class CommonInstance {
                 publicIpAddress = privateIpAddress;
             }
             state = s.getStatus().value();
-
             instanceType = s.getFlavor().getId();
             iaasSpec = IaasSpec.getSpec(IaasSpec.OPENSTACK_TYPE, instanceType);
             groupList = new ArrayList<>();

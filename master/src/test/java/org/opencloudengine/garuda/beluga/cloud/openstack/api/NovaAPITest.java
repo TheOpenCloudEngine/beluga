@@ -67,11 +67,11 @@ public class NovaApiTest {
                 .modules(modules)
                 .buildApi(NovaApi.class);
 
-        String region = "RegionOne";
+        String region = novaApi.getConfiguredRegions().iterator().next();
         ServerApi serverApi = novaApi.getServerApi(region);
         String serverName = "test-" + System.currentTimeMillis();
         String imageRef = "44c83f44-f95d-41f1-9d14-06639de892fa";//ubuntu14_04_3
-        String flavorRef = "3b22b597-1422-466c-8428-d88e6cc35840"; //m1.micro 1G
+        String flavorRef = "2";
         String securityGroup = "default";
         String keyPair = "beluga-openstack";
         String network = "ff2e5579-2cfa-4a67-832f-4fc2a6085de9";//demo-net
@@ -113,4 +113,17 @@ public class NovaApiTest {
     }
 
 
-}
+    @Test
+    public void testRegion() throws IOException {
+        Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
+
+        NovaApi novaApi = ContextBuilder.newBuilder(provider)
+                .endpoint(endpoint)
+                .credentials(identity, password)
+                .modules(modules)
+                .buildApi(NovaApi.class);
+
+        System.out.println(novaApi.getConfiguredRegions());
+    }
+
+    }
