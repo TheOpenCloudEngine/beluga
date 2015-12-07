@@ -40,6 +40,8 @@ echo "mesos-master" | sudo tee /etc/hostname
 
 echo "127.0.0.1 mesos-master" | sudo tee -a /etc/hosts
 
+sudo service hostname restart
+
 sudo service zookeeper restart
 
 sudo service mesos-master restart

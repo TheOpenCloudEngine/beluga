@@ -29,6 +29,8 @@ echo "mesos-slave" | sudo tee /etc/hostname
 
 echo "127.0.0.1 mesos-slave" | sudo tee -a /etc/hosts
 
+sudo service hostname restart
+
 sudo service zookeeper restart
 
 sudo service mesos-slave restart
