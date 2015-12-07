@@ -563,7 +563,9 @@ public class ClusterService extends AbstractClusterService {
             logger.info("Start DeploymentsCheckWorker.");
             while (!this.isInterrupted()) {
                 try {
-                    haProxyAPI.checkDeploymentsAndApply();
+                    if(haProxyAPI != null) {
+                        haProxyAPI.checkDeploymentsAndApply();
+                    }
                 } catch (Exception e) {
                     logger.error("", e);
                 }
