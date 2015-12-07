@@ -545,7 +545,9 @@ public class ClusterService extends AbstractClusterService {
             logger.info("Start ProxyUpdateWorker.");
             while (!this.isInterrupted()) {
                 try {
-                    haProxyAPI.applyProxyConfig(sshInfo);
+                    if(haProxyAPI != null) {
+                        haProxyAPI.applyProxyConfig(sshInfo);
+                    }
                 } catch (Exception e) {
                     logger.error("", e);
                 }
