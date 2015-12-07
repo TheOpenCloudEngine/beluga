@@ -14,7 +14,7 @@ public class SshClient {
     private static Logger logger = LoggerFactory.getLogger(SshClient.class);
     private static final String DEFAULT_WORKING_PATH = "/tmp/";
     private static final String DEFAULT_ARG_BRACE = "\"";
-    private static final int MAX_TRIES = 10;
+    private static final int MAX_TRIES = 30;
 
     private Session session;
     private int timeout;
@@ -59,7 +59,7 @@ public class SshClient {
                 }
                 logger.error("connection fail : {}", e.getMessage());
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ignore) {
                 }
                 continue;

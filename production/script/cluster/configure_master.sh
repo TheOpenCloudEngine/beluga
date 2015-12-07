@@ -36,4 +36,5 @@ until [ -z "$7" ]; do
   shift
 done
 
+#echo -e "1\n1" | sudo passwd
 

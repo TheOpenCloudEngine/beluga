@@ -24,3 +24,5 @@ echo $4 | sudo tee /etc/mesos-slave/containerizers
 
 #docker configuration
 echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5:5000\" | sudo tee -a /etc/default/docker
+
+#echo -e "1\n1" | sudo passwd
