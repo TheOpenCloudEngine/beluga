@@ -145,6 +145,9 @@ public class OpenstackIaas implements Iaas {
         ServerApi serverApi = novaApi.getServerApi(region);
         for(String instanceId : instanceList) {
             Server server = serverApi.get(instanceId);
+            if(server == null) {
+                continue;
+            }
             if(server.getStatus() != Server.Status.ACTIVE) {
                 //TODO
             }
