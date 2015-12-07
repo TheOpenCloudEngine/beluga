@@ -25,10 +25,14 @@ echo $4 | sudo tee /etc/mesos-slave/containerizers
 #docker configuration
 echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5:5000\" | sudo tee -a /etc/default/docker
 
+echo "mesos-slave" | sudo tee /etc/hostname
+
+echo "127.0.0.1 mesos-slave" | sudo tee -a /etc/hosts
+
 sudo service zookeeper restart
 
 sudo service mesos-slave restart
 
 sudo service docker restart
 
-#echo -e "1\n1" | sudo passwd
+echo -e "1\n1" | sudo passwd

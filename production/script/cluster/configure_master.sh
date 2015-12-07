@@ -36,6 +36,10 @@ until [ -z "$7" ]; do
   shift
 done
 
+echo "mesos-master" | sudo tee /etc/hostname
+
+echo "127.0.0.1 mesos-master" | sudo tee -a /etc/hosts
+
 sudo service zookeeper restart
 
 sudo service mesos-master restart
@@ -44,5 +48,5 @@ sudo service marathon restart
 
 sudo service docker restart
 
-#echo -e "1\n1" | sudo passwd
+echo -e "1\n1" | sudo passwd
 
