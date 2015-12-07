@@ -26,6 +26,7 @@ echo "mysql-server-5.6 mysql-server/root_password_again password beluga123:)" | 
 sudo apt-get install mysql-server-5.6 -y
 
 sudo sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/my.cnf
+sudo sed -i 's/\[mysqld\]/\[mysqld\]\nlower_case_table_names=1/g' /etc/mysql/my.cnf
 
 mysql -uroot -p'beluga123:)' -e 'USE mysql; UPDATE `user` SET `Host`="%" WHERE `User`="root" AND `Host`="localhost"; DELETE FROM `user` WHERE `Host` != "%" AND `User`="root"; FLUSH PRIVILEGES;'
 
