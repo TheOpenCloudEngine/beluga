@@ -36,5 +36,13 @@ until [ -z "$7" ]; do
   shift
 done
 
+sudo service zookeeper restart
+
+sudo service mesos-master restart
+
+sudo service marathon restart
+
+sudo service docker restart
+
 #echo -e "1\n1" | sudo passwd
 

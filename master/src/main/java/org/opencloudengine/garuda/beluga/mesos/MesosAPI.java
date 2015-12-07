@@ -94,13 +94,6 @@ public class MesosAPI {
                     if (masterTaskResult.isSuccess()) {
                         logger.info("{} is success.", masterTask.getName());
                     }
-
-                    //
-                    // reboot
-                    //
-                    logger.debug("Reboot mesos-master : {}", topology.getMesosMasterList());
-                    clusterService.rebootInstances(ClusterTopology.MESOS_MASTER_ROLE, true);
-                    logger.debug("Reboot mesos-master Done.");
                 }
             }
         } catch (Exception e) {
@@ -162,14 +155,6 @@ public class MesosAPI {
                 if (slaveTaskResult.isSuccess()) {
                     logger.info("{} is success.", slaveTask.getName());
                 }
-
-                //
-                // reboot
-                //
-                logger.debug("Reboot mesos-slave : {}", topology.getMesosSlaveList());
-                clusterService.rebootInstances(ClusterTopology.MESOS_SLAVE_ROLE, true);
-                logger.debug("Reboot mesos-slave Done.");
-
             }
         } catch (Exception e) {
             logger.error("", e);
@@ -232,14 +217,6 @@ public class MesosAPI {
                 if (slaveTaskResult.isSuccess()) {
                     logger.info("{} is success.", slaveTask.getName());
                 }
-
-                //
-                // reboot
-                //
-                logger.debug("Reboot mesos-slave : {}", mesosSlaveList);
-                clusterService.rebootInstances(mesosSlaveList, true);
-                logger.debug("Reboot mesos-slave Done.");
-
             }
         } catch (Exception e) {
             logger.error("", e);
