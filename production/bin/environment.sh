@@ -9,7 +9,7 @@ echo '++++++++++ Beluga Environment ++++++++++'
 heap_memory_size=768m
 java_path=
 daemon_account=beluga
-BELUGA_JAVA_OPTS="-Dbeluga.domain=fastcatsearch.com"
+BELUGA_JAVA_OPTS=""
 
 current=$(pwd)
 
