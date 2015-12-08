@@ -28,11 +28,11 @@ import java.util.Map;
 /**
  * Created by swsong on 2015. 8. 7..
  */
-@Path("/v1/clusters/{clusterId}")
+@Path("/v1/clusters/{clusterId}/apps")
 public class AppsAPI extends BaseAPI {
 
     @GET
-    @Path("/apps")
+    @Path("/")
     public Response getApps(@PathParam("clusterId") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps");
@@ -43,7 +43,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response getApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps/" + appId);
@@ -54,7 +54,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/apps/{id}/tasks")
+    @Path("/{id}/tasks")
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "/tasks");
@@ -68,7 +68,7 @@ public class AppsAPI extends BaseAPI {
      * 앱 파일을 업로드한다.
      */
     @POST
-    @Path("/apps/{id}/file")
+    @Path("/{id}/file")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
                                @FormDataParam("file") InputStream uploadedInputStream,
@@ -120,7 +120,7 @@ public class AppsAPI extends BaseAPI {
      * 전달된 설정대로 앱을 실행한다.
      */
     @POST
-    @Path("/apps")
+    @Path("/")
     public Response deployApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
         String appId = (String) data.get("id");
         String command = (String) data.get("cmd");
@@ -205,7 +205,7 @@ public class AppsAPI extends BaseAPI {
      * minimumHealthCapacity=0.5, maximumOverCapacity=0.2
      */
     @PUT
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response updateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
         String command = (String) data.get("cmd");
         if (command != null) {
@@ -369,7 +369,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @POST
-    @Path("/apps/{id}/restart")
+    @Path("/{id}/restart")
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
         // 포트가 바뀌므로, haproxy를 업데이트 한다.
@@ -386,7 +386,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @DELETE
-    @Path("/apps/{id}")
+    @Path("/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
         Response response = null;

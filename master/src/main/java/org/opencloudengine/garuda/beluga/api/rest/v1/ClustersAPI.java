@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 
-@Path("/v1")
+@Path("/v1/clusters")
 public class ClustersAPI extends BaseAPI {
 
     /**
@@ -23,7 +23,7 @@ public class ClustersAPI extends BaseAPI {
      * await (optional) : boolean. wait until action task is completed.
      */
     @POST
-    @Path("/clusters")
+    @Path("/")
     public Response createCluster(Map<String, Object> data) throws Exception {
 
         if (data == null) {
@@ -64,7 +64,7 @@ public class ClustersAPI extends BaseAPI {
      * await (optional) : boolean. wait until action task is completed.
      */
     @POST
-    @Path("/clusters/{id}")
+    @Path("/{id}")
     public Response changeClusterState(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
 
         if (data == null) {
@@ -115,26 +115,10 @@ public class ClustersAPI extends BaseAPI {
     }
 
     /**
-     * Get all clusters info.
-     */
-    @GET
-    @Path("/clusters")
-    public Response getClusters() throws Exception {
-        try {
-            ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
-            Collection<ClusterTopology> set = clustersService.getAllClusterTopology();
-            return Response.ok(set).build();
-        } catch (Throwable t) {
-            logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
-        }
-    }
-
-    /**
      * Get one clusters info.
      */
     @GET
-    @Path("/clusters/{id}")
+    @Path("/{id}")
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
             ClusterService clusterService = clusterService(clusterId);
@@ -150,10 +134,26 @@ public class ClustersAPI extends BaseAPI {
     }
 
     /**
+     * Get all clusters info.
+     */
+    @GET
+    @Path("/")
+    public Response getClusters() throws Exception {
+        try {
+            ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
+            Collection<ClusterTopology> set = clustersService.getAllClusterTopology();
+            return Response.ok(set).build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
+    /**
      * Destroy cluster.
      */
     @DELETE
-    @Path("/clusters/{id}")
+    @Path("/{id}")
     public Response destroyCluster(@PathParam("id") String clusterId) throws Exception {
         try {
             DestroyClusterActionRequest request = new DestroyClusterActionRequest(clusterId);
@@ -167,7 +167,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/clusters/{id}/info")
+    @Path("/{id}/info")
     public Response getMarathonInfo(@PathParam("id") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/info");
@@ -178,7 +178,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/clusters/{id}/deployments")
+    @Path("/{id}/deployments")
     public Response getDeployments(@PathParam("id") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/deployments");
@@ -189,7 +189,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @DELETE
-    @Path("/clusters/{id}/deployments/{deploymentsId}")
+    @Path("/{id}/deployments/{deploymentsId}")
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
         try {
@@ -201,7 +201,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @POST
-    @Path("/clusters/{id}/proxy")
+    @Path("/{id}/proxy")
     public Response applyProxyConfig(@PathParam("id") String clusterId) throws Exception {
         try {
             String configString = clusterService(clusterId).getProxyAPI().notifyTopologyChanged();
@@ -213,7 +213,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/clusters/{id}/domain")
+    @Path("/{id}/domain")
     public Response getDomainName(@PathParam("id") String clusterId) throws Exception {
         String domain = clusterService(clusterId).getDomainName();
         return Response.ok(domain).build();
