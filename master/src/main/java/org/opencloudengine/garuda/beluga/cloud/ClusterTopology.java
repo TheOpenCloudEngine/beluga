@@ -28,7 +28,6 @@ public class ClusterTopology {
     public static final String MESOS_MASTER_ROLE = "mesos-master";
     public static final String MESOS_SLAVE_ROLE = "mesos-slave";
     public static final String MANAGEMENT_DB_REGISTRY_ROLE = "management";
-    public static final String SERVICE_NODES_ROLE = "service-db";
 
     public static final String ID_SUFFIX = ".id";
     public static final String IP_SUFFIX = ".ip";
@@ -41,7 +40,6 @@ public class ClusterTopology {
     private List<CommonInstance> mesosMasterList;
     private List<CommonInstance> mesosSlaveList;
     private List<CommonInstance> managementList;
-    private List<CommonInstance> serviceNodeList;
     private List<CommonInstance> noRoleNodeList;
 
 
@@ -54,7 +52,6 @@ public class ClusterTopology {
         mesosMasterList = new ArrayList<>();
         mesosSlaveList = new ArrayList<>();
         managementList = new ArrayList<>();
-        serviceNodeList = new ArrayList<>();
         noRoleNodeList = new ArrayList<>();
     }
 
@@ -77,7 +74,6 @@ public class ClusterTopology {
         list.addAll(mesosMasterList);
         list.addAll(mesosSlaveList);
         list.addAll(managementList);
-        list.addAll(serviceNodeList);
         list.addAll(noRoleNodeList);
         return list;
     }
@@ -98,10 +94,6 @@ public class ClusterTopology {
         return managementList;
     }
 
-    public List<CommonInstance> getServiceNodeList() {
-        return serviceNodeList;
-    }
-
     public List<CommonInstance> getInstancesByRole(String role) throws InvalidRoleException {
         switch (role) {
             case PROXY_ROLE:
@@ -112,8 +104,6 @@ public class ClusterTopology {
                 return mesosSlaveList;
             case MANAGEMENT_DB_REGISTRY_ROLE:
                 return managementList;
-            case SERVICE_NODES_ROLE:
-                return serviceNodeList;
             default:
                 throw new InvalidRoleException("no such role : " + role);
         }
@@ -133,9 +123,6 @@ public class ClusterTopology {
             case MANAGEMENT_DB_REGISTRY_ROLE:
                 managementList.add(commonInstance);
                 break;
-            case SERVICE_NODES_ROLE:
-                serviceNodeList.add(commonInstance);
-                break;
             default:
                 noRoleNodeList.add(commonInstance);
                 throw new InvalidRoleException("no such role : " + role);
@@ -147,7 +134,6 @@ public class ClusterTopology {
         loadRole(ClusterTopology.MESOS_MASTER_ROLE, settings, iaas);
         loadRole(ClusterTopology.MESOS_SLAVE_ROLE, settings, iaas);
         loadRole(ClusterTopology.MANAGEMENT_DB_REGISTRY_ROLE, settings, iaas);
-        loadRole(ClusterTopology.SERVICE_NODES_ROLE, settings, iaas);
     }
     private void loadRole(String role, Settings settings, Iaas iaas) throws InvalidRoleException {
         String value = settings.getValue(role + ID_SUFFIX);
@@ -179,7 +165,6 @@ public class ClusterTopology {
         putProps(props, MESOS_MASTER_ROLE, mesosMasterList);
         putProps(props, MESOS_SLAVE_ROLE, mesosSlaveList);
         putProps(props, MANAGEMENT_DB_REGISTRY_ROLE, managementList);
-        putProps(props, SERVICE_NODES_ROLE, serviceNodeList);
         return props;
     }
 

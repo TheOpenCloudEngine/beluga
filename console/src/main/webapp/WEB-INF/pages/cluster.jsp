@@ -173,35 +173,6 @@ $(function(){
                         <td colspan="7">No instances</td>
                     </tr>
                 </c:if>
-
-                <!-- Resources -->
-                <c:if test="${not empty topology.serviceNodeList}">
-                    <c:forEach var="instance" items="${topology.serviceNodeList}" varStatus="status">
-                        <tr>
-                            <c:if test="${status.index == 0}">
-                                <td rowspan="${fn:length(topology.serviceNodeList)}"><strong>Resource</strong></td>
-                            </c:if>
-                            <td>${instance.instanceType}</td>
-                            <td>${instance.iaasSpec.cpu}</td>
-                            <td>${instance.iaasSpec.memory} GB</td>
-                            <td>${instance.publicIpAddress}</td>
-                            <td>${instance.privateIpAddress}</td>
-                            <td>
-                                <c:forEach var="groupName" items="${instance.groupList}">
-                                <span>${groupName} <span>
-                                    </c:forEach>
-                            </td>
-                            <td>${instance.state}</td>
-                        </tr>
-                    </c:forEach>
-                </c:if>
-                <c:if test="${empty topology.serviceNodeList}">
-                    <tr>
-                        <td><strong>Resources</strong></td>
-                        <td colspan="7">No instances</td>
-                    </tr>
-                </c:if>
-
                 </tbody>
             </table>
         </div>

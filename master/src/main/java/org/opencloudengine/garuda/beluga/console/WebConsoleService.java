@@ -47,7 +47,7 @@ public class WebConsoleService extends AbstractService {
 			logger.info("Beluga console war = {}", warFile.getAbsolutePath());
 		}else{
 			//war파일을 찾지못했다면 개발환경 경로를 확인한다.
-			File devWebApp = new File("../console/src/main/webapp");
+			File devWebApp = new File("console/src/main/webapp");
 			logger.info("Beluga console dir = {}", devWebApp.getAbsolutePath());
 			if(devWebApp.exists()){
 				warFile = devWebApp;
