@@ -2,8 +2,10 @@ package org.opencloudengine.garuda.beluga.api.rest.v1;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.JSONObject;
 import org.opencloudengine.garuda.beluga.action.ActionException;
 import org.opencloudengine.garuda.beluga.action.ActionStatus;
 import org.opencloudengine.garuda.beluga.action.serviceApp.DeployDockerImageActionRequest;
@@ -20,10 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by swsong on 2015. 8. 7..
@@ -54,8 +53,17 @@ public class ResourcesAPI extends BaseAPI {
             Integer scale = 1; //리소스는 무조건 한개로 고정.
             String resourceId = (String) data.get("id");
             String image = (String) data.get("image");
-
-            DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceId, image, port, cpus, memory, scale, null);
+            String env = (String) data.get("env");
+            Map<String, String> envMap = new HashMap<>();
+            if(env != null && env.length() > 0) {
+                JSONObject json = new JSONObject(env);
+                Iterator<String> iter = json.keys();
+                while(iter.hasNext()) {
+                    String key = iter.next();
+                    envMap.put(key, json.getString(key));
+                }
+            }
+            DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceId, image, port, cpus, memory, scale, envMap);
             ActionStatus actionStatus = actionService().request(request);
             actionStatus.waitForDone();
 
