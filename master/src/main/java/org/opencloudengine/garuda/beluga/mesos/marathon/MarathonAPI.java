@@ -120,21 +120,21 @@ public class MarathonAPI {
         return app;
     }
 
-    public Response deployCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
+    public Response deployCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale, env);
 
         WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
-    public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
-        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale);
+    public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+        App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale, env);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(toJson(appRequest)));
     }
 
-    private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale) {
+    private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
         App app = new App();
         app.setId(imageId);
         app.setCmd(command);
@@ -146,6 +146,7 @@ public class MarathonAPI {
         app.setBackoffSeconds(1);
         app.setBackoffFactor(1.15f);
         app.setMaxLaunchDelaySeconds(5 * 60); //5분안에 떠야한다.
+        app.setEnv(env);
         return app;
     }
 

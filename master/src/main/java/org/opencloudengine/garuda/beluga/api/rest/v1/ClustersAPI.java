@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 
-@Path("/v1/clusters")
+@Path("/v1")
 public class ClustersAPI extends BaseAPI {
 
     /**
@@ -23,7 +23,7 @@ public class ClustersAPI extends BaseAPI {
      * await (optional) : boolean. wait until action task is completed.
      */
     @POST
-    @Path("/")
+    @Path("/clusters")
     public Response createCluster(Map<String, Object> data) throws Exception {
 
         if (data == null) {
@@ -64,7 +64,7 @@ public class ClustersAPI extends BaseAPI {
      * await (optional) : boolean. wait until action task is completed.
      */
     @POST
-    @Path("/{id}")
+    @Path("/clusters/{id}")
     public Response changeClusterState(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
 
         if (data == null) {
@@ -118,7 +118,7 @@ public class ClustersAPI extends BaseAPI {
      * Get all clusters info.
      */
     @GET
-    @Path("/")
+    @Path("/clusters")
     public Response getClusters() throws Exception {
         try {
             ClustersService clustersService = ServiceManager.getInstance().getService(ClustersService.class);
@@ -134,7 +134,7 @@ public class ClustersAPI extends BaseAPI {
      * Get one clusters info.
      */
     @GET
-    @Path("/{id}")
+    @Path("/clusters/{id}")
     public Response getCluster(@PathParam("id") String clusterId) throws Exception {
         try {
             ClusterService clusterService = clusterService(clusterId);
@@ -153,7 +153,7 @@ public class ClustersAPI extends BaseAPI {
      * Destroy cluster.
      */
     @DELETE
-    @Path("/{id}")
+    @Path("/clusters/{id}")
     public Response destroyCluster(@PathParam("id") String clusterId) throws Exception {
         try {
             DestroyClusterActionRequest request = new DestroyClusterActionRequest(clusterId);
@@ -167,7 +167,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}/info")
+    @Path("/clusters/{id}/info")
     public Response getMarathonInfo(@PathParam("id") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/info");
@@ -178,7 +178,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}/deployments")
+    @Path("/clusters/{id}/deployments")
     public Response getDeployments(@PathParam("id") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/deployments");
@@ -189,7 +189,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @DELETE
-    @Path("/{id}/deployments/{deploymentsId}")
+    @Path("/clusters/{id}/deployments/{deploymentsId}")
     public Response deleteDeployments(@PathParam("id") String clusterId
             , @PathParam("deploymentsId") String deploymentsId) throws Exception {
         try {
@@ -201,7 +201,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @POST
-    @Path("/{id}/proxy")
+    @Path("/clusters/{id}/proxy")
     public Response applyProxyConfig(@PathParam("id") String clusterId) throws Exception {
         try {
             String configString = clusterService(clusterId).getProxyAPI().notifyTopologyChanged();
@@ -213,7 +213,7 @@ public class ClustersAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}/domain")
+    @Path("/clusters/{id}/domain")
     public Response getDomainName(@PathParam("id") String clusterId) throws Exception {
         String domain = clusterService(clusterId).getDomainName();
         return Response.ok(domain).build();

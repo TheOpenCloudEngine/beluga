@@ -13,7 +13,6 @@ import org.opencloudengine.garuda.beluga.common.util.JsonUtils;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.exception.BelugaException;
 import org.opencloudengine.garuda.beluga.proxy.HAProxyAPI;
-import org.opencloudengine.garuda.beluga.settings.Resources;
 import org.opencloudengine.garuda.beluga.utils.JsonUtil;
 
 import javax.ws.rs.*;
@@ -29,11 +28,11 @@ import java.util.Map;
 /**
  * Created by swsong on 2015. 8. 7..
  */
-@Path("/v1/clusters/{clusterId}/apps")
+@Path("/v1/clusters/{clusterId}")
 public class AppsAPI extends BaseAPI {
 
     @GET
-    @Path("/")
+    @Path("/apps")
     public Response getApps(@PathParam("clusterId") String clusterId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps");
@@ -44,7 +43,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/apps/{id}")
     public Response getApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps/" + appId);
@@ -55,19 +54,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @GET
-    @Path("/{id}/resources/{resourceId}")
-    public Response getResourceApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, @PathParam("resourceId") String resourceId) throws Exception {
-        try {
-            return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "-resources/" + resourceId);
-        } catch (Throwable t) {
-            logger.error("", t);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
-        }
-    }
-
-
-    @GET
-    @Path("/{id}/tasks")
+    @Path("/apps/{id}/tasks")
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "/tasks");
@@ -81,7 +68,7 @@ public class AppsAPI extends BaseAPI {
      * 앱 파일을 업로드한다.
      */
     @POST
-    @Path("/{id}/file")
+    @Path("/apps/{id}/file")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
                                @FormDataParam("file") InputStream uploadedInputStream,
@@ -133,7 +120,7 @@ public class AppsAPI extends BaseAPI {
      * 전달된 설정대로 앱을 실행한다.
      */
     @POST
-    @Path("/")
+    @Path("/apps")
     public Response deployApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
         String appId = (String) data.get("id");
         String command = (String) data.get("cmd");
@@ -143,13 +130,73 @@ public class AppsAPI extends BaseAPI {
         return deployOrUpdateApp(clusterId, appId, data, false);
     }
 
-//    @PUT
-//    @Path("/{id}")
-//    public Response scaleApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
-//        Integer scale = (Integer) data.get("scale");
-//        Response response = marathonAPI(clusterId).scaleApp(appId, scale);
-//        return deployOrUpdateApp(clusterId, appId, data, true);
-//    }
+    /**
+     * 리소스 앱을 실행한다.
+     * */
+    @POST
+    @Path("/resources")
+    public Response deployResourceApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
+        /*
+         * 리소스 앱을 구동한다.
+         */
+        try {
+            Integer port = (Integer) data.get("port");
+            Float cpus = null;
+            if (data.get("cpus") != null) {
+                cpus = Float.parseFloat(data.get("cpus").toString());
+            }
+            Float memory = null;
+            if (data.get("memory") != null) {
+                memory = Float.parseFloat(data.get("memory").toString());
+            }
+
+            Integer scale = 1; //리소스는 무조건 한개로 고정.
+            String resourceId = (String) data.get("id");
+            String image = (String) data.get("image");
+
+            DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceId, image, port, cpus, memory, scale, null);
+            ActionStatus actionStatus = actionService().request(request);
+            actionStatus.waitForDone();
+
+            Object result = actionStatus.getResult();
+            if(result instanceof Response) {
+                Map<String, Object> entity = parseMarathonResponse((Response) result);
+                notifyDeployment(clusterId, entity);
+            } else if(result instanceof Exception) {
+                return Response.status(500).entity(((Exception)result).getMessage()).build();
+            }
+            return Response.ok().build();
+        } catch (Throwable t) {
+            logger.error("", t);
+            throw t;
+        }
+
+//            JsonNode app = root.get("app");
+//            ArrayNode tasks = (ArrayNode) app.get("tasks");
+//            if (tasks != null) {
+//                JsonNode task = tasks.get(0);
+//                if (task != null) {
+//                    host = task.get("host").asText();
+//                    ArrayNode ports = (ArrayNode) task.get("ports");
+//                    if (ports.size() > 0) {
+//                        port = String.valueOf(ports.get(0).asInt());
+//                    }
+
+//            String webAppType = (String) data.get("type");
+//            if(webAppType != null && webAppType.startsWith("java")) {
+//                //java opts
+//                String javaOptsString = env.get("JAVA_OPTS");
+//                if(javaOptsString == null) {
+//                    javaOptsString = "";
+//                }
+//                if(javaOptsString.length() > 0){
+//                    javaOptsString += " ";
+//                }
+//                javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
+//                env.put("JAVA_OPTS", javaOptsString);
+//            }
+
+    }
 
     /**
      * 변경된 설정으로 앱을 재시작한다.
@@ -158,7 +205,7 @@ public class AppsAPI extends BaseAPI {
      * minimumHealthCapacity=0.5, maximumOverCapacity=0.2
      */
     @PUT
-    @Path("/{id}")
+    @Path("/apps/{id}")
     public Response updateApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
         String command = (String) data.get("cmd");
         if (command != null) {
@@ -180,6 +227,7 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("memory").toString());
             }
             Integer scale = (Integer) data.get("scale");
+            Map<String, String> env = (Map<String, String>) data.get("beluga_env");
             List<Integer> ports = null;
             if(port != null) {
                 ports = new ArrayList<>();
@@ -187,9 +235,9 @@ public class AppsAPI extends BaseAPI {
             }
             Response response = null;
             if (!isUpdate) {
-                response = marathonAPI(clusterId).deployCommandApp(appId, command, ports, cpus, memory, scale);
+                response = marathonAPI(clusterId).deployCommandApp(appId, command, ports, cpus, memory, scale, env);
             } else {
-                response = marathonAPI(clusterId).updateCommandApp(appId, command, ports, cpus, memory, scale);
+                response = marathonAPI(clusterId).updateCommandApp(appId, command, ports, cpus, memory, scale, env);
             }
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 //OK
@@ -209,12 +257,8 @@ public class AppsAPI extends BaseAPI {
     }
 
     private Response deployOrUpdateApp(String clusterId, String appId, Map<String, Object> data, boolean isUpdate) throws Exception {
-//        if(!isUpdate) {
-        deployResourceApp(clusterId, appId, data);
-//        }
 
         try {
-//            Integer port = (Integer) data.get("port");
             /*
              * Webapp의 port는 app이 정할 수 있는것이 아니므로 environment에 정해져 있는 포트를 연다.
              */
@@ -234,7 +278,11 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("memory").toString());
             }
             Integer scale = (Integer) data.get("scale");
-            Map<String, String> env = (Map<String, String>) data.get("beluga_env");
+
+            /*
+            * 중요!!! 여기서 리소스 노드와 연동할수 있는 환경변수를 넣어준다.
+            * */
+            Map<String, String> env = makeEnvVariables(clusterId, data);
 
             List<WebAppContextFile> webAppFileList = new ArrayList<>();
 
@@ -262,126 +310,66 @@ public class AppsAPI extends BaseAPI {
         }
     }
 
-
-    @POST
-    @Path("/{id}/resources")
-    public Response deployResourceAppListen(@PathParam("clusterId") String clusterId, @PathParam("id") String appId, Map<String, Object> data) throws Exception {
-        if(deployResourceApp(clusterId, appId, data)) {
-            return Response.ok().build();
-        }
-        return null;
-    }
-
-    private boolean deployResourceApp(String clusterId, String appId, Map<String, Object> data) throws Exception {
-        /*
-         * 서비스 DB와 같은 리소스 앱들을 미리 구동한다.
-         */
+    private Map<String, String> makeEnvVariables(String clusterId, Map<String, Object> data) {
         Map<String, String> env = new HashMap<>();
-
+        // 환경변수준비.
         List<String> resourceList = (List<String>) data.get("resourceList");
-
-        if(resourceList == null) {
-            resourceList = new ArrayList<>();
-        }
-
-        for(String resourceKey : Resources.keys()) {
-            if(resourceList.contains(resourceKey)) {
-                boolean isRunning = false;
-                Resources.Resource resource = Resources.get(resourceKey);
-                String resourceAppId = appId + "-resources/" + resource.getId();
-                //app정보를 받아온다.
-                Response response = getApp(clusterId, resourceAppId);
-                try {
-                    if (response.getStatus() == 200) {
-                        String json = response.readEntity(String.class);
-                        JsonNode entity = JsonUtil.toJsonNode(json);
-                        isRunning = true;
-                    }
-                } catch (Throwable t) {
-                    logger.error("", t);
-                }
-
-                //실행중이 아니면 구동한다.
-                if (!isRunning) {
-                    DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceAppId, resource.getImage(), resource.getPort()
-                            , resource.getCpus(), resource.getMem(), 1, resource.getEnv());
-                    ActionStatus actionStatus = actionService().request(request);
-                    actionStatus.waitForDone();
-                }
-            } else {
-                //없는 것이면 실행이 안되는건지 확인한다.
-                //조회보다는 그냥 삭제명령을 내린다.
-                marathonAPI(clusterId).requestDeleteAPI("/apps/" + appId + "-resources/" + resourceKey);
-            }
-        }
-
-        //실행한 노드들에서 host, port를 얻을 때까지 최대 1분씩 기다린다.
-        for(String resourceKey : resourceList) {
-            boolean isRunning = false;
-            Resources.Resource resource = Resources.get(resourceKey);
-            String resourceAppId = appId + "-resources/" + resource.getId();
-            //정보를 받아온다.
-            String host = "";
-            String port = "";
-            for (int i = 0; i < 60; i++) {
-                Response response = getApp(clusterId, resourceAppId);
-                try {
-                    if (response.getStatus() == 200) {
-                        String json = response.readEntity(String.class);
-                        JsonNode root = JsonUtil.toJsonNode(json);
-                        JsonNode app = root.get("app");
-                        ArrayNode tasks = (ArrayNode) app.get("tasks");
-                        if (tasks != null) {
-                            JsonNode task = tasks.get(0);
-                            if (task != null) {
-                                host = task.get("host").asText();
-                                ArrayNode ports = (ArrayNode) task.get("ports");
-                                if (ports.size() > 0) {
-                                    port = String.valueOf(ports.get(0).asInt());
-                                }
-                                isRunning = true;
-                                break;
+        for(String resourceId : resourceList) {
+            // marathon으로 resourceId를 조회하면서 task의 host, port를 알아내어 환경변수로 셋팅한다.
+            String resourceHost = null;
+            String resourcePort = null;
+            try {
+                Response response = marathonAPI(clusterId).requestGetAPI("/apps/" + resourceId);
+                if (response.getStatus() == 200) {
+                    String json = response.readEntity(String.class);
+                    JsonNode root = JsonUtil.toJsonNode(json);
+                    JsonNode app = root.get("app");
+                    ArrayNode tasks = (ArrayNode) app.get("tasks");
+                    if (tasks != null) {
+                        JsonNode task = tasks.get(0);
+                        if (task != null) {
+                            resourceHost = task.get("host").asText();
+                            ArrayNode ports = (ArrayNode) task.get("ports");
+                            if (ports.size() > 0) {
+                                resourcePort = String.valueOf(ports.get(0).asInt());
                             }
                         }
                     }
-                } catch (Throwable t) {
-                    logger.error("", t);
                 }
-                Thread.sleep(1000);
+            } catch (Throwable t) {
+                logger.error("", t);
             }
 
-            if(!isRunning) {
-                continue;
+            if (resourceHost != null && resourcePort != null) {
+                //환경변수로 $OOO_HOST, $OOO_PORT 를 사용할 수 있게 해준다.
+                String envHostKey = resourceId + "_HOST";
+                String envPortKey = resourceId + "_PORT";
+
+                env.put(envHostKey, resourceHost);
+                env.put(envPortKey, resourcePort);
+
+                String webAppType = (String) data.get("type");
+                //Java 어플리케이션의 경우 JAVA_OPTS로 넣어주어야 System.getProperties로 받아올 수 있다.
+                if (webAppType != null && webAppType.startsWith("java")) {
+                    //java opts
+                    String javaOptsString = env.get("JAVA_OPTS");
+                    if (javaOptsString == null) {
+                        javaOptsString = "";
+                    }
+                    if (javaOptsString.length() > 0) {
+                        javaOptsString += " ";
+                    }
+                    javaOptsString += ("-D" + envHostKey + "=" + resourceHost + " -D" + envPortKey + "=" + resourcePort);
+                    env.put("JAVA_OPTS", javaOptsString);
+                }
             }
 
-            //환경변수셋팅.
-            String envHostKey = resource.getHostPropertyKey();
-            String envPortKey = resource.getPortPropertyKey();
-
-            env.put(envHostKey, host);
-            env.put(envPortKey, port);
-
-            String webAppType = (String) data.get("type");
-            if(webAppType != null && webAppType.startsWith("java")) {
-                //java opts
-                String javaOptsString = env.get("JAVA_OPTS");
-                if(javaOptsString == null) {
-                    javaOptsString = "";
-                }
-                if(javaOptsString.length() > 0){
-                    javaOptsString += " ";
-                }
-                javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
-                env.put("JAVA_OPTS", javaOptsString);
-            }
         }
-
-        data.put("beluga_env", env);
-        return true;
+        return env;
     }
 
     @POST
-    @Path("/{id}/restart")
+    @Path("/apps/{id}/restart")
     public Response restartApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
         // 포트가 바뀌므로, haproxy를 업데이트 한다.
@@ -398,7 +386,7 @@ public class AppsAPI extends BaseAPI {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/apps/{id}")
     public Response deleteApp(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
 
         Response response = null;
