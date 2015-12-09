@@ -141,9 +141,9 @@ public class CloudWatcher {
                             // 스케일을 늘린다. 하지만, 아직 스케일 도중이거나, 바로 효과가 나타나지 않을 경우에는 계속해서 스케일증가 요청이 중복되게 된다.
                             // 그러므로, 스케일도중일때에는 clusterService에서 무시하도록 만든다.
 
-                            //TODO
                             logger.info("#[{}/{}] Requested auto scale-out 1 instance.", clusterService.getClusterId(), appId, usage.getLoadAverage());
 
+                            //TODO
                             int scale = 1;
                             scale++;
 
@@ -162,9 +162,9 @@ public class CloudWatcher {
                         if(diff / 60000L >= autoScaleConfig.getScaleInDuringInMin()) {
                             // 스케일을 줄인다. 하지만 최저 1개 이상은 돌아가야 하므로, 1이 될때는 clusterService에서 알아서 무시하게 만든다.
 
-                            //TODO
                             logger.info("#[{}/{}] Requested auto scale-in 1 instance.", clusterService.getClusterId(), appId);
 
+                            //TODO
 //                            MarathonAPI marathonAPI = clusterService.getMarathonAPI();
 //                            Response response = marathonAPI.requestGetAPI("/apps/" + appId);
 //                            String appString = response.readEntity(String.class);
