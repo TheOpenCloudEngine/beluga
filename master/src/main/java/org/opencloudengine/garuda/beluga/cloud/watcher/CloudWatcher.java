@@ -180,6 +180,10 @@ public class CloudWatcher {
                             appScaleInLastTimestamp = 0;
                         }
                     }
+                } else {
+                    //어느 조건에도 부합하지 않으면 초기화.
+                    appScaleOutLastTimestamp = 0;
+                    appScaleInLastTimestamp = 0;
                 }
             }
         }
