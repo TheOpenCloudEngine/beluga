@@ -33,7 +33,7 @@ public class DockerRemoteApi {
         * */
         List<String> idList = new ArrayList<>();
         WebTarget containerListTarget = getContainerListWebTarget(host);
-        logger.debug("Call {}", containerListTarget.getUri());
+        logger.trace("Call {}", containerListTarget.getUri());
         Response response = containerListTarget.request(MediaType.APPLICATION_JSON_TYPE).get();
         if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             String idListString = response.readEntity(String.class);
@@ -73,7 +73,7 @@ public class DockerRemoteApi {
                                     appIdContainerIdMap.put(appId, cidList);
                                 }
                                 cidList.add(containerId);
-                                logger.debug("Got AppId[{}] ContainerId[{}]", appId, containerId);
+                                logger.trace("Got AppId[{}] ContainerId[{}]", appId, containerId);
                                 break;
                             }
                         }

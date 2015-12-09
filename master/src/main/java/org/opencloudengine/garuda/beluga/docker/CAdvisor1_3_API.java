@@ -37,7 +37,7 @@ public class CAdvisor1_3_API {
             for(String containerId : idList) {
                 WebTarget dockerTarget = getDockerWebTarget(host);
                 dockerTarget.path(containerId);
-                logger.debug("Get cAdvisor Stat Data >> {}", dockerTarget.getUri());
+                logger.trace("Get cAdvisor Stat Data >> {}", dockerTarget.getUri());
                 Response response = dockerTarget.request(MediaType.APPLICATION_JSON_TYPE).get();
                 double loadAverage = 0f;
                 double cpuPercent = 0f;
@@ -77,7 +77,7 @@ public class CAdvisor1_3_API {
                     map.put(appId, usageList);
                 }
                 usageList.add(containerUsage);
-                logger.debug("Got {}", containerUsage);
+                logger.trace("Got {}", containerUsage);
             }
         }
 
