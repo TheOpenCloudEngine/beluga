@@ -1,5 +1,7 @@
 package org.opencloudengine.garuda.beluga.cloud;
 
+import org.opencloudengine.garuda.beluga.cloud.watcher.AutoScaleRule;
+import org.opencloudengine.garuda.beluga.cloud.watcher.CloudWatcher;
 import org.opencloudengine.garuda.beluga.env.Environment;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.env.Settings;
@@ -15,7 +17,6 @@ import org.opencloudengine.garuda.beluga.service.ServiceException;
 import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
 import org.opencloudengine.garuda.beluga.settings.IaasProviderConfig;
 import org.opencloudengine.garuda.beluga.utils.SshInfo;
-import org.opencloudengine.garuda.beluga.watcher.AutoScaleRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public class ClusterService extends AbstractClusterService {
     private String domainName;
     private Set<String> runningAppIdSet;
     private AutoScaleRule autoScaleRule;
+
+    private CloudWatcher cloudWatcher;
 
     public ClusterService(String clusterId, Environment environment, Settings settings) {
         super(clusterId, environment, settings);
@@ -87,6 +90,9 @@ public class ClusterService extends AbstractClusterService {
 
             loadProxyWorker();
             loadDeploymentsCheckWorker();
+
+            cloudWatcher = new CloudWatcher(this);
+            cloudWatcher.start();
         } catch (Exception e) {
             logger.error("error while starting cluster service : " + clusterId, e);
             return false;
@@ -98,6 +104,8 @@ public class ClusterService extends AbstractClusterService {
     protected boolean doStop() throws ServiceException {
         unloadProxyWorker();
         unloadDeploymentsCheckWorker();
+
+        cloudWatcher.stop();
         return true;
     }
 

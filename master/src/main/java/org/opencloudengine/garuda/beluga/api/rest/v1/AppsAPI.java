@@ -277,6 +277,14 @@ public class AppsAPI extends BaseAPI {
             } else if(result instanceof Exception) {
                 return Response.status(500).entity(((Exception)result).getMessage()).build();
             }
+
+
+            ///TODO 앱 리스트에 저장한다.
+            //바로 바로 저장. 형식은 list를 한줄에 하나씩 써서 저장하자.
+
+
+
+
             return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
@@ -373,6 +381,16 @@ public class AppsAPI extends BaseAPI {
             // 삭제되었으면 haproxy에서 지워준다.
             Map<String, Object> entity = parseMarathonResponse(response);
             notifyDeployment(clusterId, entity);
+
+
+            ///TODO 앱 리스트에서 삭제한다.
+            //바로바로 저장
+
+
+
+
+
+
             return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
