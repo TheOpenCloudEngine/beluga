@@ -316,8 +316,8 @@ public class AppsAPI extends BaseAPI {
 
             if (resourceHost != null && resourcePort != null) {
                 //환경변수로 $OOO_HOST, $OOO_PORT 를 사용할 수 있게 해준다.
-                String envHostKey = resourceId + "_HOST";
-                String envPortKey = resourceId + "_PORT";
+                String envHostKey = (resourceId + "_HOST").toUpperCase();
+                String envPortKey = (resourceId + "_PORT").toUpperCase();
 
                 env.put(envHostKey, resourceHost);
                 env.put(envPortKey, resourcePort);
