@@ -23,7 +23,7 @@ echo $3 | sudo tee /etc/mesos-slave/ip
 echo $4 | sudo tee /etc/mesos-slave/containerizers
 
 #docker configuration
-echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5:5000\" | sudo tee -a /etc/default/docker
+echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry $5:5000 -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock\" | sudo tee -a /etc/default/docker
 
 echo "mesos-slave" | sudo tee /etc/hostname
 
