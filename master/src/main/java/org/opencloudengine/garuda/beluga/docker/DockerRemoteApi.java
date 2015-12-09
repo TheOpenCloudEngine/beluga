@@ -27,7 +27,7 @@ public class DockerRemoteApi {
     private static final String API_CONTAINER_INSPECT = "/containers/%s/json";
     private static final String TARGET_FORMAT = "http://%s:4243";
 
-    public Map<String, String> getAppIdWithContainerIdMap(String host) {
+    public Map<String, List<String>> getAppIdWithContainerIdMap(String host) {
         /*
         * 1. 먼저 container id 리스트를 얻는다.
         * */
@@ -53,7 +53,7 @@ public class DockerRemoteApi {
         /*
         * 2. Inspect결과의 환경변수에서 appId를 얻는다.
         * */
-        Map<String, String> appIdContainerIdMap = new HashMap<>();
+        Map<String, List<String>> appIdContainerIdMap = new HashMap<>();
         for(String containerId : idList) {
             WebTarget containerInspectTarget = getContainerInspectWebTarget(host, containerId);
             response = containerInspectTarget.request(MediaType.APPLICATION_JSON_TYPE).get();
@@ -67,7 +67,12 @@ public class DockerRemoteApi {
                             String value = envArray.get(i).asText();
                             if(value.startsWith("MARATHON_APP_ID")) {
                                 String appId = value.substring("MARATHON_APP_ID=".length() + 1);
-                                appIdContainerIdMap.put(appId, containerId);
+                                List<String> cidList = appIdContainerIdMap.get(appId);
+                                if(cidList == null) {
+                                    cidList = new ArrayList<>();
+                                    appIdContainerIdMap.put(appId, cidList);
+                                }
+                                cidList.add(containerId);
                                 logger.debug("Got AppId[{}] ContainerId[{}]", appId, containerId);
                                 break;
                             }

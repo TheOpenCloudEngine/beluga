@@ -73,7 +73,7 @@ public class CloudWatcher {
 //                String host = slaveInstance.getPrivateIpAddress();
                     String host = slaveInstance.getPublicIpAddress();
 
-                    Map<String, String> appIdContainerIdMap = dockerRemoteApi.getAppIdWithContainerIdMap(host);
+                    Map<String, List<String>> appIdContainerIdMap = dockerRemoteApi.getAppIdWithContainerIdMap(host);
                     Map<String, List<ContainerUsage>> appContainerUsageMap = cAdvisorAPI.getAppIdWithDockerContainerUsages(host, appIdContainerIdMap);
                     for (Map.Entry<String, List<ContainerUsage>> entry : appContainerUsageMap.entrySet()) {
                         String appId = entry.getKey();
