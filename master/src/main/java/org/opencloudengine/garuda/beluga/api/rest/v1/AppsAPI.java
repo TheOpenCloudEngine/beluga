@@ -288,6 +288,9 @@ public class AppsAPI extends BaseAPI {
         Map<String, String> env = new HashMap<>();
         // 환경변수준비.
         List<String> resourceList = (List<String>) data.get("resourceList");
+        if(resourceList == null) {
+            return null;
+        }
         for(String resourceId : resourceList) {
             // marathon으로 resourceId를 조회하면서 task의 host, port를 알아내어 환경변수로 셋팅한다.
             String resourceHost = null;
@@ -324,18 +327,16 @@ public class AppsAPI extends BaseAPI {
 
                 String webAppType = (String) data.get("type");
                 //Java 어플리케이션의 경우 JAVA_OPTS로 넣어주어야 System.getProperties로 받아올 수 있다.
-                if (webAppType != null && webAppType.startsWith("java")) {
-                    //java opts
-                    String javaOptsString = env.get("JAVA_OPTS");
-                    if (javaOptsString == null) {
-                        javaOptsString = "";
-                    }
-                    if (javaOptsString.length() > 0) {
-                        javaOptsString += " ";
-                    }
-                    javaOptsString += ("-D" + envHostKey + "=" + resourceHost + " -D" + envPortKey + "=" + resourcePort);
-                    env.put("JAVA_OPTS", javaOptsString);
+                //java opts
+                String javaOptsString = env.get("JAVA_OPTS");
+                if (javaOptsString == null) {
+                    javaOptsString = "";
                 }
+                if (javaOptsString.length() > 0) {
+                    javaOptsString += " ";
+                }
+                javaOptsString += ("-D" + envHostKey + "=" + resourceHost + " -D" + envPortKey + "=" + resourcePort);
+                env.put("JAVA_OPTS", javaOptsString);
             }
 
         }
