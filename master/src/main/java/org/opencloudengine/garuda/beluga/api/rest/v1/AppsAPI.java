@@ -170,32 +170,6 @@ public class AppsAPI extends BaseAPI {
             logger.error("", t);
             throw t;
         }
-
-//            JsonNode app = root.get("app");
-//            ArrayNode tasks = (ArrayNode) app.get("tasks");
-//            if (tasks != null) {
-//                JsonNode task = tasks.get(0);
-//                if (task != null) {
-//                    host = task.get("host").asText();
-//                    ArrayNode ports = (ArrayNode) task.get("ports");
-//                    if (ports.size() > 0) {
-//                        port = String.valueOf(ports.get(0).asInt());
-//                    }
-
-//            String webAppType = (String) data.get("type");
-//            if(webAppType != null && webAppType.startsWith("java")) {
-//                //java opts
-//                String javaOptsString = env.get("JAVA_OPTS");
-//                if(javaOptsString == null) {
-//                    javaOptsString = "";
-//                }
-//                if(javaOptsString.length() > 0){
-//                    javaOptsString += " ";
-//                }
-//                javaOptsString += ("-D" + envHostKey + "=" + host + " -D" + envPortKey + "=" + port);
-//                env.put("JAVA_OPTS", javaOptsString);
-//            }
-
     }
 
     /**
