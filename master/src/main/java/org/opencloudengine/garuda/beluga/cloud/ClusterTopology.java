@@ -18,6 +18,7 @@ import java.util.Properties;
 public class ClusterTopology {
     private static final String REGISTRY_ADDRESS_PORT_FORMAT = "%s:" + ClusterPorts.REGISTRY_PORT;
     private static final String REGISTRY_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.REGISTRY_PORT;
+    private static final String MESOS_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.MESOS_PORT;
     private static final String MARATHON_ENDPOINT_FORMAT = "http://%s:" + ClusterPorts.MARATHON_PORT;
 
     public static final String IAAS_PROFILE_KEY = "iaasProfile";
@@ -208,6 +209,14 @@ public class ClusterTopology {
         List<String> list = new ArrayList<>();
         for(CommonInstance i : mesosMasterList) {
             list.add(String.format(MARATHON_ENDPOINT_FORMAT, i.getPublicIpAddress()));
+        }
+        return list;
+    }
+
+    public List<String> getMesosMasterEndPoints() {
+        List<String> list = new ArrayList<>();
+        for(CommonInstance i : mesosMasterList) {
+            list.add(String.format(MESOS_ENDPOINT_FORMAT, i.getPublicIpAddress()));
         }
         return list;
     }

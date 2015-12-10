@@ -59,7 +59,9 @@ public class ClustersAPI extends BaseAPI {
 
     /**
      * Change clusters state
-     * type             : start | stop | restart | destroy
+     * type             : start | stop | restart | destroy | add | remove
+     * 슬레이브 노드를 추가할 때는 type=add, size=1, role=mesos-slave
+     * 슬레이브 노드를 삭제할 때는 type=remove, role=mesos-slave, instanceId={instanceId}
      * definition       : definition id. Only needed when a type is 'create'.
      * await (optional) : boolean. wait until action task is completed.
      */
@@ -218,17 +220,4 @@ public class ClustersAPI extends BaseAPI {
         String domain = clusterService(clusterId).getDomainName();
         return Response.ok(domain).build();
     }
-
-    @POST
-    @Path("/{id}/increaseSlave")
-    public Response modifySlaveNode(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
-        int size = 1;
-        Integer incrementSize = (Integer) data.get("incrementSize");
-        if(incrementSize != null) {
-            size = incrementSize;
-        }
-        clusterService(clusterId).addSlaveNode(size);
-        return Response.ok().build();
-    }
-
 }

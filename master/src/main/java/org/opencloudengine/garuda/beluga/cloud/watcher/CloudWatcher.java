@@ -1,10 +1,15 @@
 package org.opencloudengine.garuda.beluga.cloud.watcher;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.opencloudengine.garuda.beluga.action.cluster.AddSlaveNodeAction;
+import org.opencloudengine.garuda.beluga.action.cluster.AddSlaveNodeActionRequest;
 import org.opencloudengine.garuda.beluga.cloud.ClusterService;
 import org.opencloudengine.garuda.beluga.cloud.CommonInstance;
 import org.opencloudengine.garuda.beluga.docker.CAdvisor1_3_API;
 import org.opencloudengine.garuda.beluga.docker.DockerRemoteApi;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
+import org.opencloudengine.garuda.beluga.mesos.MesosAPI;
+import org.opencloudengine.garuda.beluga.mesos.SlaveResource;
 import org.opencloudengine.garuda.beluga.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.beluga.service.ServiceException;
 import org.opencloudengine.garuda.beluga.utils.JsonUtil;
@@ -19,19 +24,21 @@ import java.util.*;
  * 실행중인 docker app들에 대해서 리소스 사용률을 체크하고 필요시 scale out을 결정한다
  * docker remote api 와 cAdvisor를 함께 사용하여 리소스를 받아오는데,
  * cAdvisor는 컨테이너 내부의 환경변수를 제공하지 않기 때문에, remote api를 사용하여 <컨테이너ID:App ID> 쌍을 매핑해야 한다.
- *
+ * <p>
  * Created by swsong on 2015. 7. 15..
  */
 public class CloudWatcher {
     private static Logger logger = LoggerFactory.getLogger(CloudWatcher.class);
+
+    private static final int SLAVE_USAGE_HIGHER = 80; //항상 20%의 여유를 가지고 간다.
+    private static final int SLAVE_USAGE_LOWER = 30;
 
     private String clusterId;
     private ClusterService clusterService;
 
     private CAdvisor1_3_API cAdvisorAPI;
     private DockerRemoteApi dockerRemoteApi;
-
-    private TimerTask cloudResourceWatcher;
+    private MesosAPI mesosApi;
 
     private Timer timer;
 
@@ -48,15 +55,21 @@ public class CloudWatcher {
     }
 
     public boolean start() throws ServiceException {
+        mesosApi = new MesosAPI(clusterService, SettingManager.getInstance().getEnvironment());
         allAppContainerUsageMap = new HashMap<>();
         appContainerUsageMap = new HashMap<>();
         //오토 스케일-인/아웃.
         autoScaleRuleMap = SettingManager.getInstance().getAutoScaleRule(clusterId);
         logger.debug("[{}] Autoscale Rule > {}", clusterId, autoScaleRuleMap);
         timer = new Timer();
-        cloudResourceWatcher = new CloudResourceWatcher();
-        //2초후에 5초간격.
-        timer.schedule(cloudResourceWatcher, 2 * 1000, 5 * 1000);
+        TimerTask cloudResourceWatcher = new CloudResourceWatcher();
+        TimerTask cloudSlaveNodeWatcher = new CloudSlaveNodeWatcher();
+        //2초후에 5초주기.
+        long delay = 2 * 1000;
+        long resourceWatchPeriod = 5 * 1000;
+        long slaveWatchPeriod = 10 * 1000;
+        timer.schedule(cloudResourceWatcher, delay, resourceWatchPeriod);
+        timer.schedule(cloudSlaveNodeWatcher, delay, slaveWatchPeriod);
         return true;
     }
 
@@ -67,7 +80,7 @@ public class CloudWatcher {
     }
 
     public synchronized void updateAutoScaleRule(String appId, AutoScaleRule autoScaleRule) {
-        if(autoScaleRule != null) {
+        if (autoScaleRule != null) {
             autoScaleRuleMap.put(appId, autoScaleRule);
         } else {
             autoScaleRuleMap.remove(appId);
@@ -75,6 +88,95 @@ public class CloudWatcher {
         //오토스케일 룰 저장.
         SettingManager.getInstance().storeAutoScaleRule(clusterId, autoScaleRuleMap);
         logger.debug("[{}] Autoscale Rule Updated > {}", clusterId, autoScaleRuleMap);
+    }
+
+    class CloudSlaveNodeWatcher extends TimerTask {
+
+        @Override
+        public void run() {
+            Map<String, SlaveResource> slaveResourceMap = new HashMap<>();
+            double totalCpus = 0;
+            int totalMem = 0;
+            double totalUsedCpus = 0;
+            int totalUsedMem = 0;
+            int slaveSize = 0;
+            try {
+                Response response = mesosApi.requestSlaves();
+                if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                    String slavesString = response.readEntity(String.class);
+                    if (slavesString != null) {
+                        JsonNode slaves = JsonUtil.toJsonNode(slavesString).get("slaves");
+                        slaveSize = slaves.size();
+                        for (int i = 0; i < slaveSize; i++) {
+                            JsonNode slave = slaves.get(i);
+                            String hostname = slave.get("hostname").asText();
+                            JsonNode resources = slave.get("resources");
+                            double cpus = resources.get("cpus").asDouble(0);
+                            int mem = resources.get("mem").asInt(0);
+                            JsonNode usedResources = slave.get("used_resources");
+                            double usedCpus = usedResources.get("cpus").asDouble();
+                            int usedMem = usedResources.get("mem").asInt(0);
+                            totalCpus += cpus;
+                            totalMem += mem;
+                            totalUsedCpus += usedCpus;
+                            totalUsedMem += usedMem;
+                            SlaveResource slaveResource = new SlaveResource(mem, cpus, usedMem, usedCpus);
+                            slaveResourceMap.put(hostname, slaveResource);
+                            logger.debug(">> Slave Node {} > {}", hostname, slaveResource);
+                        }
+                        logger.debug(">> Total Slave Usage totalMem[{}] totalUsedMem[{}] totalCpus[{}] totalUsedCpus[{}]", totalMem, totalUsedMem, totalCpus, totalUsedCpus);
+                    }
+                }
+
+                /*
+                 * 비율이 SLAVE_USAGE_HIGHER 이상이면 노드를 더 늘리고,
+                 * 비율이 SLAVE_USAGE_LOWER 이하이면 작업이 없는 노드를 삭제한다.
+                 */
+                int incrementSize = 1;
+                double totalMemRate = (double) totalUsedMem / (double) totalMem;
+                double totalCpusRate = totalUsedCpus / totalCpus;
+
+                //cpu 또는 mem 이 SLAVE_USAGE_HIGHER 보다 크면 노드를 늘린다.
+                if(totalMemRate >= SLAVE_USAGE_HIGHER || totalCpusRate >= SLAVE_USAGE_HIGHER) {
+                    new AddSlaveNodeAction(new AddSlaveNodeActionRequest(clusterId, incrementSize)).run();
+                }
+
+                //cpu, mem 둘다 SLAVE_USAGE_LOWER 보다 작아야 노드를 줄인다.
+                //단 slaveSize가 2이상이어야 줄이는 시도를 한다.
+                if(slaveSize > 1 && totalMemRate < SLAVE_USAGE_LOWER && totalCpusRate < SLAVE_USAGE_LOWER) {
+                    //작업이 없는 노드를 찾아서 하나만 종료시킨다.
+
+                    logger.debug("Slave node usage is lower than {}, and find to terminate candidate node.", SLAVE_USAGE_LOWER);
+                    String toTerminateSlaveHostname = null;
+                    for(Map.Entry<String, SlaveResource> entry : slaveResourceMap.entrySet()){
+                        SlaveResource resource = entry.getValue();
+                        if(resource.getUsedCpus() == 0 && resource.getUsedMem() == 0) {
+                            //사용하지 않는 노드이다.
+                            toTerminateSlaveHostname = entry.getKey();
+                            break;
+                        }
+                    }
+
+                    if(toTerminateSlaveHostname != null) {
+                        //종료시킨다.
+                        for(CommonInstance instance : clusterService.getClusterTopology().getMesosSlaveList()) {
+                            //hostname을 가지고 있는 instance를 찾는다.
+                            if(toTerminateSlaveHostname.equalsIgnoreCase(instance.getPrivateIpAddress())
+                                || toTerminateSlaveHostname.equalsIgnoreCase(instance.getPublicIpAddress())) {
+                                String instanceId = instance.getInstanceId();
+                                logger.debug("Terminate slave node > {} : {}", instanceId, instance.getPublicIpAddress());
+                                clusterService.removeSlaveNode(instanceId);
+                                break;
+                            }
+                        }
+                    } else {
+                        logger.debug("Cannot find idle slave node.");
+                    }
+                }
+            } catch (Throwable t) {
+                logger.error("error while cloud watching..", t);
+            }
+        }
     }
 
     class CloudResourceWatcher extends TimerTask {
@@ -187,7 +289,7 @@ public class CloudWatcher {
                         autoScaleRule.setAppScaleInLastTimestamp(0);
                     }
                 }
-            }catch(Throwable t) {
+            } catch (Throwable t) {
                 logger.error("error while cloud watching..", t);
             }
         }

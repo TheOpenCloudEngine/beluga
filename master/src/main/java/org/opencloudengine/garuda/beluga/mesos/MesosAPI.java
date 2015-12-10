@@ -15,6 +15,11 @@ import org.opencloudengine.garuda.beluga.utils.SshInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.List;
 
@@ -24,7 +29,7 @@ import java.util.List;
 public class MesosAPI {
     protected static Logger logger = LoggerFactory.getLogger(MesosAPI.class);
     private static final String MARATHON_CONTAINER = "docker,mesos";
-
+    private static final String API_PATH_SLAVES = "/master/slaves";
     private String clusterId;
     private ClusterService clusterService;
     private Environment environment;
@@ -34,6 +39,26 @@ public class MesosAPI {
         this.clusterId = clusterService.getClusterId();
         this.environment = environment;
     }
+
+    /*
+    * Mesos 의 GET API를 직접호출한다.
+    * */
+    public Response requestSlaves() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(chooseMesosEndPoint()).path(API_PATH_SLAVES);
+        return target.request(MediaType.APPLICATION_JSON_TYPE).get();
+    }
+    protected String chooseMesosEndPoint() {
+        // 여러개중 장애없는 것을 가져온다.
+        ClusterTopology topology = clusterService.getClusterTopology();
+        List<String> list = topology.getMesosMasterEndPoints();
+        if (list == null) {
+            return null;
+        }
+        ///FIXME 제일 처음것을 가져온다.
+        return list.get(0);
+    }
+
     private int calculateQuorum(int size) {
         return size / 2 + 1; //과반수.
     }
