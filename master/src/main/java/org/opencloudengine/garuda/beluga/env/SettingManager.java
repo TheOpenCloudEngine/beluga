@@ -1,5 +1,6 @@
 package org.opencloudengine.garuda.beluga.env;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.opencloudengine.garuda.beluga.cloud.watcher.AutoScaleRule;
 import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
@@ -9,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 엔진내 conf/하위 셋팅들을 가지고 있다.
@@ -206,7 +204,24 @@ public class SettingManager {
         String autoScaleRuleString = loadText(getSettingFilename(SettingFileNames.autoScaleRule, clusterId));
         try {
             if(autoScaleRuleString != null) {
-                return JsonUtil.json2Object(autoScaleRuleString, Map.class);
+                Map<String, AutoScaleRule> map = new HashMap<>();
+
+                JsonNode node = JsonUtil.toJsonNode(autoScaleRuleString);
+                Iterator<Map.Entry<String, JsonNode>> iter = node.fields();
+                while(iter.hasNext()) {
+                    Map.Entry<String, JsonNode> entry = iter.next();
+                    String appId = entry.getKey();
+                    JsonNode obj = entry.getValue();
+
+                    AutoScaleRule r = new AutoScaleRule();
+                    r.setInUse(obj.get("inUse").asBoolean());
+                    r.setScaleOutWorkLoad(obj.get("scaleOutWorkLoad").asInt());
+                    r.setScaleOutTimeInMin(obj.get("scaleOutTimeInMin").asInt());
+                    r.setScaleInWorkLoad(obj.get("scaleInWorkLoad").asInt());
+                    r.setScaleInTimeInMin(obj.get("scaleInTimeInMin").asInt());
+                    map.put(appId, r);
+                }
+                return map;
             }
         } catch (IOException e) {
             logger.error("", e);
@@ -214,7 +229,12 @@ public class SettingManager {
         return new HashMap<>();
     }
 
-    public void storeAutoScaleRule(String clusterId, String autoScaleRuleString) {
-        storeText(autoScaleRuleString, getSettingFilename(SettingFileNames.autoScaleRule, clusterId));
+    public void storeAutoScaleRule(String clusterId, Map<String, AutoScaleRule> autoScaleRuleMap) {
+        try {
+            String autoScaleRuleString = JsonUtil.object2String(autoScaleRuleMap);
+            storeText(autoScaleRuleString, getSettingFilename(SettingFileNames.autoScaleRule, clusterId));
+        } catch (IOException e) {
+            logger.error("", e);
+        }
     }
 }

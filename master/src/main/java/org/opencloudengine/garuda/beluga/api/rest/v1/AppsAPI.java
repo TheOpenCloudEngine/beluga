@@ -260,14 +260,16 @@ public class AppsAPI extends BaseAPI {
             /*
             * 오토스케일링 rule로 저장한다.
             * */
-            AutoScaleRule autoScaleRule = JsonUtil.json2Object(autoScaleConf, AutoScaleRule.class);
-            logger.debug("###[{}/{}] autoScaleRule > {}", clusterId, appId, autoScaleRule);
+            if(autoScaleConf != null) {
+                AutoScaleRule autoScaleRule = JsonUtil.json2Object(autoScaleConf, AutoScaleRule.class);
+                logger.debug("###[{}/{}] autoScaleRule > {}", clusterId, appId, autoScaleRule);
 
-            CloudWatcher cloudWatcher = clusterService(clusterId).getCloudWatcher();
-            if(autoScaleRule.isInUse() != null && autoScaleRule.isInUse()) {
-                clusterService(clusterId).getCloudWatcher().updateAutoScaleRule(appId, autoScaleRule);
-            } else {
-                cloudWatcher.updateAutoScaleRule(appId, null);
+                CloudWatcher cloudWatcher = clusterService(clusterId).getCloudWatcher();
+                if (autoScaleRule.isInUse() != null && autoScaleRule.isInUse()) {
+                    clusterService(clusterId).getCloudWatcher().updateAutoScaleRule(appId, autoScaleRule);
+                } else {
+                    cloudWatcher.updateAutoScaleRule(appId, null);
+                }
             }
 
             /*
@@ -294,14 +296,6 @@ public class AppsAPI extends BaseAPI {
             } else if(result instanceof Exception) {
                 return Response.status(500).entity(((Exception)result).getMessage()).build();
             }
-
-
-            ///TODO 앱 리스트에 저장한다.
-            //바로 바로 저장. 형식은 list를 한줄에 하나씩 써서 저장하자.
-
-
-
-
             return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);

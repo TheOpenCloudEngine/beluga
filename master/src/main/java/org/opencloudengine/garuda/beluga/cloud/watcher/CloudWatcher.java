@@ -5,11 +5,13 @@ import org.opencloudengine.garuda.beluga.cloud.CommonInstance;
 import org.opencloudengine.garuda.beluga.docker.CAdvisor1_3_API;
 import org.opencloudengine.garuda.beluga.docker.DockerRemoteApi;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
+import org.opencloudengine.garuda.beluga.mesos.marathon.MarathonAPI;
 import org.opencloudengine.garuda.beluga.service.ServiceException;
 import org.opencloudengine.garuda.beluga.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
 
@@ -35,10 +37,6 @@ public class CloudWatcher {
 
     private Map<String, AutoScaleRule> autoScaleRuleMap;
 
-    //조건에 부합하던 마지막 시간. 0이면 부합하지 않았던 것을 의미한다.
-    private long appScaleOutLastTimestamp;
-    private long appScaleInLastTimestamp;
-
     private Map<String, List<ContainerUsage>> allAppContainerUsageMap;
     private Map<String, ContainerUsage> appContainerUsageMap;
 
@@ -54,157 +52,158 @@ public class CloudWatcher {
         appContainerUsageMap = new HashMap<>();
         //오토 스케일-인/아웃.
         autoScaleRuleMap = SettingManager.getInstance().getAutoScaleRule(clusterId);
-        appScaleOutLastTimestamp = 0;
-        appScaleInLastTimestamp = 0;
+        logger.debug("[{}] Autoscale Rule > {}", clusterId, autoScaleRuleMap);
         timer = new Timer();
         cloudResourceWatcher = new CloudResourceWatcher();
         //2초후에 5초간격.
         timer.schedule(cloudResourceWatcher, 2 * 1000, 5 * 1000);
-
-
         return true;
     }
 
     public boolean stop() throws ServiceException {
         timer.cancel();
         autoScaleRuleMap.clear();
-
-        try {
-            String autoScaleRuleString = JsonUtil.object2String(autoScaleRuleMap);
-            logger.debug("autoScaleRuleString > {}", autoScaleRuleString);
-            SettingManager.getInstance().storeAutoScaleRule(clusterId, autoScaleRuleString);
-        } catch (IOException e) {
-            logger.error("", e);
-        }
-
         return true;
     }
 
-    public void updateAutoScaleRule(String appId, AutoScaleRule autoScaleRule) {
+    public synchronized void updateAutoScaleRule(String appId, AutoScaleRule autoScaleRule) {
         if(autoScaleRule != null) {
             autoScaleRuleMap.put(appId, autoScaleRule);
         } else {
             autoScaleRuleMap.remove(appId);
         }
-        //TODO 저장한다.
-
+        //오토스케일 룰 저장.
+        SettingManager.getInstance().storeAutoScaleRule(clusterId, autoScaleRuleMap);
+        logger.debug("[{}] Autoscale Rule Updated > {}", clusterId, autoScaleRuleMap);
     }
 
     class CloudResourceWatcher extends TimerTask {
 
         @Override
         public void run() {
+            try {
             /*
             * 모든 slave노드에서 앱 사용률을 가져온다.
             * webapp과 resouceApp이 섞여있다.
             * */
-            try {
+                Map<String, List<ContainerUsage>> currentAllAppContainerUsageMap = new HashMap<>();
                 for (CommonInstance slaveInstance : clusterService.getClusterTopology().getMesosSlaveList()) {
 //                String host = slaveInstance.getPrivateIpAddress();
                     String host = slaveInstance.getPublicIpAddress();
 
                     Map<String, List<String>> appIdContainerIdMap = dockerRemoteApi.getAppIdWithContainerIdMap(host);
                     Map<String, List<ContainerUsage>> appContainerUsageMap = cAdvisorAPI.getAppIdWithDockerContainerUsages(host, appIdContainerIdMap);
+
                     for (Map.Entry<String, List<ContainerUsage>> entry : appContainerUsageMap.entrySet()) {
                         String appId = entry.getKey();
                         List<ContainerUsage> usageList = entry.getValue();
-                        List<ContainerUsage> allUsageList = allAppContainerUsageMap.get(appId);
+                        List<ContainerUsage> allUsageList = currentAllAppContainerUsageMap.get(appId);
                         if (allUsageList == null) {
-                            allAppContainerUsageMap.put(appId, usageList);
+                            currentAllAppContainerUsageMap.put(appId, usageList);
                         } else {
                             allUsageList.addAll(usageList);
                         }
                     }
                 }
+                allAppContainerUsageMap = currentAllAppContainerUsageMap;
 
-            }catch(Throwable t) {
-                logger.error("error while resource watching..", t);
-            }
-
-            for(Map.Entry<String, List<ContainerUsage>> entry : allAppContainerUsageMap.entrySet()){
-                String appId = entry.getKey();
-                List<ContainerUsage> usageList = entry.getValue();
-                //max를 찾는다.
-                ContainerUsage maxUsage = null;
-                for(ContainerUsage usage : usageList) {
-                    if(maxUsage == null) {
-                        maxUsage = usage;
-                    } else {
-                        if(maxUsage.getWorkLoadPercent() < usage.getWorkLoadPercent()) {
+                Map<String, ContainerUsage> currentAppContainerUsageMap = new HashMap<>();
+                for (Map.Entry<String, List<ContainerUsage>> entry : allAppContainerUsageMap.entrySet()) {
+                    String appId = entry.getKey();
+                    List<ContainerUsage> usageList = entry.getValue();
+                    //max를 찾는다.
+                    ContainerUsage maxUsage = null;
+                    for (ContainerUsage usage : usageList) {
+                        if (maxUsage == null) {
                             maxUsage = usage;
+                        } else {
+                            if (maxUsage.getWorkLoadPercent() < usage.getWorkLoadPercent()) {
+                                maxUsage = usage;
+                            }
                         }
                     }
+                    currentAppContainerUsageMap.put(appId, maxUsage);
                 }
-                appContainerUsageMap.put(appId, maxUsage);
-            }
+                appContainerUsageMap = currentAppContainerUsageMap;
 
-//
-            for (Map.Entry<String, ContainerUsage> entry : appContainerUsageMap.entrySet()) {
-                String appId = entry.getKey();
-                ContainerUsage usage = entry.getValue();
-                AutoScaleRule autoScaleConfig = autoScaleRuleMap.get(appId);
-                if(autoScaleConfig == null) {
-                    continue;
-                }
+                for (Map.Entry<String, ContainerUsage> entry : appContainerUsageMap.entrySet()) {
+                    String appId = entry.getKey();
+                    ContainerUsage usage = entry.getValue();
+                    AutoScaleRule autoScaleRule = autoScaleRuleMap.get(appId);
+                    if (autoScaleRule == null) {
+                        continue;
+                    }
 
-                //1. scale out 먼저 체크.
-                int workLoadPercent = usage.getWorkLoadPercent();
-                if (workLoadPercent >= autoScaleConfig.getScaleOutWorkLoad()) {
+                    //1. scale out 먼저 체크.
+                    int workLoadPercent = usage.getWorkLoadPercent();
+                    if (workLoadPercent >= autoScaleRule.getScaleOutWorkLoad()) {
 
-                    if(appScaleOutLastTimestamp == 0) {
-                        appScaleOutLastTimestamp = Calendar.getInstance().getTimeInMillis();
+                        if (autoScaleRule.getAppScaleOutLastTimestamp() == 0) {
+                            autoScaleRule.setAppScaleOutLastTimestamp(Calendar.getInstance().getTimeInMillis());
+                        } else {
+                            //차이 확인.
+                            long diff = Calendar.getInstance().getTimeInMillis() - autoScaleRule.getAppScaleOutLastTimestamp();
+                            if (diff / 60000L >= autoScaleRule.getScaleOutTimeInMin()) {
+                                // 스케일을 늘린다. 하지만, 아직 스케일 도중이거나, 바로 효과가 나타나지 않을 경우에는 계속해서 스케일증가 요청이 중복되게 된다.
+                                // 그러므로, 스케일도중일때에는 clusterService에서 무시하도록 만든다.
+
+                                int scale = getScale(appId);
+                                logger.info("#[{}/{}] Requested auto scale-out from {} to {} instances. workLoad[{}] time[{}Min]", clusterId, appId, scale, scale + 1, usage.getWorkLoadPercent(), diff / 60000L);
+                                scale++;
+
+                                //String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env
+                                clusterService.getMarathonAPI().updateDockerApp(appId, null, null, null, null, scale, null);
+                                //다시 초기화한다.
+                                autoScaleRule.setAppScaleOutLastTimestamp(0);
+                            }
+                        }
+                    } else if (workLoadPercent < autoScaleRule.getScaleInWorkLoad()) {
+                        List<ContainerUsage> usageList = allAppContainerUsageMap.get(appId);
+                        if (usageList == null || usageList.size() <= 1) {
+                            //없거나 하나이면 스케일을 줄이지 않으므로, 검사도하지 않는다.
+                            continue;
+                        }
+                        if (autoScaleRule.getAppScaleInLastTimestamp() == 0) {
+                            autoScaleRule.setAppScaleInLastTimestamp(Calendar.getInstance().getTimeInMillis());
+                        } else {
+                            //차이 확인.
+                            long diff = Calendar.getInstance().getTimeInMillis() - autoScaleRule.getAppScaleInLastTimestamp();
+                            if (diff / 60000L >= autoScaleRule.getScaleInTimeInMin()) {
+                                // 스케일을 줄인다. 하지만 최저 1개 이상은 돌아가야 하므로, 1이 될때는 clusterService에서 알아서 무시하게 만든다.
+
+                                int scale = getScale(appId);
+                                logger.info("#[{}/{}] Requested auto scale-in from {} to {} instances. workLoad[{}] time[{}Min]", clusterId, appId, scale, scale - 1, usage.getWorkLoadPercent(), diff / 60000L);
+                                scale--;
+
+                                //String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env
+                                clusterService.getMarathonAPI().updateDockerApp(appId, null, null, null, null, scale, null);
+
+                                //다시 초기화한다.
+                                autoScaleRule.setAppScaleInLastTimestamp(0);
+                            }
+                        }
                     } else {
-                        //차이 확인.
-                        long diff = Calendar.getInstance().getTimeInMillis() - appScaleOutLastTimestamp;
-                        if(diff / 60000L >= autoScaleConfig.getScaleOutTimeInMin()) {
-                            // 스케일을 늘린다. 하지만, 아직 스케일 도중이거나, 바로 효과가 나타나지 않을 경우에는 계속해서 스케일증가 요청이 중복되게 된다.
-                            // 그러므로, 스케일도중일때에는 clusterService에서 무시하도록 만든다.
-
-                            logger.info("#[{}/{}] Requested auto scale-out 1 instance. workLoad[{}] time[{}Min]", clusterId, appId, usage.getWorkLoadPercent(), diff / 60000L );
-
-                            //TODO
-                            int scale = 1;
-                            scale++;
-
-                            //String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env
-//                            clusterService.getMarathonAPI().updateDockerApp(appId, null, null, null, null, scale, null);
-                            //다시 초기화한다.
-                            appScaleOutLastTimestamp = 0;
-                        }
+                        //어느 조건에도 부합하지 않으면 초기화.
+                        autoScaleRule.setAppScaleOutLastTimestamp(0);
+                        autoScaleRule.setAppScaleInLastTimestamp(0);
                     }
-                } else if (workLoadPercent < autoScaleConfig.getScaleInWorkLoad()) {
-                    if(appScaleInLastTimestamp == 0) {
-                        appScaleInLastTimestamp = Calendar.getInstance().getTimeInMillis();
-                    } else {
-                        //차이 확인.
-                        long diff = Calendar.getInstance().getTimeInMillis() - appScaleInLastTimestamp;
-                        if(diff / 60000L >= autoScaleConfig.getScaleInTimeInMin()) {
-                            // 스케일을 줄인다. 하지만 최저 1개 이상은 돌아가야 하므로, 1이 될때는 clusterService에서 알아서 무시하게 만든다.
-
-                            logger.info("#[{}/{}] Requested auto scale-in 1 instance. workLoad[{}] time[{}Min]", clusterId, appId, usage.getWorkLoadPercent(), diff / 60000L );
-
-                            //TODO
-//                            MarathonAPI marathonAPI = clusterService.getMarathonAPI();
-//                            Response response = marathonAPI.requestGetAPI("/apps/" + appId);
-//                            String appString = response.readEntity(String.class);
-//                            JsonUtil.toJsonNode(appString).get("");
-
-                            int scale = 2;
-                            scale--;
-
-                            //String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env
-//                            clusterService.getMarathonAPI().updateDockerApp(appId, null, null, null, null, scale, null);
-
-                            //다시 초기화한다.
-                            appScaleInLastTimestamp = 0;
-                        }
-                    }
-                } else {
-                    //어느 조건에도 부합하지 않으면 초기화.
-                    appScaleOutLastTimestamp = 0;
-                    appScaleInLastTimestamp = 0;
                 }
+            }catch(Throwable t) {
+                logger.error("error while cloud watching..", t);
             }
+        }
+
+        private int getScale(String appId) {
+            MarathonAPI marathonAPI = clusterService.getMarathonAPI();
+            Response response = marathonAPI.requestGetAPI("/apps/" + appId);
+            String appString = response.readEntity(String.class);
+            try {
+                int scale = JsonUtil.toJsonNode(appString).get("app").get("instances").asInt();
+                return scale;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return -1;
         }
     }
 }
