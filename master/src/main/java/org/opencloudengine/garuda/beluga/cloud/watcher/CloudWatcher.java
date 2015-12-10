@@ -133,8 +133,14 @@ public class CloudWatcher {
                  * 비율이 SLAVE_USAGE_LOWER 이하이면 작업이 없는 노드를 삭제한다.
                  */
                 int incrementSize = 1;
-                double totalMemRate = (double) totalUsedMem * 100d / (double) totalMem;
-                double totalCpusRate = totalUsedCpus * 100d / totalCpus;
+                double totalMemRate = 0d;
+                if(totalMem > 0) {
+                    totalMemRate = (double) totalUsedMem * 100d / (double) totalMem;
+                }
+                double totalCpusRate = 0d;
+                if(totalCpus > 0) {
+                    totalCpusRate = totalUsedCpus * 100d / totalCpus;
+                }
                 logger.debug(">> Total Slave Usage Rate memRate[{}] cpusRate[{}]", totalMemRate, totalCpusRate);
                 //cpu 또는 mem 이 SLAVE_USAGE_HIGHER 보다 크면 노드를 늘린다.
                 if(totalMemRate >= SLAVE_USAGE_HIGHER || totalCpusRate >= SLAVE_USAGE_HIGHER) {
@@ -150,7 +156,8 @@ public class CloudWatcher {
                     String toTerminateSlaveHostname = null;
                     for(Map.Entry<String, SlaveResource> entry : slaveResourceMap.entrySet()){
                         SlaveResource resource = entry.getValue();
-                        if(resource.getUsedCpus() == 0 && resource.getUsedMem() == 0) {
+                        //cpus 가 2.7E-17 와 같은 오차가 포함되어 있으므로 0.001보다 작으면 0으로 간주한다.
+                        if(resource.getUsedCpus() < 0.001 && resource.getUsedMem() == 0) {
                             //사용하지 않는 노드이다.
                             toTerminateSlaveHostname = entry.getKey();
                             break;
@@ -250,6 +257,9 @@ public class CloudWatcher {
                                 // 그러므로, 스케일도중일때에는 clusterService에서 무시하도록 만든다.
 
                                 int scale = getScale(appId);
+                                if(scale < 0) {
+                                    continue;
+                                }
                                 logger.info("#[{}/{}] Requested auto scale-out from {} to {} instances. workLoad[{}] time[{}Min]", clusterId, appId, scale, scale + 1, usage.getWorkLoadPercent(), diff / 60000L);
                                 scale++;
 
@@ -299,10 +309,12 @@ public class CloudWatcher {
             Response response = marathonAPI.requestGetAPI("/apps/" + appId);
             String appString = response.readEntity(String.class);
             try {
-                int scale = JsonUtil.toJsonNode(appString).get("app").get("instances").asInt();
-                return scale;
+                if(appString != null) {
+                    int scale = JsonUtil.toJsonNode(appString).get("app").get("instances").asInt();
+                    return scale;
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("", e);
             }
             return -1;
         }
