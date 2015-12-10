@@ -133,9 +133,9 @@ public class CloudWatcher {
                  * 비율이 SLAVE_USAGE_LOWER 이하이면 작업이 없는 노드를 삭제한다.
                  */
                 int incrementSize = 1;
-                double totalMemRate = (double) totalUsedMem / (double) totalMem;
-                double totalCpusRate = totalUsedCpus / totalCpus;
-
+                double totalMemRate = (double) totalUsedMem * 100d / (double) totalMem;
+                double totalCpusRate = totalUsedCpus * 100d / totalCpus;
+                logger.debug(">> Total Slave Usage Rate memRate[{}] cpusRate[{}]", totalMemRate, totalCpusRate);
                 //cpu 또는 mem 이 SLAVE_USAGE_HIGHER 보다 크면 노드를 늘린다.
                 if(totalMemRate >= SLAVE_USAGE_HIGHER || totalCpusRate >= SLAVE_USAGE_HIGHER) {
                     new AddSlaveNodeAction(new AddSlaveNodeActionRequest(clusterId, incrementSize)).run();
