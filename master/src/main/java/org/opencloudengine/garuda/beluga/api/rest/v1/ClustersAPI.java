@@ -31,7 +31,7 @@ public class ClustersAPI extends BaseAPI {
         }
 
         String clusterId = (String) data.get("id");
-        if(clusterId == null) {
+        if (clusterId == null) {
             return getErrorMessageOkResponse("ID must be set.");
         }
         String definitionId = (String) data.get("definition");
@@ -90,13 +90,13 @@ public class ClustersAPI extends BaseAPI {
             } else if (type.equalsIgnoreCase("add")) {
                 int size = (int) data.get("size");
                 String role = (String) data.get("role");
-                if(role.equalsIgnoreCase("mesos-slave")) {
+                if (role.equalsIgnoreCase("mesos-slave")) {
                     request = new AddSlaveNodeActionRequest(clusterId, size);
                 }
             } else if (type.equalsIgnoreCase("remove")) {
                 String role = (String) data.get("role");
                 String instanceId = (String) data.get("instanceId");
-                if(role.equalsIgnoreCase("mesos-slave")) {
+                if (role.equalsIgnoreCase("mesos-slave")) {
                     request = new RemoveSlaveNodeActionRequest(clusterId, instanceId);
                 }
             } else {
@@ -218,4 +218,17 @@ public class ClustersAPI extends BaseAPI {
         String domain = clusterService(clusterId).getDomainName();
         return Response.ok(domain).build();
     }
+
+    @POST
+    @Path("/{id}/increaseSlave")
+    public Response modifySlaveNode(@PathParam("id") String clusterId, Map<String, Object> data) throws Exception {
+        int size = 1;
+        Integer incrementSize = (Integer) data.get("incrementSize");
+        if(incrementSize != null) {
+            size = incrementSize;
+        }
+        clusterService(clusterId).addSlaveNode(size);
+        return Response.ok().build();
+    }
+
 }

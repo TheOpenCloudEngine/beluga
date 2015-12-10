@@ -17,6 +17,9 @@ $(function(){
             }
         })
     });
+    $("#modifySlaveSize").on("click", function(){
+
+    });
 });
 
 </script>
@@ -179,14 +182,15 @@ $(function(){
 
         <div class="col-md-12">
             <div class="box" >
-                <button type="button" class="btn btn-lg btn-primary outline" data-toggle="modal" data-target="#addSlaveModal"><i class="glyphicon glyphicon-plus"></i> Add Slave Worker</button>
                 <div class="pull-right">
-                    <button type="button" class="btn btn-lg btn-danger outline" data-toggle="modal" data-target="#removeSlaveModal"><i class="glyphicon glyphicon-minus"></i> Remove Slave Worker</button>
+                    <button type="button" class="btn btn-lg btn-primary outline" data-toggle="modal" data-target="#modifySlaveModal"><i class="glyphicon glyphicon-resize-full"></i> Modify Worker Size</button>
                 </div>
                 <h2>Modify Cluster</h2>
                 <p>This will increase or decrease slave worker size in the cluster.</p>
             </div>
         </div>
+
+        <div>&nbsp;</div>
         <div class="col-md-12">
             <div class="box" >
                 <div class="pull-right">
@@ -213,6 +217,32 @@ $(function(){
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
                 <button type="button" class="btn btn-danger" id="deleteClusterButton">Yes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modifySlaveModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Modify Worker Size</h4>
+            </div>
+            <div class="modal-body">
+                <p>This will resize slave node size, and decrease operation may restart running apps.</p>
+                <p><strong class="text-primary">Resize slave worker size in the cluster "${topology.clusterId}".</strong></p>
+                <select class="form-control" disabled>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="modifySlaveSize" disabled>Yes</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
