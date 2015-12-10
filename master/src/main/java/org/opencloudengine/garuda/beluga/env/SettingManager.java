@@ -26,6 +26,7 @@ public class SettingManager {
 	private Environment environment;
 	private static Map<String, Object> settingCache = new HashMap<String, Object>();
 	private static SettingManager instance;
+    public static String DEFAULT_CHARSET = "utf-8";
 
 	public SettingManager(Environment environment) {
 		this.environment = environment;
@@ -104,25 +105,28 @@ public class SettingManager {
     private boolean storeText(String text, String filename) {
         String configFilepath = getConfigFilepath(filename);
         logger.trace("Store text = {}", configFilepath);
-
-        PrintStream os = null;
         try {
-            os = new PrintStream(new FileOutputStream(configFilepath));
-            os.print(text);
+            FileUtils.write(new File(configFilepath), text, DEFAULT_CHARSET);
             return true;
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            if(os != null){
-                os.close();
-            }
         }
 
         return false;
     }
 
     private String loadText(String filename) {
-        //TODO
+        String configFilepath = getConfigFilepath(filename);
+        logger.trace("Load text = {}", configFilepath);
+
+        try {
+            File f = new File(configFilepath);
+            if(f.exists()) {
+                return FileUtils.readFileToString(new File(configFilepath), DEFAULT_CHARSET);
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
 
         return null;
     }
@@ -198,12 +202,15 @@ public class SettingManager {
 		return settings;
 	}
 
-    public Map<String, AutoScaleRule> getAutoScaleRule() {
-        String autoScaleRuleString = loadText(SettingFileNames.autoScaleRule);
-//        JsonUtil.json2Object(au)
-
-
-        //TODO
+    public Map<String, AutoScaleRule> getAutoScaleRule(String clusterId) {
+        String autoScaleRuleString = loadText(getSettingFilename(SettingFileNames.autoScaleRule, clusterId));
+        try {
+            if(autoScaleRuleString != null) {
+                return JsonUtil.json2Object(autoScaleRuleString, Map.class);
+            }
+        } catch (IOException e) {
+            logger.error("", e);
+        }
         return new HashMap<>();
     }
 

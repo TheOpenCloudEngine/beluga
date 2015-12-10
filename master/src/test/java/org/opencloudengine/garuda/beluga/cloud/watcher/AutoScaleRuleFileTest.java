@@ -15,7 +15,7 @@ import java.util.Map;
 public class AutoScaleRuleFileTest {
 
     @Test
-    public void save() {
+    public void saveAndLoad() {
         try {
             AutoScaleRule rule = new AutoScaleRule();
             rule.setInUse(true);
@@ -31,8 +31,15 @@ public class AutoScaleRuleFileTest {
 
             String clusterId = "good";
             Environment env = new Environment("/tmp");
+            env.filePaths().path("conf").file().mkdir();
             new SettingManager(env).asSingleton();
-            SettingManager.getInstance().storeAutoScaleRule(clusterId, autoScaleRuleString);
+
+            //기록.
+//            SettingManager.getInstance().storeAutoScaleRule(clusterId, autoScaleRuleString);
+
+            Map<String, AutoScaleRule> autoScaleRule = SettingManager.getInstance().getAutoScaleRule(clusterId);
+            System.out.println("autoScaleRule > " + autoScaleRule);
+
         } catch (IOException e) {
             e.printStackTrace();;
         }
