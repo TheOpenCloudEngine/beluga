@@ -158,8 +158,8 @@ public class CloudWatcher {
                             }
                         }
                     } else if (workLoadPercent < autoScaleRule.getScaleInWorkLoad()) {
-                        List<ContainerUsage> usageList = allAppContainerUsageMap.get(appId);
-                        if (usageList == null || usageList.size() <= 1) {
+                        int scale = getScale(appId);
+                        if (scale <= 1) {
                             //없거나 하나이면 스케일을 줄이지 않으므로, 검사도하지 않는다.
                             continue;
                         }
@@ -171,7 +171,6 @@ public class CloudWatcher {
                             if (diff / 60000L >= autoScaleRule.getScaleInTimeInMin()) {
                                 // 스케일을 줄인다. 하지만 최저 1개 이상은 돌아가야 하므로, 1이 될때는 clusterService에서 알아서 무시하게 만든다.
 
-                                int scale = getScale(appId);
                                 logger.info("#[{}/{}] Requested auto scale-in from {} to {} instances. workLoad[{}] time[{}Min]", clusterId, appId, scale, scale - 1, usage.getWorkLoadPercent(), diff / 60000L);
                                 scale--;
 

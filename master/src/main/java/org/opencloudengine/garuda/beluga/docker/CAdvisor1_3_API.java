@@ -49,6 +49,9 @@ public class CAdvisor1_3_API {
                     try {
                         if (dockerStatString != null) {
                             JsonNode obj = JsonUtil.toJsonNode(dockerStatString).get("/docker/" + containerId);
+                            if(obj == null) {
+                                continue;
+                            }
                             JsonNode stats = obj.get("stats");
                             if (stats.size() >= 5) {
                                 JsonNode oldestStat = stats.get(stats.size() - 5);
