@@ -1,9 +1,6 @@
 package org.opencloudengine.garuda.beluga.cloud.watcher;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-
-import javax.xml.bind.annotation.XmlTransient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by swsong on 2015. 11. 27..
@@ -17,9 +14,9 @@ public class AutoScaleRule {
 
     // 조건에 부합하던 마지막 시간. 0이면 부합하지 않았던 것을 의미한다.
     // runtime 변수로 활용하며 저장하지는 않는다.
-    @JsonIgnoreProperties
+    @JsonIgnore
     private long appScaleOutLastTimestamp;
-    @JsonIgnoreProperties
+    @JsonIgnore
     private long appScaleInLastTimestamp;
 
     public AutoScaleRule() { }
