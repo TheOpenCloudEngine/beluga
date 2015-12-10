@@ -1,8 +1,10 @@
 package org.opencloudengine.garuda.beluga.env;
 
 import org.apache.commons.io.FileUtils;
+import org.opencloudengine.garuda.beluga.cloud.watcher.AutoScaleRule;
 import org.opencloudengine.garuda.beluga.settings.ClusterDefinition;
 import org.opencloudengine.garuda.beluga.settings.IaasProviderConfig;
+import org.opencloudengine.garuda.beluga.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +100,32 @@ public class SettingManager {
 		
 		return false;
 	}
+
+    private boolean storeText(String text, String filename) {
+        String configFilepath = getConfigFilepath(filename);
+        logger.trace("Store text = {}", configFilepath);
+
+        PrintStream os = null;
+        try {
+            os = new PrintStream(new FileOutputStream(configFilepath));
+            os.print(text);
+            return true;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            if(os != null){
+                os.close();
+            }
+        }
+
+        return false;
+    }
+
+    private String loadText(String filename) {
+        //TODO
+
+        return null;
+    }
 	
 	public Settings getSystemSettings() {
 		return getSettings(SettingFileNames.systemProperties);
@@ -170,4 +198,16 @@ public class SettingManager {
 		return settings;
 	}
 
+    public Map<String, AutoScaleRule> getAutoScaleRule() {
+        String autoScaleRuleString = loadText(SettingFileNames.autoScaleRule);
+//        JsonUtil.json2Object(au)
+
+
+        //TODO
+        return new HashMap<>();
+    }
+
+    public void storeAutoScaleRule(String clusterId, String autoScaleRuleString) {
+        storeText(autoScaleRuleString, getSettingFilename(SettingFileNames.autoScaleRule, clusterId));
+    }
 }

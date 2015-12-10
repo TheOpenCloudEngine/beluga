@@ -7,16 +7,16 @@ public class ContainerUsage {
 
     private String appId;
     private String containerId;
-    private double loadAverage;
-    private double cpuPercent;
-    private double memoryPercent;
+    private int workLoadPercent;
+    private int cpuPercent;
+    private int memoryPercent;
     private long maxMemory;
     private long usedMemory;
 
-    public ContainerUsage(String appId, String containerId, double loadAverage, double cpuPercent, double memoryPercent, long maxMemory, long usedMemory) {
+    public ContainerUsage(String appId, String containerId, int workLoadPercent, int cpuPercent, int memoryPercent, long maxMemory, long usedMemory) {
         this.appId = appId;
         this.containerId = containerId;
-        this.loadAverage = loadAverage;
+        this.workLoadPercent = workLoadPercent;
         this.cpuPercent = cpuPercent;
         this.memoryPercent = memoryPercent;
         this.maxMemory = maxMemory;
@@ -39,27 +39,27 @@ public class ContainerUsage {
         this.containerId = containerId;
     }
 
-    public double getLoadAverage() {
-        return loadAverage;
+    public int getWorkLoadPercent() {
+        return workLoadPercent;
     }
 
-    public void setLoadAverage(double loadAverage) {
-        this.loadAverage = loadAverage;
+    public void setWorkLoadPercent(int workLoadPercent) {
+        this.workLoadPercent = workLoadPercent;
     }
 
-    public double getCpuPercent() {
+    public int getCpuPercent() {
         return cpuPercent;
     }
 
-    public void setCpuPercent(double cpuPercent) {
+    public void setCpuPercent(int cpuPercent) {
         this.cpuPercent = cpuPercent;
     }
 
-    public double getMemoryPercent() {
+    public int getMemoryPercent() {
         return memoryPercent;
     }
 
-    public void setMemoryPercent(double memoryPercent) {
+    public void setMemoryPercent(int memoryPercent) {
         this.memoryPercent = memoryPercent;
     }
 
@@ -82,7 +82,7 @@ public class ContainerUsage {
     @Override
     public String toString() {
         return new StringBuffer().append("ResourceUsage: app[").append(appId).append("] container[").append(containerId).append("] load[")
-                .append(loadAverage).append("] cpu[").append(cpuPercent).append("%] memory[").append(memoryPercent).append("%] memUsed[")
+                .append(workLoadPercent).append("%] cpu[").append(cpuPercent).append("%] memory[").append(memoryPercent).append("%] memUsed[")
                 .append(usedMemory).append("] memMax[").append(maxMemory).append("]").toString();
     }
 }

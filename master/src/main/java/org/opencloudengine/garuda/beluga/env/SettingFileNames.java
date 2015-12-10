@@ -13,4 +13,6 @@ public class SettingFileNames {
 
     public static final String clusterDefinition = "define.%s.conf";
     public static final String topologyConfig = "topology.%s.conf";
+
+    public static final String autoScaleRule = "autoscale.%s.rule";
 }

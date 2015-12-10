@@ -4,47 +4,60 @@ package org.opencloudengine.garuda.beluga.cloud.watcher;
  * Created by swsong on 2015. 11. 27..
  */
 public class AutoScaleRule {
-    private Integer scaleOutLoadAverage;
-    private Integer scaleOutDuringInMin;
-    private Integer scaleInLoadAverage;
-    private Integer scaleInDuringInMin;
+    private Boolean inUse;
+    private Integer scaleOutWorkLoad;
+    private Integer scaleOutTimeInMin;
+    private Integer scaleInWorkLoad;
+    private Integer scaleInTimeInMin;
 
-    public AutoScaleRule(Integer scaleOutLoadAverage, Integer scaleOutDuringInMin, Integer scaleInLoadAverage, Integer scaleInDuringInMin) {
-        this.scaleOutLoadAverage = scaleOutLoadAverage;
-        this.scaleOutDuringInMin = scaleOutDuringInMin;
-        this.scaleInLoadAverage = scaleInLoadAverage;
-        this.scaleInDuringInMin = scaleInDuringInMin;
+    public AutoScaleRule() { }
+
+    public Boolean isInUse() {
+        return inUse;
     }
 
-    public Integer getScaleOutLoadAverage() {
-        return scaleOutLoadAverage;
+    public void setInUse(Boolean inUse) {
+        this.inUse = inUse;
     }
 
-    public void setScaleOutLoadAverage(Integer scaleOutLoadAverage) {
-        this.scaleOutLoadAverage = scaleOutLoadAverage;
+    public Integer getScaleOutWorkLoad() {
+        return scaleOutWorkLoad;
     }
 
-    public Integer getScaleOutDuringInMin() {
-        return scaleOutDuringInMin;
+    public void setScaleOutWorkLoad(Integer scaleOutWorkLoad) {
+        this.scaleOutWorkLoad = scaleOutWorkLoad;
     }
 
-    public void setScaleOutDuringInMin(Integer scaleOutDuringInMin) {
-        this.scaleOutDuringInMin = scaleOutDuringInMin;
+    public Integer getScaleOutTimeInMin() {
+        return scaleOutTimeInMin;
     }
 
-    public Integer getScaleInLoadAverage() {
-        return scaleInLoadAverage;
+    public void setScaleOutTimeInMin(Integer scaleOutTimeInMin) {
+        this.scaleOutTimeInMin = scaleOutTimeInMin;
     }
 
-    public void setScaleInLoadAverage(Integer scaleInLoadAverage) {
-        this.scaleInLoadAverage = scaleInLoadAverage;
+    public Integer getScaleInWorkLoad() {
+        return scaleInWorkLoad;
     }
 
-    public Integer getScaleInDuringInMin() {
-        return scaleInDuringInMin;
+    public void setScaleInWorkLoad(Integer scaleInWorkLoad) {
+        this.scaleInWorkLoad = scaleInWorkLoad;
     }
 
-    public void setScaleInDuringInMin(Integer scaleInDuringInMin) {
-        this.scaleInDuringInMin = scaleInDuringInMin;
+    public Integer getScaleInTimeInMin() {
+        return scaleInTimeInMin;
+    }
+
+    public void setScaleInTimeInMin(Integer scaleInTimeInMin) {
+        this.scaleInTimeInMin = scaleInTimeInMin;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuffer().append("AutoScaleRule scaleOutWorkLoad[")
+                .append(scaleOutWorkLoad).append("%] scaleOutTime[")
+                .append(scaleOutTimeInMin).append("Min] scaleInWorkLoad[")
+                .append(scaleInWorkLoad).append("%] scaleInTime[")
+                .append(scaleInTimeInMin).append("Min]").toString();
     }
 }

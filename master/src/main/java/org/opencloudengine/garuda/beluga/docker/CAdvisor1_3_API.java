@@ -39,9 +39,9 @@ public class CAdvisor1_3_API {
                 dockerTarget.path(containerId);
                 logger.trace("Get cAdvisor Stat Data >> {}", dockerTarget.getUri());
                 Response response = dockerTarget.request(MediaType.APPLICATION_JSON_TYPE).get();
-                double loadAverage = 0f;
-                double cpuPercent = 0f;
-                double memoryPercent = 0f;
+                int workLoadPercent = 0; //공식 : loadAvg * 100 / numCore , 즉 cpu가 2개인데 loadAvg가 2이면 100이 나온다.
+                int cpuPercent = 0;
+                int memoryPercent = 0;
                 long maxMemory = 0;
                 long usedMemory = 0;
                 if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
@@ -54,15 +54,16 @@ public class CAdvisor1_3_API {
                                 JsonNode oldestStat = stats.get(stats.size() - 5);
                                 JsonNode latestStat = stats.get(stats.size() - 1);
 
-                                loadAverage = latestStat.get("cpu").get("load_average").asDouble(0);
+                                long numCores = latestStat.get("cpu").get("usage").get("per_cpu_usage").size();
+                                double loadAverage = latestStat.get("cpu").get("load_average").asDouble(0);
+                                workLoadPercent = (int) (loadAverage * 100) / (int) numCores;
                                 long usedCpuClock = latestStat.get("cpu").get("usage").get("total").asLong(0)
                                         - oldestStat.get("cpu").get("usage").get("total").asLong(0);
-                                long numCores = latestStat.get("cpu").get("usage").get("per_cpu_usage").size();
                                 //5초간의 차이로 cpu를 계산.
-                                cpuPercent = usedCpuClock * 100L / (numCores * 1000000000L * 4L); //5초사이 이므로 간격은 4이다.
+                                cpuPercent = (int) (usedCpuClock * 100L / (numCores * 1000000000L * 4L)); //5초사이 이므로 간격은 4이다.
                                 maxMemory = obj.get("spec").get("memory").get("limit").asLong(1);
                                 usedMemory = latestStat.get("memory").get("usage").asLong(0);
-                                memoryPercent = usedMemory * 100L / maxMemory;
+                                memoryPercent = (int) (usedMemory * 100L / maxMemory);
                             }
                         }
                     } catch (IOException e) {
@@ -70,7 +71,7 @@ public class CAdvisor1_3_API {
                     }
                 }
 
-                ContainerUsage containerUsage = new ContainerUsage(appId, containerId, loadAverage, cpuPercent, memoryPercent, maxMemory, usedMemory);
+                ContainerUsage containerUsage = new ContainerUsage(appId, containerId, workLoadPercent, cpuPercent, memoryPercent, maxMemory, usedMemory);
                 List<ContainerUsage> usageList = map.get(appId);
                 if (usageList == null) {
                     usageList = new ArrayList<>();

@@ -29,7 +29,7 @@ public class JsonUtil {
     public static String object2String(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-        return mapper.writer(sdf).writeValueAsString(object);
+        return mapper.writer(sdf).withDefaultPrettyPrinter().writeValueAsString(object);
     }
 
     public static JsonNode toJsonNode(String json) throws IOException {

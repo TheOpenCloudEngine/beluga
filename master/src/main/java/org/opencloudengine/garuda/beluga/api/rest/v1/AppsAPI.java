@@ -9,6 +9,8 @@ import org.opencloudengine.garuda.beluga.action.ActionStatus;
 import org.opencloudengine.garuda.beluga.action.serviceApp.DeployDockerImageActionRequest;
 import org.opencloudengine.garuda.beluga.action.webapp.DeployWebAppActionRequest;
 import org.opencloudengine.garuda.beluga.action.webapp.WebAppContextFile;
+import org.opencloudengine.garuda.beluga.cloud.watcher.AutoScaleRule;
+import org.opencloudengine.garuda.beluga.cloud.watcher.CloudWatcher;
 import org.opencloudengine.garuda.beluga.common.util.JsonUtils;
 import org.opencloudengine.garuda.beluga.env.SettingManager;
 import org.opencloudengine.garuda.beluga.exception.BelugaException;
@@ -252,6 +254,21 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("memory").toString());
             }
             Integer scale = (Integer) data.get("scale");
+            String autoScaleConf = (String) data.get("autoScaleConf");
+
+
+            /*
+            * 오토스케일링 rule로 저장한다.
+            * */
+            AutoScaleRule autoScaleRule = JsonUtil.json2Object(autoScaleConf, AutoScaleRule.class);
+            logger.debug("###[{}/{}] autoScaleRule > {}", clusterId, appId, autoScaleRule);
+
+            CloudWatcher cloudWatcher = clusterService(clusterId).getCloudWatcher();
+            if(autoScaleRule.isInUse() != null && autoScaleRule.isInUse()) {
+                clusterService(clusterId).getCloudWatcher().updateAutoScaleRule(appId, autoScaleRule);
+            } else {
+                cloudWatcher.updateAutoScaleRule(appId, null);
+            }
 
             /*
             * 중요!!! 여기서 리소스 노드와 연동할수 있는 환경변수를 넣어준다.

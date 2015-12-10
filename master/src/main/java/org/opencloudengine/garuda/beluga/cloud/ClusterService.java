@@ -141,6 +141,9 @@ public class ClusterService extends AbstractClusterService {
         return true;
     }
 
+    public CloudWatcher getCloudWatcher() {
+        return cloudWatcher;
+    }
     protected ClusterService createCluster(String definitionId, String domainName, boolean waitUntilInstanceAvailable) throws BelugaException, UnknownIaasProviderException {
         this.domainName = domainName;
         SettingManager settingManager = environment.settingManager();
