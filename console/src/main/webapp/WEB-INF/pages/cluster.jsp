@@ -204,49 +204,49 @@ $(function(){
     </div>
 </div>
 
-<%--<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" >--%>
-    <%--<div class="modal-dialog">--%>
-        <%--<div class="modal-content">--%>
-            <%--<div class="modal-header">--%>
-                <%--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>--%>
-                <%--<h4 class="modal-title">Are you sure?</h4>--%>
-            <%--</div>--%>
-            <%--<div class="modal-body">--%>
-                <%--<p>This will terminate running app and permanently delete all instances.</p>--%>
-                <%--<p><strong class="text-danger">Delete cluster "${topology.clusterId}".</strong></p>--%>
-            <%--</div>--%>
-            <%--<div class="modal-footer">--%>
-                <%--<button type="button" class="btn btn-default" data-dismiss="modal">No</button>--%>
-                <%--<button type="button" class="btn btn-danger" id="deleteClusterButton">Yes</button>--%>
-            <%--</div>--%>
-        <%--</div><!-- /.modal-content -->--%>
-    <%--</div><!-- /.modal-dialog -->--%>
-<%--</div><!-- /.modal -->--%>
-
-<div class="modal fade" id="modifySlaveModal" tabindex="-1" role="dialog" >
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Modify Worker Size</h4>
+                <h4 class="modal-title">Are you sure?</h4>
             </div>
             <div class="modal-body">
-                <p>This will resize slave node size, and decrease operation may restart running apps.</p>
-                <p><strong class="text-primary">Resize slave worker size in the cluster "${topology.clusterId}".</strong></p>
-                <select class="form-control" disabled>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
+                <p>This will terminate running app and permanently delete all instances.</p>
+                <p><strong class="text-danger">Delete cluster "${topology.clusterId}".</strong></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="modifySlaveSize" disabled>Yes</button>
+                <button type="button" class="btn btn-danger" id="deleteClusterButton">Yes</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<%--<div class="modal fade" id="modifySlaveModal" tabindex="-1" role="dialog" >--%>
+    <%--<div class="modal-dialog">--%>
+        <%--<div class="modal-content">--%>
+            <%--<div class="modal-header">--%>
+                <%--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>--%>
+                <%--<h4 class="modal-title">Modify Worker Size</h4>--%>
+            <%--</div>--%>
+            <%--<div class="modal-body">--%>
+                <%--<p>This will resize slave node size, and decrease operation may restart running apps.</p>--%>
+                <%--<p><strong class="text-primary">Resize slave worker size in the cluster "${topology.clusterId}".</strong></p>--%>
+                <%--<select class="form-control" disabled>--%>
+                    <%--<option>1</option>--%>
+                    <%--<option>2</option>--%>
+                    <%--<option>3</option>--%>
+                    <%--<option>4</option>--%>
+                    <%--<option>5</option>--%>
+                <%--</select>--%>
+            <%--</div>--%>
+            <%--<div class="modal-footer">--%>
+                <%--<button type="button" class="btn btn-default" data-dismiss="modal">No</button>--%>
+                <%--<button type="button" class="btn btn-primary" id="modifySlaveSize" disabled>Yes</button>--%>
+            <%--</div>--%>
+        <%--</div><!-- /.modal-content -->--%>
+    <%--</div><!-- /.modal-dialog -->--%>
+<%--</div><!-- /.modal -->--%>
 
 <%@include file="bottom.jsp" %>
