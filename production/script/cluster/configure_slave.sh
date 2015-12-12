@@ -36,7 +36,7 @@ sudo service zookeeper restart
 sudo service mesos-slave restart
 
 sudo service docker restart
-
+sleep 2
 sudo docker start cadvisor
 
 echo -e "1\n1" | sudo passwd
