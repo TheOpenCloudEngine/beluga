@@ -27,14 +27,7 @@ $ ./install_docker_daemon.sh
 
 ## 설정사항
 
-1 . beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
-
-```
-$ cd script/docker
-$ ./add_insecure_registry.sh <Management 아이피>
-```
-
-2 . Credential 입력
+1 . Credential 입력
 
 `conf/iaas.profile.conf` 에 `accessKey`, `credentialKey`, `endPoint` 를 입력한다.
 
@@ -54,7 +47,7 @@ openstack1.endPoint=http://10.0.1.11:5000/v2.0
 ```
 
 
-3 . define설정파일에 keyPair을 설정한다.
+2 . define설정파일에 keyPair을 설정한다.
 
 인스턴스 관리에 사용할 keyPair는 반드시 먼저 하나 만들어두도록 한다.
 beluga-aws라는 이름의 key pair를 만들었다면 beluga-aws.pem파일을 특정위치에 복사하고, `define.XXX.conf` 파일을 아래와 같이 수정한다.
@@ -67,11 +60,21 @@ keyPairFile=/home/ubuntu/beluga-aws.pem
 
 $ chmod 400 /home/ubuntu/beluga-aws.pem
 
-4 . hosts 파일. (Optional)
+3 . hosts 파일. (Optional)
 
 오픈스택을 설치시 설정파일에 controller의 IP 주소대신 `controller`라는 이름을 넣었다면 Beluga에서 접근시 `controller`라는 이름으로 접근하게 된다. 그러므로 `/etc/hosts`파일에 아래 항목을 추가한다.
 ```
 10.0.1.11  controller
+```
+
+4 . 도커 레지스트리 접근 설정 (클러스터 생성후)
+
+beluga의 private docker registry(management노드)에 접근하기 위해서는 아래 명령을 수행한다.
+
+클러스터를 생성해야 Management 아이피를 알수 있으므로, 이 설정은 서버를 기동하고, 클러스터를 생성한 뒤에 진행해야 한다.
+```
+$ cd script/docker
+$ ./add_insecure_registry.sh <Management 아이피>
 ```
 
 ## 서비스시작/종료
