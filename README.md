@@ -25,7 +25,7 @@ $ cd script/cluster
 $ ./install_docker_daemon.sh
 ```
 
-> 도커를 설치하고 나서는 ubuntu 계정에 docker 그룹권한이 할당되므로, 활성화하기 위해서는 반드시 로그아웃후 재로그인 하도록 한다.
+> 도커를 설치하고 나서는 ubuntu 계정에 docker 그룹권한이 할당되므로, 활성화하기 위해서는 반드시 로그아웃후 재로그인 하도록 한뒤, Beluga를 시작해야 한다.
 
 ## 설정사항
 
