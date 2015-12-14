@@ -1,4 +1,4 @@
-# Beluga
+# Beluga [![Build Status](https://travis-ci.org/TheOpenCloudEngine/beluga.png)](https://travis-ci.org/TheOpenCloudEngine/beluga)
 
 ## Demo videos
 
