@@ -74,7 +74,7 @@ public class CAdvisor1_3_API {
                     }
                 }
 
-                ContainerUsage containerUsage = new ContainerUsage(appId, containerId, workLoadPercent, cpuPercent, memoryPercent, maxMemory, usedMemory);
+                ContainerUsage containerUsage = new ContainerUsage(appId, containerId, /*workLoadPercent*/cpuPercent, cpuPercent, memoryPercent, maxMemory, usedMemory);
                 List<ContainerUsage> usageList = map.get(appId);
                 if (usageList == null) {
                     usageList = new ArrayList<>();
