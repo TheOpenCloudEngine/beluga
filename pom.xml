@@ -45,10 +45,9 @@
         <!-- Java EE -->
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.jsp.version>2.1</javax.jsp.version>
-        <javax.el.version>1.0</javax.el.version>
         <javax.jstl.version>1.1.2</javax.jstl.version>
         <tablibs.version>1.1.2</tablibs.version>
-        <javax.el.version>1.0</javax.el.version>
+        <javax.el.version>2.2</javax.el.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.persistence.version>1.0</javax.persistence.version>
         <javax.jaxws.version>2.1-1</javax.jaxws.version>
