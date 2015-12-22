@@ -393,15 +393,6 @@ public class AppsAPI extends BaseAPI {
             Map<String, Object> entity = parseMarathonResponse(response);
             notifyDeployment(clusterId, entity);
 
-
-            ///TODO 앱 리스트에서 삭제한다.
-            //바로바로 저장
-
-
-
-
-
-
             return Response.ok().build();
         } catch (Throwable t) {
             logger.error("", t);
