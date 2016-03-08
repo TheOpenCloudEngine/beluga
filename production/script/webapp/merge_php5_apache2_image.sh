@@ -4,6 +4,12 @@
 # @author : Sang Wook, Song
 #
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# Mac Os X
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    source "$DIR/../osx/mac-osx-docker-booting.sh"
+fi
+
 if [ $# -ne 3 ] ; then
     echo "Usage: $0 <image_name> <zip_file>"
     echo "Sample: $0 192.168.0.10/php-calendar Calendar.zip"

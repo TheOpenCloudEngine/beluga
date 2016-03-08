@@ -4,6 +4,12 @@
 # @author : Sang Wook, Song
 #
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# Mac Os X
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    source "$DIR/../osx/mac-osx-docker-booting.sh"
+fi
+
 echo Command : $0 "$@"
 
 if [ $# -lt 4 ] ; then

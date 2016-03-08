@@ -7,6 +7,10 @@ sudo apt-add-repository -y ppa:vbernat/haproxy-1.5
 sudo apt-get -y update
 sudo apt-get install haproxy
 
+sudo wget -qO- https://get.docker.com/ | sh
+
+sudo usermod -aG docker ubuntu
+
 cat <<EndOfStatConfig | sudo tee -a /etc/haproxy/haproxy.cfg
 
 listen stats :1900
