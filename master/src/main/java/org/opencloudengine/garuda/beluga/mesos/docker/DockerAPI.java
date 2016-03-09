@@ -1,14 +1,10 @@
 package org.opencloudengine.garuda.beluga.mesos.docker;
 
-import ch.qos.logback.classic.Level;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.opencloudengine.garuda.beluga.action.webapp.WebAppContextFile;
-import org.opencloudengine.garuda.beluga.common.log.ErrorLogOutputStream;
-import org.opencloudengine.garuda.beluga.common.log.InfoLogOutputStream;
-import org.opencloudengine.garuda.beluga.common.process.ProcessLogHandler;
+import org.opencloudengine.garuda.beluga.common.progress.ProcessLogHandler;
 import org.opencloudengine.garuda.beluga.env.Environment;
 import org.opencloudengine.garuda.beluga.env.ScriptFileNames;
 import org.slf4j.Logger;
