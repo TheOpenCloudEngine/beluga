@@ -27,32 +27,32 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 
 ![vb2](/docs/images/vb/vb2.png)
 
-![vb3](../images/vb/vb3.png)
+![vb3](/docs/images/vb/vb3.png)
 
 생성 된 가상머신을 우클륵하여 설정 창을 불러옵니다.
 
-![vb4](../images/vb/vb4.png)
+![vb4](/docs/images/vb/vb4.png)
 
 네트워크 탭에서 네트워크 어댑터를 브리지 어댑터로 설정합니다.
 
 브리지 어댑터의 종류는 보통 제일 첫번째 것을 사용하며, 사용자의 인터넷 환경에 맞는 것을 선택하여 줍니다.
 
-![vb5](../images/vb/vb5.png)
+![vb5](/docs/images/vb/vb5.png)
 
 가상 머신을 시작하면 우분투가 구동되는 모습을 볼 수 있습니다.
 
-![vb6](../images/vb/vb6.png)
+![vb6](/docs/images/vb/vb6.png)
 
 로그인 아이디와 패스워드는 uengine / uengine 으로 되어있습니다.
 
-![vb7](../images/vb/vb7.png)
+![vb7](/docs/images/vb/vb7.png)
 
 
 ## Find address
 
 구동 된 가상머신의 터미널에서 ifconfig 명령어를 통해 할당 된 아이피를 알 수 있습니다.
 
-![vb8](../images/vb/vb8.png)
+![vb8](/docs/images/vb/vb8.png)
 
 
 [Download ova](#download-ova) 과정에서 수동으로 서버를 설치하셨을 경우에는, ssh 인스톨을 실행합니다.
