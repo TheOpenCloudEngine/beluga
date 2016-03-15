@@ -25,7 +25,7 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 
 파일 - 가상시스템 가져오기 를 통해 다운로드 받은 ova 를 불러옵니다.
 
-![vb2](../images/vb/vb2.png)
+![vb2](/docs/images/vb/vb2.png)
 
 ![vb3](../images/vb/vb3.png)
 
