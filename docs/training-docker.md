@@ -13,6 +13,9 @@
     
  - [Docker Registry](#docker-registry)
     - [Docker Hub](#docker-hub)
+        - [Account creation and login](#account-creation-and-login)
+        - [Searching for images](#searching-for-images)
+        - [Pushing a repository to Docker Hub](#pushing-a-repository-to-docker-hub)
     - [Private registry](#private-registry)
  
  - [Launch Web Application](#launch-web-application)
@@ -60,7 +63,7 @@ $ sudo apt-get update
 $ sudo apt-get install curl
 $ curl -sSL https://get.docker.com/ | sh
 
-$ sudo usermod -aG docker ubuntu
+$ sudo usermod -aG docker uengine
 
 ```
 
@@ -452,8 +455,416 @@ root@5c6d86adfd2e:~#
 
 ```
  
+### Version management
+
+도커에서 이미지는 불변이지만 이 이미지 위에 무언가를 더해서 새로운 이미지를 만들어내는 일이 가능합니다. 
+좀 더 정확히 말하면 컨테이너는 변경가능(Mutabe)합니다. 
+특정한 이미지로부터 생성된 컨테이너에 어떤 변경사항을 더하고, 
+이 변경된 상태를 이미지로 만들어내는 것이 가능합니다.
+
+먼저, ubuntu 기본 이미지를 bash 를 사용하여 부팅합니다.
+
+```
+$ sudo docker run -i -t  ubuntu:14.04 /bin/bash
+root@eeafb06bdc57:/# 
+
+```
+
+컨테이너에 Git을 설치합니다. 위에서 실행한 쉘에 다음과 같은 명령어를 입력합니다.
+
+```
+root@eeafb06bdc57:/# apt-get install -y git
+...
+
+root@eeafb06bdc57:/# git --version
+git version 1.9.1
+
+```
+
+exit 명령어로 컨테이너의 shell 에서 빠져나간 후, docker ps 명령어로 컨테이너를 검색합니다.
+
+```
+root@eeafb06bdc57:/# exit
+
+$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+```
+
+shell 이 종료된 시점에 컨테이너도 종료되었기 때문에, 종료된 컨테이너까지 검색하도록 docker ps -a 를 사용합니다.
+
+```
+$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+eeafb06bdc57        ubuntu:14.04        "/bin/bash"         9 minutes ago       Exited (0) 4 minutes ago                       trusting_jang
+
+
+```
+
+해당 컨테이너에는 우분투의 패키지 관리자인 apt-get을 통해서 버전 관리 시스템인 Git 이 설치 되어 있습니다. 
+여기서 도커는 VCS 처럼, 어떤 컨테이너와 이 컨테이너의 부모 이미지 간의 파일의 변경사항을 확인할 수 있는 명령어를 제공합니다. 
+마치 git diff 명령어로 프로젝트의 변경사항을 확인하듯이, 
+docker diff 명령어로 부모 이미지와 여기서 파생된 컨테이너의 파일 시스템 간의 변경사항을 확인할 수 있습니다.
+
+```
+$ sudo docker diff eeafb06bdc57
+C /etc
+C /etc/alternatives
+A /etc/alternatives/rcp
+A /etc/alternatives/rcp.1.gz
+A /etc/alternatives/rlogin
+A /etc/alternatives/rlogin.1.gz
+A /etc/alternatives/rsh
+.
+.
+
+```
+
+이제 기본 우분투 14.04 이미지에 Git 이 설치된 새로운 이미지를 생성해보도록 하겠습니다. 
+이 작업도 VCS와 매우 비슷합니다. 도커에서는 이 작업을 commit이라고 합니다.
+
+```
+$ sudo docker commit eeafb06bdc57 ubuntu:git
+sha256:248cf008cbea5b7cf6d616c69b3c80a9142136f6f75bc2509005e56649d90315
+uengine@ubuntu:~$ sudo docker images | grep git
+ubuntu              git                 248cf008cbea        16 seconds ago      225.6 MB
+
+```
+
+이미지가 쉽게 생성이 되었습니다. 
+커밋을 하고 뒤에 이름을 붙여주면 바로 새로운 도커 이미지가 생성됩니다. 
+이미지로부터 컨테이너를 실행시키고 이 컨테이너의 수정사항을 통해서 새로운 이미지를 만들었습니다. 
+이제 이 이미지를 통해서 컨테이너를 실행시켜(run) git 이 실행되는지 직접 확인 해 봅니다.
+
+```
+$ sudo docker run -i -t ubuntu:git /bin/bash
+root@ec127aef48cf:/# git --version
+git version 1.9.1
+
+```
+
+이 이미지를 삭제하도록 하겠습니다. 
+중요한 사항은, 이미지에서 (종료상태를 포함한) 파생된 컨테이너가 하나라도 있다면 이미지는 삭제할 수 없습니다. 
+따라서 먼저 컨테이너를 종료하고, 삭제까지 해주어야합니다. 
+docker rm은 컨테이너를 삭제하는 명령어입니다. 
+docker rmi는 이미지를 삭제하는 명령어입니다.
+
+먼저 컨테이너를 지우고, 이미지를 삭제해보겠습니다.
+
+```
+$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+ec127aef48cf        ubuntu:git          "/bin/bash"         3 minutes ago       Exited (0) 18 seconds ago                       sleepy_northcutt
+eeafb06bdc57        ubuntu:14.04        "/bin/bash"         26 minutes ago      Exited (0) 20 minutes ago                       trusting_jang
+
+$ sudo docker rm ec127aef48cf
+ec127aef48cf
+
+$ sudo docker rmi ubuntu:git
+Untagged: ubuntu:git
+Deleted: sha256:248cf008cbea5b7cf6d616c69b3c80a9142136f6f75bc2509005e56649d90315
+Deleted: sha256:0ed549cc160c7df64df7724fffb97f7e5da5c50421cd50eeacf15d4825f8fcfa
+
+```
+
+## Docker Registry
+
+앞서 [Pull Image](#pull-image) 를 통하여 도커 이미지를 다운로드 받는 것을 배웠고, 
+[Dockerfile](#dockerfile) 에서 이미지를 생성하는 것도 배웠습니다.
+
+이번에는 가지고 있는 이미지를 공용, 또는 개인 레파지토리에 저장하는 법을 배워보도록 합니다.
+
+### Docker Hub
+
+도커 허브는 도커 회사가 운영하는 공공 레지스트리 서비스 입니다.
+도커 허브를 통하여 이미지를 다운로드하고 업로드 할 수 있습니다.
+일반적으로 docker pull 을 통한 이미지 다운로드는 특별한 tag 가 붙지 않는다면, 도커 허브를 통하여 다운로드 받아지게 됩니다. 
+또한 webhooks 같은 인증, 작업 그룹 구조 , 워크 플로우 도구를 제공 하고 공개적으로 공유하고 싶지 않은 이미지를 저장하는 개인 저장소 및 개인 정보 보호 도구를 구축 할 수 있습니다.
+
+도커 클라이언트는 도커 허브 서비스를 사용하기 위해 docker search, pull, login, push 커맨드를 사용합니다.
  
+먼저 도커 허브에 로그인 하기 위해서 [https://hub.docker.com/](https://hub.docker.com/) 에 가입을 하도록 합니다.
+
+![docker-hub1](/docs/images/docker/docker-hub1.png)
+
+
+#### Account creation and login
+
+docker login 명령어를 사용하면 사용자 이름, 비밀번호, 이메일 주소를 입력 하라는 메시지가 표시됩니다. 
+로그인 후에는 자동으로 사용자 정보가 기록된 credentials 를 저장하게 됩니다. 
+
+```
+$ sudo docker login
+Username: sppark
+Password: 
+Email: sppark@uengine.org
+WARNING: login credentials saved in /home/uengine/.docker/config.json
+Login Succeeded
+
+```
+
+#### Searching for images
+
+docker search 명령어를 사용하여 도커 허브 레지스트리를 검색 할 수 있습니다. 
+이미지 이름, 사용자 이름 또는 이미지 설명 으로 검색 할 수 있습니다.
+
+```
+$ sudo docker search centos
+NAME                            DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+centos                          The official build of CentOS.                   2022      [OK]       
+jdeathe/centos-ssh              CentOS-6 6.7 x86_64 / CentOS-7 7.2.1511 x8...   17                   [OK]
+jdeathe/centos-ssh-apache-php   CentOS-6 6.7 x86_64 / Apache / PHP / PHP M...   14                   [OK]
+million12/centos-supervisor     Base CentOS-7 with supervisord launcher, h...   9                    [OK]
+blalor/centos                   Bare-bones base CentOS 6.5 image                8                    [OK]
+nimmis/java-centos              This is docker images of CentOS 7 with dif...   7                    [OK]
+torusware/speedus-centos        Always updated official CentOS docker imag...   7                    [OK]
+nickistre/centos-lamp           LAMP on centos setup                            3                    [OK]
+nathonfowlie/centos-jre         Latest CentOS image with the JRE pre-insta...   3                    [OK]
+centos/mariadb55-centos7                                                        3                    [OK]
+consol/sakuli-centos-xfce       Sakuli end-2-end testing and monitoring co...   2                    [OK]
+lighthopper/orientdb-centos     A Dockerfile for creating an OrientDB imag...   1                    [OK]
+yajo/centos-epel                CentOS with EPEL and fully updated              1                    [OK]
+timhughes/centos                Centos with systemd installed and running       1                    [OK]
+layerworx/centos                CentOS container with etcd, etcdctl, confd...   1                    [OK]
+pacur/centos-7                  Pacur CentOS 7                                  1                    [OK]
+pacur/centos-6                  Pacur CentOS 6                                  1                    [OK]
+darksheer/centos                Base Centos Image -- Updated hourly             1                    [OK]
+softvisio/centos                Centos                                          1                    [OK]
+ustclug/centos                   USTC centos                                    0                    [OK]
+blacklabelops/centos            CentOS Base Image! Built and Updates Daily!     0                    [OK]
+jsmigel/centos-epel             Docker base image of CentOS w/ EPEL installed   0                    [OK]
+grayzone/centos                 auto build for centos.                          0                    [OK]
+lighthopper/openjdk-centos      A Dockerfile for creating an OpenJDK image...   0                    [OK]
+januswel/centos                 yum update-ed CentOS image                      0                    [OK]
+
+
+```
+
+#### Pushing a repository to Docker Hub
+
+도커 허브로 이미지를 저장하기 전에, 도커 이미지의 이름은
  
+```
+<사용자의 도커허브 아이디>/이미지 이름
+```
+
+형식이어야 합니다.
+
+docker tag 명령어는 이미지로부터 새로운 이미지의 이름을 파생시킬 수 있게 합니다. 
+ubuntu:14.04 이미지로부터 새로운 이미지를 파생시켜 보도록 하겠습니다.
+예시에서는 도커허브 아이디가 sppark 라고 가정합니다.
+
+```
+$ sudo docker tag ubuntu:14.04 sppark/ubuntu
+
+$ sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+sppark/ubuntu       latest              a0d4a44ae66e        9 hours ago         188 MB
+ubuntu              14.04               a0d4a44ae66e        9 hours ago         188 MB
+
+```
+
+도커 허브에 이미지를 업로드합니다.
+
+```
+$ sudo docker push sppark/ubuntu
+The push refers to a repository [docker.io/sppark/ubuntu]
+5f70bf18a086: Pushed 
+c01527795ce9: Pushed 
+f301be1d9cc5: Pushed 
+a591b287e755: Pushed 
+latest: digest: sha256:1284357ceef1c154f5dc863aa8eb20a3e90c4b997ed46b6f2c530817dc1219de size: 4128
+
+```
+
+[https://hub.docker.com/](https://hub.docker.com/) 에 접속하여 로그인 하여 보면, 이미지가 업로드 된 것을 볼 수 있습니다.
+
+![docker-hub2](/docs/images/docker/docker-hub2.png)
+
+
+### Private registry
+
+도커 허브를 이용하지 않고 별도의 개인 저장소를 이용할 수 있습니다. 
+이 경우 도커 허브의 역할을 하는 시스템이 미리 구축된 이미지를 다운받아 사용하게 됩니다.
+ 
+도커 허브에 배포되어 있는 registry:2 이미지로 컨테이너를 구동합니다.
+
+```
+$ sudo docker run -d -p 5000:5000 --restart=always --name registry registry:2
+Unable to find image 'registry:2' locally
+2: Pulling from library/registry
+
+fdd5d7827f33: Pull complete 
+a3ed95caeb02: Pull complete 
+a79b4a92697e: Pull complete 
+6cbb75c7cc30: Pull complete 
+4831699594bc: Pull complete 
+Digest: sha256:20f5d95004b71fe14dbe7468eff33f18ee7fa52502423c5d107d4fb0abb05c1d
+Status: Downloaded newer image for registry:2
+7580bf298f96102ece65a858f2ea687db89029c2983831354b49072b108c7517
+
+$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+7580bf298f96        registry:2          "/bin/registry /etc/d"   32 seconds ago      Up 31 seconds       0.0.0.0:5000->5000/tcp   registry
+
+```
+
+docker ps 로 컨테이너를 조회해보면 컨테이너의 5000 번 포트가 로컬 머신의 5000 번 포트와 연결되었음을 알 수 있습니다.
+
+로컬 머신의 5000 번 포트를 확인 해 봅니다.
+
+```
+$ netstat -lntp
+(No info could be read for "-p": geteuid()=1000 but you should be root.)
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -               
+tcp6       0      0 :::22                   :::*                    LISTEN      -               
+tcp6       0      0 :::5000                 :::*                    LISTEN      - 
+
+```
+
+구축한 registry 를 저장소로 이용하기 위해서는 도커 데몬을 실행 시 registry 주소를 알려주고 재시작 하여야 합니다.
+ 
+```
+$ sudo vi /etc/default/docker
+
+마지막 줄에 DOCKER_OPTS="--insecure-registry localhost:5000" 를 기입합니다.
+
+# Docker Upstart and SysVinit configuration file
+
+#
+# THIS FILE DOES NOT APPLY TO SYSTEMD
+#
+#   Please see the documentation for "systemd drop-ins":
+#   https://docs.docker.com/engine/articles/systemd/
+#
+
+.
+.
+.
+
+DOCKER_OPTS="--insecure-registry localhost:5000"
+
+$ sudo service docker restart
+docker stop/waiting
+docker start/running, process 6820
+
+```
+
+구축한 저장소로 이미지를 push 하기 위해서는 이미지의 태그에 저장소 주소를 명시해야 합니다. 
+
+```
+<레지스트리 주소>/이미지 이름
+
+```
+
+```
+$ sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+sppark/ubuntu       latest              a0d4a44ae66e        12 hours ago        188 MB
+ubuntu              14.04               a0d4a44ae66e        12 hours ago        188 MB
+registry            2                   83139345d017        7 days ago          165.8 MB
+
+$ sudo docker tag ubuntu:14.04 localhost:5000/ubuntu
+
+$ sudo docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+localhost:5000/ubuntu   latest              a0d4a44ae66e        12 hours ago        188 MB
+sppark/ubuntu           latest              a0d4a44ae66e        12 hours ago        188 MB
+ubuntu                  14.04               a0d4a44ae66e        12 hours ago        188 MB
+registry                2                   83139345d017        7 days ago          165.8 MB
+
+```
+
+localhost:5000/ubuntu 이미지를 저장소에 추가 해 봅니다.
+
+```
+$ sudo docker push localhost:5000/ubuntu
+The push refers to a repository [localhost:5000/ubuntu]
+5f70bf18a086: Pushed 
+c01527795ce9: Pushed 
+f301be1d9cc5: Pushed 
+a591b287e755: Pushed 
+latest: digest: sha256:448684b210f07699e45370cd6dd6d187bdbbe2255e3caecf2866f04b85de8029 size: 1129
+
+```
+
+## Launch Web Application
+
+이제까지 학습 한 내용을 바탕으로 간단한 hello world 어플리케이션을 도커를 사용하여 브라우저에 띄워보도록 하겠습니다.
+
+### Build Image
+
+예제 어플리케이션을 다운받아 구동시키는 이미지를 생성하도록 하겠습니다.
+
+먼저 디렉토리를 만들고 도커파일을 만듭니다.
+
+```
+$ mkdir hello-world
+
+$ vi hello-world/Dockerfile
+
+# hello-world
+#
+# VERSION               0.0.2
+
+FROM ubuntu:14.04
+MAINTAINER uEngine <http://www.uengine.org>
+
+RUN apt-get update && apt-get install -y curl wget unzip
+RUN curl -sL https://deb.nodesource.com/setup | sudo bash -
+RUN sudo apt-get install -y nodejs
+RUN wget https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/nodejs-hello-world-master.zip
+RUN unzip nodejs-hello-world-master.zip
+ 
+EXPOSE 9000
+CMD ["node", "nodejs-hello-world-master/web.js"]
+
+```
+
+위의 도커 파일은 curl,wget,unzip,nodejs 를 차례대로 인스톨 하고, nodejs-hello-world-master.zip 을 다운받아 압축을 푼 후 
+nodejs 서버를 구동시키는 순서를 담고 있습니다. 
+hello-world 어플리케이션은 9000 포트를 사용하여 서버를 띄우도록 되어있으며 도커 컨테이너는 EXPOSE 를 이용해 포트로 접근하능 하게 합니다.
+마지막으로 CMD 를 사용하여 컨테이너가 구동될 때 자동으로 web.js 파일을 nodejs 로 실행하도록 되어있습니다.
+
+이 Dockerfile 을 빌드하도록 합니다.
+
+```
+$ sudo docker build -t hello-world hello-world/
+Sending build context to Docker daemon 2.048 kB
+Step 1 : FROM ubuntu:14.04
+ ---> a0d4a44ae66e
+Step 2 : MAINTAINER uEngine <http://www.uengine.org>
+ ---> Running in 31dc0089f67a
+ ---> 72416c86ddce
+Removing intermediate container 31dc0089f67a
+
+.
+.
+.
+
+Removing intermediate container 2d5eecf07769
+Successfully built e59466cbf1f3
+
+```
+
+### Launch Application
+
+9000 포트를 연결하여 컨테이너를 구동합니다.
+
+```
+$ sudo docker run -p 9000:9000 hello-world
+Server running at http://127.0.0.1:1337/
+Listening on 9000
+
+```
+
+브라우저에 실습중인 로컬 머신의 주소와 포트를 입력하면 hello-world 가 브라우저에 출력되는 것을 볼 수 있습니다.
+
+예) http://192.168.0.7:9000/
+
+
 
 
 
