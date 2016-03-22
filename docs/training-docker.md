@@ -78,7 +78,7 @@
 ## Overview
 
 여기서부터 진행되는 도커 섹션의 모든 진행 과정은 
-[https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/docker-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/docker-tutorial.ova] 
+[https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/docker-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/docker-tutorial.ova) 
 를 통해 다운로드 받으실 수 있습니다.
 
 클라우드와 같이 잘 짜여지고, 잘 나뉘어진 거대한 시스템에서야 그렇다 치더라도 가상 머신은 여러모로 손실이 많은 수단 중 하나입니다. 가상 머신은 격리된 환경을 구축해준다는 데서 매력적이긴 하지만, 실제 배포용으로 쓰기에는 성능 면에서 매우 불리한 도구라고 할 수 있습니다. 당연한 이야기입니다만 일단 운영체제 위에서 또 다른 운영체제를 통째로 돌린다는 것 자체가 리소스를 비효율적으로 활용할 수밖에 없습니다.
