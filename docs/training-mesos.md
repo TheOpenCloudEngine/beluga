@@ -13,9 +13,9 @@
         - [Master Server](#master-server)
         - [Slave Server](#slave-server)
         - [Validate Configuration](#slave-server)
-        - [Configuration Reference](#configuration-reference)
     - [Mesos Frameworks](#mesos-frameworks)
-        - [Scala Example](#scala-example)
+        - [Mesos framework components](#mesos-framework-components)
+        - [Running framework](#running-framework)
     
     
 ## Overview
@@ -766,9 +766,9 @@ $ sudo service mesos-slave restart
 
 위의 내용을 모두 진행하셨다면 마스터서버주소:5050 포트를 브라우저에서 열어보면 메소스 UI 상에 슬레이브 하나가 등록이 되어있어야 합니다.
 
-![mesos3](/docs/images/mesos/mesos3.jpg)
+![mesos3](/docs/images/mesos/mesos3.png)
 
-![mesos4](/docs/images/mesos/mesos4.jpg)
+![mesos4](/docs/images/mesos/mesos4.png)
 
 이 슬레이브가 실제로 동작하는지 테스트를 진행하도록 합니다.
 
@@ -852,12 +852,361 @@ Received status update TASK_FINISHED for task cluster-test
 
 이 과정이 일어나는 동안 UI 에서는 다음과 같이 화면이 출력됩니다.
 
-![mesos5](/docs/images/mesos/mesos5.jpg)
+![mesos5](/docs/images/mesos/mesos5.png)
 
 위의 타스크 테스트까지 종료되었다면 이제 분산 프레임워크 클러스터를 운용할 준비가 끝난 것입니다.
 
+### Mesos Frameworks
 
-#### Configuration Reference
+이전까지의 과정에서, 우분투 에 메소스를 설치하고 클러스터 환경을 구성하는 것 까지 알아보았습니다. 
+
+앞으로의 과정을 통해 메소스 클러스터에 있는 모든 시스템에서 쉘 명령을 분산 실행하는 프로그램을 코딩 할 것입니다.
+
+메소스에서 실행중인 모든 응용 프로그램은 프레임워크라고 부릅니다.
+이 과정에서 제작할 프레임워크는 메소스 Java Api 를 사용하도록 하겠습니다.
+
+직접 코딩을 진행하셔도 되지만, 완성 된 소스코드를 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip) 
+에서 다운받는 것을 추천드립니다.
+
+![mesos5](/docs/images/mesos/mesos5.png)
+
+#### Mesos framework components
+
+모든 메소스 프레임워크는 세 가지 중요한 구성 요소가 있습니다.
+
+ - Client
+ 
+클라이언트는 프레임워크로 타스크를 제출하는 코드입니다.
+타스크는 메소스에서 작업을 수행하기 위해 일부 자원을 소모하는 일련의 과정의 추상화 입니다.
+
+ - Scheduler
+
+스케쥴러는 프레임 워크의 중요한 부분입니다. 스케줄러는 메소스 스케줄러 인터페이스를 구현하는 부분입니다. 스케줄러는 클라이언트로부터 타스크를 전달받아 메소스 클러스터에서 동작시킵니다.
+
+ - Executor
+
+익스큐터는 클라이언트로부터 전달받은 각 타스크가 돌아갈 환경을 설정하여 줍니다. 스케쥴러는 각 작업을 사용하기 위해 익스큐터를 사용합니다. 
+이 예제에서는 메소스에서 제공하는 기본 실행 익스튜터를 사용하도록 하겠습니다.
+
+다음은 익스큐터를 제외한 클라이언트와 스케쥴러 부분의 코드 구현입니다.
+
+##### Client
+
+Mesos client is a simple Scala program which creates instance of Scheduler and submit tasks to it.
+
+Mesos uses Google protocol buffer internally to do serialization. So each data structure in mesos follows builder design pattern.
+
+The following are the steps to create the client
+
+ - Create framework info
+ 
+Each framework running on mesos should identify itself using framework info data type. Usually framework info contains framework name, user information etc. Here we set our framework name as DistributedShell. All other properties are set to default.
+
+```
+val framework = FrameworkInfo.newBuilder.
+                setName("DistributedShell").
+                setUser("").
+                setRole("*").
+                setCheckpoint(false).
+                setFailoverTimeout(0.0d).
+                build()
+```
+
+ - Create instance of Scheduler
+ 
+Once we have framework info, we create instance of our scheduler. You can have multiple instance of scheduler running on mesos cluster at same time.
+
+```
+val scheduler = new ScalaScheduler
+```
+
+ - Submit tasks
+
+```
+scheduler.submitTasks(args:_*)
+```
+
+ - Start mesos driver with our scheduler and framework
+ 
+Mesos driver is the API which takes specified scheduler and framework info to create instance of scheduler on mesos cluster.
+
+```
+//url pointing to mesos master
+val mesosURL = "localhost:5050"
+val driver = new MesosSchedulerDriver(scheduler,
+    framework,mesosURL)
+//run the driver
+driver.run()
+```
+
+##### Scheduler
+
+ScalaScheduler is our framework scheduler which extends Mesos interface Scheduler. There are many call backs provided by Scheduler API, but here we are going to only concentrate on resourceOffers.
+
+resourceOffers callback is called when mesos has some free resources. A resource can be memory,cpu or disk. So whenever there is a free resource, we submit a task.
+
+ - Create resource request for the task
+ 
+For every task we submit to the mesos, we have to specify it’s resource requirements. In this example we are specifying that we need 1 CPU to run our shell command.
+
+```
+val cpus = Resource.newBuilder.
+           setType(org.apache.mesos.Protos.Value.Type.SCALAR).
+           setName("cpus").
+           setScalar(org.apache.mesos.Protos.Value.
+           Scalar.newBuilder.setValue(1.0)).
+           setRole("*").
+           build
+```
+
+ - Generate task id
+ 
+Each task inside a framework, is identified using a taskid.
+
+```
+val id = "task" + System.currentTimeMillis()
+```
+
+ - Create taskinfo using command
+
+After having resource information and task id, we create a task object. Here we are not specifying any specific executor to run the task. In this case, mesos will use its default executor named CommandExecutor.
+
+```
+val task = TaskInfo.newBuilder.
+           setCommand(cmd).
+           setName(id).
+           setTaskId(TaskID.newBuilder.setValue(id)).
+           addResources(cpus).
+           setSlaveId(offer.getSlaveId).
+           build
+```
+
+ - Launch the tasks
+ 
+Once we have all the information ready for a task, we launch that task on the cluster.
+
+```
+driver.launchTasks(offer.getId, List(task).asJava)
+```
+
+#### Running framework
+
+위의 구현내용을 바탕으로 완성된 최종 코드는 다음과 같습니다.
+
+ - DistributedShell.scala (클라이언트) 
+
+```
+package com.madhu.mesos
+
+/**
+ * Created by madhu on 30/9/14.
+ */
+
+import org.apache.mesos.MesosSchedulerDriver
+import org.apache.mesos.Protos.FrameworkInfo
+
+/**
+ * Client program which will launch shell commands on cluster
+ * Read README.md for example invocation.
+ */
+object DistributedShell {
+
+  def main(args: Array[String]) {
+
+        val framework = FrameworkInfo.newBuilder.
+        setName("DistributedShell").
+        setUser("").
+        setRole("*").
+        setCheckpoint(false).
+        setFailoverTimeout(0.0d).
+        build()
+
+        val mesosURL = args(0)
+        val b = args.toBuffer
+        b.remove(0)
+        b.toArray
+
+        //create instance of schedule and connect to mesos
+        val scheduler = new ScalaScheduler
+
+        //submit shell commands
+        scheduler.submitTasks(b:_*)
+        val driver = new MesosSchedulerDriver(scheduler,framework,mesosURL)
+
+        //run the driver
+        driver.run()
+  }
+}
+```
+
+ - ScalaScheduler.scala (스케쥴러)
+ 
+```
+package com.madhu.mesos
+
+import org.apache.mesos.{SchedulerDriver, Scheduler}
+import org.apache.mesos.Protos._
+import scala.collection.JavaConverters._
+import scala.collection.mutable
+
+/**
+ * Implementation of simple Scheduler
+ */
+class ScalaScheduler() extends Scheduler {
+  var _tasks: mutable.Queue[String] = mutable.Queue[String]()
+
+  override def error(driver: SchedulerDriver, message: String) {}
+
+  override def executorLost(driver: SchedulerDriver, executorId: ExecutorID, slaveId: SlaveID, status: Int) {}
+
+  override def slaveLost(driver: SchedulerDriver, slaveId: SlaveID) {}
+
+  override def disconnected(driver: SchedulerDriver) {}
+
+  override def frameworkMessage(driver: SchedulerDriver, executorId: ExecutorID, slaveId: SlaveID, data: Array[Byte]) {}
+
+  override def statusUpdate(driver: SchedulerDriver, status: TaskStatus) {
+    println(s"received status update $status")
+  }
+
+  override def offerRescinded(driver: SchedulerDriver, offerId: OfferID) {}
+
+  /**
+   *
+   * This callback is called when resources are available to  run tasks
+   *
+   */
+  override def resourceOffers(driver: SchedulerDriver, offers: java.util.List[Offer]) {
+
+    //for every available offer run tasks
+    for (offer <- offers.asScala) {
+      println(s"offer $offer")
+      _tasks.dequeueFirst(value => true) map (cmdString => {
+        val cmd = CommandInfo.newBuilder
+          .setValue(cmdString)
+
+        //our task will use one cpu
+        val cpus = Resource.newBuilder.
+          setType(org.apache.mesos.Protos.Value.Type.SCALAR)
+          .setName("cpus")
+          .setScalar(org.apache.mesos.Protos.Value.Scalar.newBuilder.setValue(1.0))
+          .setRole("*")
+          .build
+
+        //generate random task id
+        val id = "task" + System.currentTimeMillis()
+
+        //create task with given command
+        val task = TaskInfo.newBuilder
+          .setCommand(cmd)
+          .setName(id)
+          .setTaskId(TaskID.newBuilder.setValue(id))
+          .addResources(cpus)
+          .setSlaveId(offer.getSlaveId)
+          .build
+
+        driver.launchTasks(offer.getId, List(task).asJava)
+      })
+    }
+  }
+
+  def submitTasks(tasks: String*) = {
+    this.synchronized {
+      this._tasks.enqueue(tasks: _*)
+    }
+  }
+
+  override def reregistered(driver: SchedulerDriver, masterInfo: MasterInfo) {}
+
+  override def registered(driver: SchedulerDriver, frameworkId: FrameworkID, masterInfo: MasterInfo) {}
+
+}
+```
+
+소스코드를 빌드하여 실제로 메소스에서 프레임워크로 동작하게 하기 위하여 maven 빌드소스가 포함되어있는 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip) 
+를 다운받습니다.
+
+```
+$ wget https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip
+```
+
+아래 순서로 압출을 푼 후, 빌드를 하도록 합니다.
+
+```
+$ tar xvf mesos-helloworld.zip
+$ cd mesos-helloworld
+$ mvn clean install
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Mesos 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ Mesos ---
+[INFO] Deleting /home/uengine/mesos-helloworld/target
+.
+.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 9.851s
+[INFO] Finished at: Wed Mar 23 19:33:18 KST 2016
+[INFO] Final Memory: 10M/34M
+[INFO] ------------------------------------------------------------------------
+```
+
+코드상에서 DistributedShell 을 실행시킬 때, 첫번째 arg 에는 메소스 마스터의 주소를, 두번째 arg 부터는 실행시킬 커맨드를 넣도록 되어있습니다.
+
+빌드를 하고 나면 target 폴더가 생성되는데, target 폴더안의 생성된 jar 파일을 arg 를 넣어 실행시키도록 합니다.
+
+```
+$ java -cp target/Mesos-0.0.1-SNAPSHOT.jar -Djava.library.path=/usr/local/lib com.madhu.mesos.DistributedShell 192.168.0.5:5050 "/bin/echo hello" "/bin/echo how are you"
+
+I0323 19:46:25.048733  6290 sched.cpp:222] Version: 0.28.0
+I0323 19:46:25.055717  6305 sched.cpp:326] New master detected at master@192.168.0.5:5050
+I0323 19:46:25.056334  6305 sched.cpp:336] No credentials provided. Attempting to register without authentication
+I0323 19:46:25.057670  6305 sched.cpp:703] Framework registered with 6710a3d5-1047-43e0-b9fd-79a3028b9683-0006
+offer id {
+  value: "6710a3d5-1047-43e0-b9fd-79a3028b9683-O8"
+}
+framework_id {
+  value: "6710a3d5-1047-43e0-b9fd-79a3028b9683-0006"
+}
+.
+.
+```
+
+쉘을 종료하지 않는 상태로 메소스 UI 를 확인해보면 Completed Tasks 에 방금전의 타스크가 등록되어 있는 것을 확인할 수 있습니다.
+
+![mesos7](/docs/images/mesos/mesos7.png)
+
+Sandbox 를 클릭하여 stdout 로그를 확인하여 보면 다음의 로그가 찍혀있습니다.
+
+![mesos8](/docs/images/mesos/mesos8.png)
+
+```
+Registered executor on 192.168.0.6
+Starting task task1458729985774
+sh -c '/bin/echo how are you'
+how are you
+Forked command at 5842
+Command exited with status 0 (pid: 5842)
+```
+
+```
+Registered executor on 192.168.0.6
+Starting task task1458729985210
+sh -c '/bin/echo hello'
+hello
+Forked command at 5827
+Command exited with status 0 (pid: 5827)
+```
+
+순서대로 echo hello , echo how are you 가 실행되었음을 볼 수 있습니다.
+
+
+
+
+
 
 
 
