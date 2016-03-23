@@ -871,7 +871,7 @@ Successfully built e59466cbf1f3
 9000 포트를 연결하여 컨테이너를 구동합니다.
 
 ```
-$ sudo docker run -p 9000:9000 hello-world
+$ sudo docker run -d -p 9000:9000 hello-world
 Server running at http://127.0.0.1:1337/
 Listening on 9000
 
