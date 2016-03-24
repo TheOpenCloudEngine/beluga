@@ -8,9 +8,9 @@
 # Training
  * [Virtual Box for Windows and Mac](docs/training-vb.md)
  * [Docker](docs/training-docker.md)
- * [HAProxy](docs/training-proxy.md)
  * [Mesos](docs/training-mesos.md)
  * [Mesos-Marathon](docs/training-marathon.md)
+ * [HAProxy](docs/training-proxy.md)
 
 # 설치
 본 문서의 목표는 서버 운용자로 하여금 Beluga 프로젝트의 빌드와 Beluga 실행시 Docker Cluster 를 활용하여 유저의 어플리케이션마다 독립적인 OS 환경을 제공하고, 소모되는 리소스를 Docker Cluster 환경에 분산배치 하는 것입니다.
