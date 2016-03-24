@@ -16,6 +16,7 @@
     - [Mesos Frameworks](#mesos-frameworks)
         - [Mesos framework components](#mesos-framework-components)
         - [Running framework](#running-framework)
+ - [Next Step](#next-step)
     
     
 ## Overview
@@ -1203,32 +1204,8 @@ Command exited with status 0 (pid: 5827)
 
 순서대로 echo hello , echo how are you 가 실행되었음을 볼 수 있습니다.
 
+## Next Step
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+[Mesos Marathon 학습 바로가기](/docs/training-marathon.md) 
 
  
