@@ -22,7 +22,7 @@
 ## Overview
 
 여기서부터 진행되는 주키퍼,메소스,메소스 마라톤 섹션의 모든 진행 과정은 
-[https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/mesos-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/mesos-tutorial.ova) 
+[https://drive.google.com/open?id=0By_yEUK4bN_wSE1JT09vQmdVSFU](https://drive.google.com/open?id=0By_yEUK4bN_wSE1JT09vQmdVSFU) 
 를 통해 다운로드 받으실 수 있습니다.
 
 진행에 어려움이 있을 시에는 사전에 설치가 완료된 위의 이미지를 다운받아 도움을 받을 수 있도록 합니다. 
@@ -53,13 +53,13 @@ NoSQL의 한종류인 Apache HBase, 대용량 분산 큐 시스템인 Kafka등�
 분산 프로그램 작성의 어려움: 부분적 실패(partial failure)
 ``
 
-주키퍼가 부분적 실패를 완전히 사라지게 할 수는 없지만, 부분적 실패를 안전하게 다루면서 분산 응용 프로그램을 구출할 수 있도록 도와주는 도구를 제공.
+주키퍼가 부분적 실패를 완전히 사라지게 할 수는 없지만, 부분적 실패를 안전하게 다루면서 분산 응용 프로그램을 구출할 수 있도록 도와주는 도구를 제공합니다.
 
  * 주키퍼는 단순하다.
 
 단순한 몇 개의 핵심적인 연산을 제공하는 간소화(stripped-down)된 하나의 파일시스템
 
-이벤트와 관련된 순서화(ordering)와 통지(notification) \같은 추상화도 제공한다.
+이벤트와 관련된 순서화(ordering)와 통지(notification) \같은 추상화도 제공
 
  
 
@@ -487,7 +487,7 @@ Mesos를 활용하는 기업으로는 Twitter, Facebook, eBay, Riot Games가 있
 
 ### Install Mesos
 
-실제 주키퍼와 연동된 메소스의 fail-over 동작을 확인하기 위해서는 최소 메소스 3대, 메소스 슬레이브 3대 총 6대의 VM 이 필요합니다. 
+실제 주키퍼와 연동된 메소스의 fail-over 동작을 확인하기 위해서는 최소 메소스 마스터 3대, 메소스 슬레이브 3대 총 6대의 VM 이 필요합니다. 
 원활한 실습 진행을 위해서 메소스의 동작원리만 살펴보는 의미로 Master, Slave 각각 1대씩을 준비 해 보도록 하겠습니다.
 
 앞서 다운로드 받은 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/mesos-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/mesos-tutorial.ova) 
@@ -577,14 +577,14 @@ The following extra packages will be installed:
 마스터 서버에서 다음을 실행하여 기 등록된 슬레이브 정보를 삭제합니다.
 
 ```
-$ sudo rm -f /tmp/mesos/meta/slaves/latest
+[master]$ sudo rm -f /tmp/mesos/meta/slaves/latest
 ```
 
 /etc/init 폴더에 mesos-master.conf, mesos-slave.conf 파일이 존재하는 것을 볼 수 있습니다.
 
 이 파일들은 시스템에 등록된 mesos-master, mesos-slave 서비스가 구동 될 때 실행되는 파일들입니다.
 
-mesos-master.conf
+/etc/init/mesos-master.conf
 
 ```
 exec /usr/bin/mesos-init-wrapper master
@@ -599,7 +599,7 @@ exec /usr/bin/mesos-init-wrapper slave
 마스터 서버에서는 슬레이브를 구동하지 않기 때문에 슬레이브 구동 파일을 백업하여 두도록 합니다.
 
 ```
-$ sudo mv /etc/init/mesos-slave.conf /etc/init/mesos-slave.conf.bak
+[master]$ sudo mv /etc/init/mesos-slave.conf /etc/init/mesos-slave.conf.bak
 ```
 
 다음은 주키퍼 설정입니다.
@@ -607,7 +607,7 @@ $ sudo mv /etc/init/mesos-slave.conf /etc/init/mesos-slave.conf.bak
 myid 를 1 로 지정하도록 합니다.
 
 ```
-$ sudo vi /etc/zookeeper/conf/myid
+[master]$ sudo vi /etc/zookeeper/conf/myid
 
 1
 ```
@@ -616,7 +616,7 @@ $ sudo vi /etc/zookeeper/conf/myid
 
 ```
 예)
-$ sudo vi /etc/zookeeper/conf/zoo.cfg
+[master]$ sudo vi /etc/zookeeper/conf/zoo.cfg
 
 # http://hadoop.apache.org/zookeeper/docs/current/zookeeperAdmin.html
 
@@ -647,11 +647,11 @@ server.1=192.168.0.5:2888:3888
 VM 의 호스트 이름을 mesos-master 로 설정하고 /etc/hosts 파일을 수정합니다.
 
 ```
-$ sudo vi /etc/hostname
+[master]$ sudo vi /etc/hostname
 
 mesos-master
 
-$ sudo vi /etc/hosts
+[master]$ sudo vi /etc/hosts
 
 127.0.0.1       localhost       mesos-master
 127.0.1.1       ubuntu
@@ -664,7 +664,7 @@ $ sudo vi /etc/hosts
 메소스에 주키퍼의 주소를 설정하여 줍니다. 이때 주키퍼의 주소는 마스터 서버의 아이피입니다.
 
 ```
-$ sudo vi /etc/mesos/zk
+[master]$ sudo vi /etc/mesos/zk
 
 zk://192.168.0.5:2181/mesos
 ```
@@ -672,11 +672,11 @@ zk://192.168.0.5:2181/mesos
 hostname 과 ip 를 설정합니다. 이때 필요값은 마스터 서버의 아이피입니다.
 
 ```
-$ sudo vi /etc/mesos-master/hostname
+[master]$ sudo vi /etc/mesos-master/hostname
 
 192.168.0.5
 
-$ sudo vi /etc/mesos-master/ip
+[master]$ sudo vi /etc/mesos-master/ip
 
 192.168.0.5
 ```
@@ -685,7 +685,7 @@ quorum 값을 설정합니다. quorum 은 전체 master 서버를 2로 나눈수
 실습에서는 1개의 마스터를 사용하므로 quorum 값은 1 입니다.
 
 ```
-$ sudo vi /etc/mesos-master/quorum
+[master]$ sudo vi /etc/mesos-master/quorum
 
 1
 ```
@@ -693,9 +693,9 @@ $ sudo vi /etc/mesos-master/quorum
 이제까지 수정한 항목과 관련된 서비스들을 재시작 하도록 합니다.
 
 ```
-$ sudo service hostname restart
-$ sudo service zookeeper restart
-$ sudo service mesos-master restart
+[master]$ sudo service hostname restart
+[master]$ sudo service zookeeper restart
+[master]$ sudo service mesos-master restart
 ```
 
 #### Slave Server
@@ -703,8 +703,8 @@ $ sudo service mesos-master restart
 마스터 서버 구동 관련 설정을 백업해 놓도록 합니다. 또한, 슬레이브 서버에서 주키퍼가 실행되지는 않으므로 주키퍼 구동 정보도 백업하도록 합니다.
 
 ```
-$ sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
-$ sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
+[slave]$ sudo mv /etc/init/mesos-master.conf /etc/init/mesos-master.conf.bak
+[slave]$ sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
 ```
 
 다음은 호스트 및 호스트파일 설정입니다.
@@ -712,11 +712,11 @@ $ sudo mv /etc/init/zookeeper.conf /etc/init/zookeeper.conf.bak
 VM 의 호스트 이름을 mesos-slave 로 설정하고 /etc/hosts 파일을 수정합니다.
 
 ```
-$ sudo vi /etc/hostname
+[slave]$ sudo vi /etc/hostname
 
 mesos-slave
 
-$ sudo vi /etc/hosts
+[slave]$ sudo vi /etc/hosts
 
 127.0.0.1       localhost       mesos-slave
 127.0.1.1       ubuntu
@@ -729,7 +729,7 @@ $ sudo vi /etc/hosts
 메소스에 주키퍼의 주소를 설정하여 줍니다. 이때 주키퍼의 주소는 슬레이브 서버의 아이피가 아니라 마스터 서버의 아이피여야 합니다.
 
 ```
-$ sudo vi /etc/mesos/zk
+[slave]$ sudo vi /etc/mesos/zk
 
 zk://192.168.0.5:2181/mesos
 ```
@@ -737,11 +737,11 @@ zk://192.168.0.5:2181/mesos
 hostname 과 ip 를 설정합니다. 이때 필요값은 슬레이브 서버의 아이피입니다.
 
 ```
-$ sudo vi /etc/mesos-slave/hostname
+[slave]$ sudo vi /etc/mesos-slave/hostname
 
 192.168.0.6
 
-$ sudo vi /etc/mesos-slave/ip
+[slave]$ sudo vi /etc/mesos-slave/ip
 
 192.168.0.6
 ```
@@ -750,7 +750,7 @@ containerizers 값을 설정합니다. containerizers 는 슬레이브가 타스
 docker, mesos 두가지 값을 추가하도록 합니다.
 
 ```
-$ sudo vi /etc/mesos-slave/containerizers
+[slave]$ sudo vi /etc/mesos-slave/containerizers
 
 docker,mesos
 ```
@@ -758,9 +758,9 @@ docker,mesos
 이제까지 수정한 항목과 관련된 서비스들을 재시작 하도록 합니다.
 
 ```
-$ sudo service hostname restart
-$ sudo service zookeeper stop
-$ sudo service mesos-slave restart
+[slave]$ sudo service hostname restart
+[slave]$ sudo service zookeeper stop
+[slave]$ sudo service mesos-slave restart
 ```
 
 #### Validate Configuration
@@ -776,7 +776,7 @@ $ sudo service mesos-slave restart
 슬레이브 서버에서 mesos-execute 명령어로 간단한 쉘 명령어를 실행하도록 해 봅니다.
 
 ```
-$ MASTER=$(mesos-resolve `cat /etc/mesos/zk`)
+[slave]$ MASTER=$(mesos-resolve `cat /etc/mesos/zk`)
 2016-03-23 17:35:07,617:3808(0x7f462853e700):ZOO_INFO@log_env@712: Client environment:zookeeper.version=zookeeper C client 3.4.5
 2016-03-23 17:35:07,618:3808(0x7f462853e700):ZOO_INFO@log_env@716: Client environment:host.name=mesos-slave
 2016-03-23 17:35:07,618:3808(0x7f462853e700):ZOO_INFO@log_env@723: Client environment:os.name=Linux
@@ -809,7 +809,7 @@ MASTER 변수에는 주키퍼를 통하여 알아온 메소스 마스터 서버�
 이를 이용하여 mesos-execute 에 --master 옵션을 주어서 실행시켜 보도록 하겠습니다.
 
 ```
-$ mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 10"
+[slave]$ mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 10"
 WARNING: Logging before InitGoogleLogging() is written to STDERR
 W0323 17:41:01.498194  3822 sched.cpp:1642] 
 **************************************************
@@ -827,7 +827,7 @@ Libprocess 는 메소스에서 사용하는 3th party C/C++ 프로그램입니�
 요청 슬레이브의 아이피를 요구하는 것이므로 슬레이브 서버의 아이피를 넣어서, 다음과 같이 다시 명령을 내려줍니다.
 
 ```
-$ LIBPROCESS_IP=192.168.0.6 mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 10"
+[slave]$ LIBPROCESS_IP=192.168.0.6 mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 10"
 I0323 18:12:49.145813  5711 sched.cpp:222] Version: 0.28.0
 I0323 18:12:49.149257  5718 sched.cpp:326] New master detected at master@192.168.0.5:5050
 I0323 18:12:49.149848  5718 sched.cpp:336] No credentials provided. Attempting to register without authentication
@@ -1128,15 +1128,15 @@ class ScalaScheduler() extends Scheduler {
 를 다운받습니다.
 
 ```
-$ wget https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip
+[master]$ wget https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip
 ```
 
 아래 순서로 압출을 푼 후, 빌드를 하도록 합니다.
 
 ```
-$ tar xvf mesos-helloworld.zip
-$ cd mesos-helloworld
-$ mvn clean install
+[master]$ tar xvf mesos-helloworld.zip
+[master]$ cd mesos-helloworld
+[master]$ mvn clean install
 [INFO]                                                                         
 [INFO] ------------------------------------------------------------------------
 [INFO] Building Mesos 0.0.1-SNAPSHOT
@@ -1160,7 +1160,7 @@ $ mvn clean install
 빌드를 하고 나면 target 폴더가 생성되는데, target 폴더안의 생성된 jar 파일을 arg 를 넣어 실행시키도록 합니다.
 
 ```
-$ java -cp target/Mesos-0.0.1-SNAPSHOT.jar -Djava.library.path=/usr/local/lib com.madhu.mesos.DistributedShell 192.168.0.5:5050 "/bin/echo hello" "/bin/echo how are you"
+[master]$ java -cp target/Mesos-0.0.1-SNAPSHOT.jar -Djava.library.path=/usr/local/lib com.madhu.mesos.DistributedShell 192.168.0.5:5050 "/bin/echo hello" "/bin/echo how are you"
 
 I0323 19:46:25.048733  6290 sched.cpp:222] Version: 0.28.0
 I0323 19:46:25.055717  6305 sched.cpp:326] New master detected at master@192.168.0.5:5050

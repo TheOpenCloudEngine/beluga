@@ -18,7 +18,7 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 [https://rorlab.gitbooks.io/railsguidebook/content/appendices/ubuntu14server.html](https://rorlab.gitbooks.io/railsguidebook/content/appendices/ubuntu14server.html)
 문서를 참조하시기 바랍니다.
 
-[https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/ubuntu14.04-uengine.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/ubuntu14.04-uengine.ova)
+[https://drive.google.com/open?id=0By_yEUK4bN_wOVc5ZlZ4ZkY1akE](https://drive.google.com/open?id=0By_yEUK4bN_wOVc5ZlZ4ZkY1akE)
  을 통해 사전에 설치가 완료된 ova 파일을 다운받을 수 있습니다.
 
 ## Run ova
@@ -60,7 +60,6 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 [Download ova](#download-ova) 과정에서 수동으로 서버를 설치하셨을 경우에는, ssh 인스톨을 실행합니다.
 ```
 $ sudo apt-get install ssh
-
 ```
 
 putty 또는 mac os x 터미널에서 가상머신으로 접속 할 수 있습니다.
@@ -84,7 +83,6 @@ Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 4.2.0-27-generic x86_64)
 
 Last login: Tue Mar 15 14:08:57 2016
 $ 
-
 ```
 
 

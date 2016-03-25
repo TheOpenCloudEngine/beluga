@@ -72,7 +72,7 @@
 실습에서는 메소스 마스터 서버가 하나이므로 한곳에서만 설치를 진행하면 됩니다.
 
 ```
-$ sudo apt-get install marathon
+[master]$ sudo apt-get install marathon
 Reading package lists... Done
 Building dependency tree       
 Reading state information... Done
@@ -81,7 +81,7 @@ The following NEW packages will be installed:
 0 upgraded, 1 newly installed, 0 to remove and 31 not upgraded.
 .
 .
-$ sudo service marathon restart
+[master]$ sudo service marathon restart
 ```
 
 브라우저에 마스터 서버주소:8080 으로 접속하시면, 마라톤 UI 가 떠 있는 것을 볼 수 있습니다.
@@ -113,11 +113,11 @@ $ sudo service marathon restart
  - 슬레이브 서버에서(문서의 192.168.0.6 대신 실제 슬레이브 서버의 아이피를 넣도록 합니다.)
  
 ```
-$ netstat -nlp | grep 8000
+[slave]$ netstat -nlp | grep 8000
 (No info could be read for "-p": geteuid()=1000 but you should be root.)
 tcp        0      0 0.0.0.0:8000            0.0.0.0:*               LISTEN      - 
 
-$ curl http://192.168.0.6:8000/
+[slave]$ curl http://192.168.0.6:8000/
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"><html>
 <title>Directory listing for /</title>
 <body>
@@ -137,13 +137,13 @@ $ curl http://192.168.0.6:8000/
 curl 로 실제 SimpleHTTPServer 가 실행될 때 나타나는 로그인지 확인하여 볼 수 있습니다.
 
 ```
-$ curl http://192.168.0.6:8000/stderr
+[slave]$ curl http://192.168.0.6:8000/stderr
 I0323 22:06:37.120326  5976 exec.cpp:143] Version: 0.28.0
 I0323 22:06:37.123612  5984 exec.cpp:217] Executor registered on slave c7ecb89b-691a-458b-8bd6-b7e0a8e38c0d-S17
 192.168.0.6 - - [23/Mar/2016 22:09:07] "GET / HTTP/1.1" 200 -
 192.168.0.6 - - [23/Mar/2016 22:10:28] "GET /stderr HTTP/1.1" 200 -
 
-$ curl http://192.168.0.6:8000/stdout
+[slave]$ curl http://192.168.0.6:8000/stdout
 Registered executor on 192.168.0.6
 Starting task test-python.13fa1489-f0f8-11e5-9f24-0242aa66ba43
 sh -c 'python -m SimpleHTTPServer'
@@ -155,15 +155,15 @@ Forked command at 5986
 슬레이브 서버에서 이 파이썬 프로세스를 죽인 후, 마라톤에 의해 다시 리커버리 되는지를 지켜보도록 하겠습니다.
 
 ```
-$ ps -ef | grep python
+[slave]$ ps -ef | grep python
 root      5986  5976  0 22:06 ?        00:00:00 sh -c python -m SimpleHTTPServer
 root      5987  5986  0 22:06 ?        00:00:00 python -m SimpleHTTPServer
 uengine   5999  1319  0 22:16 pts/0    00:00:00 grep --color=auto python
 
-$ sudo pkill -f -9 python
+[slave]$ sudo pkill -f -9 python
 Killed
 
-$ ps -ef | grep python
+[slave]$ ps -ef | grep python
 root      6274  6264  0 22:34 ?        00:00:00 sh -c python -m SimpleHTTPServer
 root      6275  6274  0 22:34 ?        00:00:00 python -m SimpleHTTPServer
 uengine   6277  1319  0 22:34 pts/0    00:00:00 grep --color=auto python
@@ -172,6 +172,7 @@ uengine   6277  1319  0 22:34 pts/0    00:00:00 grep --color=auto python
 pkill 명령어로 파이선을 종료했지만 곧 되살아 남을 볼 수 있습니다. 이 과정동안 일어나는 일을 알아보기 위해 메소스 마스터서버의 로그를 살펴보도록 하겠습니다.
 
 ```
+[master]$ tail -f /var/log/mesos/mesos-master.INFO
 I0323 22:34:06.612828  6195 master.cpp:4763] Status update TASK_FAILED (UUID: d40de225-5659-4175-9921-8eb66559c9f0) for task test-python.63fe2bf4-f0fa-11e5-9f24-0242aa66ba43 of framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007 from slave c7ecb89b-691a-458b-8bd6-b7e0a8e38c0d-S17 at slave(1)@192.168.0.6:5051 (192.168.0.6)
 I0323 22:34:06.612893  6195 master.cpp:4811] Forwarding status update TASK_FAILED (UUID: d40de225-5659-4175-9921-8eb66559c9f0) for task test-python.63fe2bf4-f0fa-11e5-9f24-0242aa66ba43 of framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007
 I0323 22:34:06.612958  6195 master.cpp:6421] Updating the state of task test-python.63fe2bf4-f0fa-11e5-9f24-0242aa66ba43 of framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007 (latest state: TASK_FAILED, status update state: TASK_FAILED)
@@ -245,7 +246,7 @@ test-python 어플리케이션이 한개의 타스크를 가동중에 있고, �
 슬레이브 서버에서, 실제로 프로세스를 검사해 보도록 하겠습니다.
 
 ```
-$ ps -ef | grep python
+[slave]$ ps -ef | grep python
 root      6298  6288  0 22:48 ?        00:00:00 sh -c python -m SimpleHTTPServer $PORT
 root      6299  6298  0 22:48 ?        00:00:00 python -m SimpleHTTPServer 31794
 root      6326  6306  0 22:52 ?        00:00:00 sh -c python -m SimpleHTTPServer $PORT
@@ -258,6 +259,7 @@ uengine   6331  1319  0 22:52 pts/0    00:00:00 grep --color=auto python
 기존 1개의 타스크에서 3개의 타스크로 확장이 되는 동안, 메소스 마스터의 로그를 통해 어떠한 순서로 동작하는지 살펴보도록 하겠습니다.
 
 ```
+[master]$ tail -f /var/log/mesos/mesos-master.INFO
 I0323 23:05:44.102913  6193 master.cpp:3720] Processing REVIVE call for framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007 (marathon) at scheduler-dc49883a-1460-47f5-b24a-551a6b7a0c7c@127.0.0.1:35231
 I0323 23:05:44.102969  6193 hierarchical.cpp:988] Removed offer filters for framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007
 I0323 23:05:44.103119  6193 master.cpp:5324] Sending 1 offers to framework 6710a3d5-1047-43e0-b9fd-79a3028b9683-0007 (marathon) at scheduler-dc49883a-1460-47f5-b24a-551a6b7a0c7c@127.0.0.1:35231
@@ -298,7 +300,7 @@ I0323 23:05:44.686877  6196 master.cpp:3641] Processing DECLINE call for offers:
 
 ```
 # get metrics on the running apps
-$ curl http://0.0.0.0:8080/metrics | python -m json.tool | less
+[master]$ curl http://0.0.0.0:8080/metrics | python -m json.tool | less
 {
     "counters": {
         "org.eclipse.jetty.servlet.ServletContextHandler.active-dispatches": {
@@ -315,16 +317,16 @@ $ curl http://0.0.0.0:8080/metrics | python -m json.tool | less
 .
 (키보드 q 를 누르시면 빠져나갈 수 있습니다.)
 # look at the apps you have installed
-$ curl http://0.0.0.0:8080/v2/apps | python -m json.tool
+[master]$ curl http://0.0.0.0:8080/v2/apps | python -m json.tool
 
 # look at a specific app, named test from Ex4 and Ex5
-$ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
+[master]$ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 
 # delete that app
-$ curl -X DELETE http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
+[master]$ curl -X DELETE http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 
 # show that the app is gone
-$ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
+[master]$ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 ```
 
 ## Deploying A Web App Using Docker
@@ -344,7 +346,7 @@ $ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 
 먼저, Dockerfile 을 작성하고 이미지를 생성하도록 합니다.
 
-이 과정은 도커 교재의 [Launch Web Application](/docs/training-docker.md#launch-web-application) 진행과정과 같으니 이미 이 튜토리얼을 진행하여 hello-world 
+이 과정은 도커 교재의 [Launch Web Application](training-docker.md#launch-web-application) 진행과정과 같으니 이미 이 튜토리얼을 진행하여 hello-world 
 이미지를 가지고 있다면 넘어가도록 합니다.
 
 슬레이브 서버에 Docker 가 설치되어 있다고 가정하고, 슬레이브 서버에서 작업하도록 합니다.
@@ -352,9 +354,9 @@ $ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 ```
 # 도커 파일 생성
 
-$ mkdir hello-world
+[slave]$ mkdir hello-world
 
-$ vi hello-world/Dockerfile
+[slave]$ vi hello-world/Dockerfile
 
 # hello-world
 #
@@ -371,10 +373,12 @@ RUN unzip nodejs-hello-world-master.zip
  
 EXPOSE 9000
 CMD ["node", "nodejs-hello-world-master/web.js"]
+```
 
+```
 # 도커 파일 빌드
 
-$ sudo docker build -t hello-world hello-world/
+[slave]$ sudo docker build -t hello-world hello-world/
 Sending build context to Docker daemon 2.048 kB
 Step 1 : FROM ubuntu:14.04
  ---> a0d4a44ae66e
@@ -382,17 +386,17 @@ Step 2 : MAINTAINER uEngine <http://www.uengine.org>
  ---> Running in 31dc0089f67a
  ---> 72416c86ddce
 Removing intermediate container 31dc0089f67a
-
 .
 .
 .
-
 Removing intermediate container 2d5eecf07769
 Successfully built e59466cbf1f3
+```
 
+```
 # 빌드 이미지 확인
 
-$ sudo docker images
+[slave]$ sudo docker images
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
 hello-world             latest              06e8dd4381b3        8 hours ago         268.3 MB
 ```
@@ -400,7 +404,7 @@ hello-world             latest              06e8dd4381b3        8 hours ago     
 슬레이브 서버에서 앞서 메소스 파트에서 설정했던 /etc/mesos-slave/containerizers 파일이 docker 구동을 허락하고 있는지 확인하도록 합니다.
 
 ```
-$ cat /etc/mesos-slave/containerizers
+[slave]$ cat /etc/mesos-slave/containerizers
 docker,mesos
 ```
 
@@ -409,7 +413,7 @@ docker,mesos
 ```
 # Json 작성
 
-$ vi helloworld.json
+[master]$ vi helloworld.json
 {
   "id": "hello-world",
   "cpus": 0.1,
@@ -428,10 +432,12 @@ $ vi helloworld.json
 }
 
 # instances 값 만큼 어플리케이션의 스케일 수가 정해지게 됩니다.
+```
 
+```
 # Rest 요청 (마스터 서버의 주소를 넣도록 합니다.)
 
-$ curl -X POST http://192.168.0.5:8080/v2/apps -d @helloworld.json -H "Content-type: application/json" | python -m json.tool
+[master]$ curl -X POST http://192.168.0.5:8080/v2/apps -d @helloworld.json -H "Content-type: application/json" | python -m json.tool
 
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -473,7 +479,7 @@ Listening on 9000
 슬레이브 서버에 실제 도커 컨테이너를 검색하여 봅니다.
 
 ```
-$ sudo docker ps
+[slave]$ sudo docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                     NAMES
 5be2a2e5db40        hello-world         "node nodejs-hello-wo"   10 minutes ago      Up 10 minutes       0.0.0.0:31028->9000/tcp   mesos-c7ecb89b-691a-458b-8bd6-b7e0a8e38c0d-S17.85b59aee-af0a-4a1f-85c8-453b6dc6b9fe
 da58a06c2175        hello-world         "node nodejs-hello-wo"   10 minutes ago      Up 10 minutes       0.0.0.0:31881->9000/tcp   mesos-c7ecb89b-691a-458b-8bd6-b7e0a8e38c0d-S17.bab0e13b-5aad-4dc9-b487-c1a35879c66c

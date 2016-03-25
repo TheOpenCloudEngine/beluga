@@ -16,7 +16,7 @@
  
 ## Overview
 
-앞서 [마라톤 프레임워크](/docs/training-marathon.md) 학습 단계에서 우리는 제각각의 주소와 포트를 가진 도커 웹 컨테이너를 다수 보유하고 있습니다.
+앞서 [마라톤 프레임워크](training-marathon.md) 학습 단계에서 우리는 제각각의 주소와 포트를 가진 도커 웹 컨테이너를 다수 보유하고 있습니다.
 
 ```
 192.168.0.6:31928
@@ -28,7 +28,7 @@
 
 이 섹션에서는 HAProxy 를 이용하여 이 웹 서비스들을 어떠한 스위칭 장비도 없이 하나의 도메인(또는 하나의 아이피) 으로 서비스 하는 법을 배워보도록 합니다.
 
-교재 진행을 위한 사전 이미지는 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/haproxy-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/haproxy-tutorial.ova) 
+교재 진행을 위한 사전 이미지는 [https://drive.google.com/open?id=0By_yEUK4bN_weW1CYTF5Z2s4LVE](https://drive.google.com/open?id=0By_yEUK4bN_weW1CYTF5Z2s4LVE) 
 을 다운받아 진행하시길 바랍니다.
 
 ## Understand HAProxy
@@ -89,7 +89,7 @@ L4에 도달하면 L4가 클라이언트에게 받은 목적지 IP 주소를 L4 
 HAProxy 는 기본적으로 reverse proxy 형태로 동작합니다. 
 우리가 브라우저에서 사용하는 proxy 는 클라이언트 앞에서 처리하는 기능으로, forward proxy 라 합니다. 
 reverse proxy 의 역할을 간단히 설명하면, 실제 서버 요청에 대해서 서버 앞 단에 존재하면서, 
-서버로 들어오는 요청을 대신 받아서 서버에 전달하고 요청한 곳에 그 결과를 다시 전달하는 것이다.
+서버로 들어오는 요청을 대신 받아서 서버에 전달하고 요청한 곳에 그 결과를 다시 전달하는 것입니다.
 
 HAProxy 의 동작 방식을 알아보고 HAProxy 를 이용해서 어떤 구조로 확장할 수 있는지 알아보도록 합니다.
 
@@ -131,10 +131,10 @@ HA로 설정된 HAProxy 의 동작 흐름이 단일 HAProxy 와 다른 점은 �
 
 ## Install HAProxy
 
-버츄얼 박스에서 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/haproxy-tutorial.ova](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/images/ova/haproxy-tutorial.ova) 
+버츄얼 박스에서 [https://drive.google.com/open?id=0By_yEUK4bN_weW1CYTF5Z2s4LVE](https://drive.google.com/open?id=0By_yEUK4bN_weW1CYTF5Z2s4LVE) 
 에서 다운받은 이미지로 새로 VM을 생성하도록 합니다. (Mac 주소는 초기화 해 주도록 합니다.)
 
-이 VM에 이름을 haproxy 라고 변경해주고, 아이피는 192.168.0.2 라고 가정합니다.
+이 VM에 이름을 haproxy 으로 변경해주고, 아이피는 192.168.0.2 라고 가정합니다.
 
 ```
 192.168.0.2 haproxy
@@ -143,7 +143,7 @@ HA로 설정된 HAProxy 의 동작 흐름이 단일 HAProxy 와 다른 점은 �
 apt 에 레파지토리를 추가하고 설치를 진행합니다.
 
 ```
-$ sudo apt-add-repository -y ppa:vbernat/haproxy-1.5
+[proxy]$ sudo apt-add-repository -y ppa:vbernat/haproxy-1.5
 
 gpg: keyring `/tmp/tmpvwic6d4e/secring.gpg' created
 gpg: keyring `/tmp/tmpvwic6d4e/pubring.gpg' created
@@ -154,8 +154,8 @@ gpg: Total number processed: 1
 gpg:               imported: 1  (RSA: 1)
 OK
 
-$ sudo apt-get -y update
-$ sudo apt-get install haproxy
+[proxy]$ sudo apt-get -y update
+[proxy]$ sudo apt-get install haproxy
 
 Reading package lists... Done
 Building dependency tree       
@@ -169,7 +169,7 @@ Suggested packages:
 HAProxy 의 설치가 잘 되었나 확인해봅니다.
 
 ```
-$ sudo service haproxy status 
+[proxy]$ sudo service haproxy status 
 haproxy is running.
 ```
 
@@ -178,7 +178,7 @@ haproxy is running.
 설치된 서버의 /etc/haproxy/haproxy.cfg 를 살펴보면 아래의 내용이 나타나게 됩니다.
 
 ```
-$ cat /etc/haproxy/haproxy.cfg
+[proxy]$ cat /etc/haproxy/haproxy.cfg
 global
 	log /dev/log	local0
 	log /dev/log	local1 notice
@@ -290,7 +290,7 @@ Step 1. haproxy.cfg 편집
 /etc/haproxy/haproxy.cfg 에서 다음 두 라인을 주석처리하고 새로운 라인을 입력합니다.
 
 ```
-$ sudo vi /etc/haproxy/haproxy.cfg
+[proxy]$ sudo vi /etc/haproxy/haproxy.cfg
 
 global
         log 127.0.0.1   local0
@@ -302,13 +302,13 @@ global
 Step 2. rsyslog 설치
 
 ```
-$ sudo apt-get install rsyslog
+[proxy]$ sudo apt-get install rsyslog
 ```
 
 Step 3. /etc/rsyslog.d/haproxy.conf 생성
 
 ```
-$ sudo vi /etc/rsyslog.d/haproxy.conf
+[proxy]$ sudo vi /etc/rsyslog.d/haproxy.conf
 
 $ModLoad imudp
 $UDPServerRun 514
@@ -321,14 +321,14 @@ local0.* ~
 Step 4. 서비스 재시작
 
 ```
-$ sudo service rsyslog restart
-$ sudo service haproxy restart
+[proxy]$ sudo service rsyslog restart
+[proxy]$ sudo service haproxy restart
 ```
 
 Step 4 까지 진행을 하고 나면 /var/log/haproxy.log 파일이 생성되어 있어야 합니다.
 
 ```
-$ cat /var/log/haproxy.log 
+[proxy]$ cat /var/log/haproxy.log 
 Mar 24 18:06:54 localhost haproxy[2251]: Proxy service started.
 Mar 24 18:06:54 localhost haproxy[2251]: Proxy service started.
 ```
@@ -397,7 +397,7 @@ frontend 와 backend 각 항목의 주요 옵션들을 살펴보겠습니다.
 haproxy 를 재시작합니다.
 
 ```
-$ sudo service haproxy restart
+[proxy]$ sudo service haproxy restart
 ```
 
 그리고, haproxy 서버의 80 포트로 브라우저에 접속하여 봅니다.
@@ -407,7 +407,7 @@ $ sudo service haproxy restart
 이때 haproxy 의 로그를 살펴보겠습니다.
 
 ```
-$ sudo tail -f /var/log/haproxy.log 
+[proxy]$ sudo tail -f /var/log/haproxy.log 
 Mar 24 18:12:12 localhost haproxy[2290]: 192.168.0.23:55237 [24/Mar/2016:18:12:12.631] service sample-be/sample-be-0 0/0/0/1/1 200 156 - - --NN 1/1/0/1/0 0/0 "GET / HTTP/1.1"
 Mar 24 18:12:12 localhost haproxy[2290]: 192.168.0.23:55237 [24/Mar/2016:18:12:12.632] service sample-be/sample-be-1 78/0/1/0/79 200 156 - - --NN 1/1/0/1/0 0/0 "GET /favicon.ico HTTP/1.1"
 Mar 24 18:12:18 localhost haproxy[2290]: 192.168.0.23:55237 [24/Mar/2016:18:12:12.712] service sample-be/sample-be-2 6118/0/1/0/6119 200 156 - - --NN 1/1/0/1/0 0/0 "GET / HTTP/1.1"
