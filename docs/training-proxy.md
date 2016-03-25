@@ -47,11 +47,11 @@ HAProxy 는 설치가 쉽고 또한 환경 설정도 어렵지 않으므로 서�
  
 로드 밸런스의 타입과 동작 방식에 대해 간략히 그림으로 표현해보도록 합니다.
   
-![haproxy1](/docs/images/haproxy/haproxy1.png)
+![haproxy1](images/haproxy/haproxy1.png)
 
-![haproxy2](/docs/images/haproxy/haproxy2.png)
+![haproxy2](images/haproxy/haproxy2.png)
 
-![haproxy3](/docs/images/haproxy/haproxy3.png)
+![haproxy3](images/haproxy/haproxy3.png)
 
 로드 밸런서의 동작을 간단하게 설명하면, 네트워크에서 IP 주소와 MAC 주소를 이용해 목적지(destination) IP 주소를 찾아가고 출발지로 되돌아오는 구조입니다. 
 이 글에서는 4가지의 로드 밸런서 동작 방식을 설명하지만, 
@@ -100,7 +100,7 @@ HAProxy의 동작 흐름은 다음과 같습니다.
 3. 재요청 시 proxy 에서 쿠키 정보 확인 > 최초 요청 서버로 전달
 4. 다시 접근 시 쿠키 추가 없이 전달 > 클라이언트에 쿠키 정보가 계속 존재함(쿠키 재사용)
 
-![haproxy4](/docs/images/haproxy/haproxy4.png)
+![haproxy4](images/haproxy/haproxy4.png)
 
 ### HAProxy High availability
 
@@ -114,7 +114,7 @@ HAProxy 의 성능상 초당 8만 건 정도의 연결을 처리해도 크게 �
 active 상태의 서버에 문제가 발생하면 standby HAProxy 가 active 상태로 변경되면서 
 기존 active HAProxy 의 가상 IP 주소를 가져오면서 서비스가 무정지 상태를 유지하게 됩니다. 
 
-![haproxy5](/docs/images/haproxy/haproxy5.png)
+![haproxy5](images/haproxy/haproxy5.png)
 
 HA로 설정된 HAProxy 의 동작 흐름이 단일 HAProxy 와 다른 점은 최초 접근 시 쿠키에 바로 서버 정보를 입력하지 않고 
 서버에서 jsessionid 가 전달될 때 서버 정보를 합쳐서 전달한다는 것입니다.
@@ -125,7 +125,7 @@ HA로 설정된 HAProxy 의 동작 흐름이 단일 HAProxy 와 다른 점은 �
 4. 서버 정보 + jsessionid 를 쿠키에 추가
 5. 쿠키에서 서버 판별 후 jsessionid 만 전달
 
-![haproxy6](/docs/images/haproxy/haproxy6.png)
+![haproxy6](images/haproxy/haproxy6.png)
 
 다음 파트에서 실제로 HAProxy 를 설치하고 실행해보도록 하겠습니다. 
 
@@ -431,7 +431,7 @@ Mar 24 18:12:21 localhost haproxy[2290]: 192.168.0.23:55237 [24/Mar/2016:18:12:2
 
 다음 파트에서는 메소스, 마라톤, 그리고 DNS 과 로드밸런싱, 데이터베이스 리소스등을 복잡한 설치 과정 없이 아주 쉽게 구성할 수 있게 해주는 오픈소스 플랫폼인 Beluga 를 학습 해 보겠습니다.
 
-[Beluga 학습 바로가기](/README.md)
+[Beluga 학습 바로가기](../README.md)
 
 
     

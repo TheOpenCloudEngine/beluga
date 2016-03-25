@@ -608,7 +608,7 @@ Deleted: sha256:0ed549cc160c7df64df7724fffb97f7e5da5c50421cd50eeacf15d4825f8fcfa
  
 먼저 도커 허브에 로그인 하기 위해서 [https://hub.docker.com/](https://hub.docker.com/) 에 가입을 하도록 합니다.
 
-![docker-hub1](/docs/images/docker/docker-hub1.png)
+![docker-hub1](images/docker/docker-hub1.png)
 
 
 #### Account creation and login
@@ -698,7 +698,7 @@ latest: digest: sha256:1284357ceef1c154f5dc863aa8eb20a3e90c4b997ed46b6f2c530817d
 
 [https://hub.docker.com/](https://hub.docker.com/) 에 접속하여 로그인 하여 보면, 이미지가 업로드 된 것을 볼 수 있습니다.
 
-![docker-hub2](/docs/images/docker/docker-hub2.png)
+![docker-hub2](images/docker/docker-hub2.png)
 
 
 ### Private registry
@@ -2019,6 +2019,6 @@ Block until a container stops, then print its exit code.
 
 ## Next Step
 
-[Mesos 학습 바로가기](/docs/training-mesos.md) 
+[Mesos 학습 바로가기](training-mesos.md) 
 
 

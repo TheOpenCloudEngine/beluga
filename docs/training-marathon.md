@@ -42,13 +42,13 @@
 
 마라톤은 이처럼 다른 메소스 프레임워크도 하나의 어플리케이션처럼 관리하여 여러 타스크 도구들이 유기적으로 자원을 할당받아 하나의 완성된 데이터 센터를 유지할 수 있게 합니다.
 
-![marathon1](/docs/images/marathon/marathon1.png)
+![marathon1](images/marathon/marathon1.png)
 
 다음 그림은 조금 더 어플리케이션의 관점에서 바라본 마라톤의 구성 모습입니다.
 
 마라톤에 각기 다른 수의 타스크들이 (검색 엔진 1개, Jetty 3개, Rails5 개) 실행되고 있습니다.
 
-![marathon2](/docs/images/marathon/marathon2.png)
+![marathon2](images/marathon/marathon2.png)
 
 웹 사이트 사용자수가 늘어나서 트랜잭션이 증가함에 따라, 운영자는 검색 서비스 와 Rails 기반 응용 프로그램을 확장하기로 결정합니다.
  
@@ -56,13 +56,13 @@
 
 마라톤은 마라톤 시스템과 설정한 제한 용량을 벗어나지 않는 한도 내에서, 여유 공간이 있는 기기에 새로운 작업을 배치합니다.
 
-![marathon3](/docs/images/marathon/marathon3.png)
+![marathon3](images/marathon/marathon3.png)
 
 만일 데이터 센터의 노동자가 실수로 하나의 서버의 파워를 뽑아버렸다고 생각해 봅니다. 마라톤은 사라진 서버에서 실행중이던 검색 서비스와 Rails 응용프로그램을 
 
 다른 서버에서 재시작 하게 됩니다. 컨테이너 기반의 분산 배치는 이처럼 엔지니어로 하여금 서비스 리커버리에 들이는 많은 노력과 시간을 절약하게 하여 줍니다.
 
-![marathon4](/docs/images/marathon/marathon4.png)
+![marathon4](images/marathon/marathon4.png)
 
 
 ## Install Marathon
@@ -86,14 +86,14 @@ $ sudo service marathon restart
 
 브라우저에 마스터 서버주소:8080 으로 접속하시면, 마라톤 UI 가 떠 있는 것을 볼 수 있습니다.
 
-![marathon5](/docs/images/marathon/marathon5.png)
+![marathon5](images/marathon/marathon5.png)
 
 마라톤을 별도로 빌드하여 설치 할 경우에는 메소스와 연동하는 과정이 필요하지만, 메소스피어에서 제공한 패키지로 설치를 진행하였기 때문에 별다른 연동 과정 없이 
 메소스 클러스의 주키퍼로부터 정보를 받아와 실행 될 것입니다.
 
 메소스 클러스터와 잘 연동이 되었지 확인하기 위해 UI 에서 About 을 클릭합니다. 그림과 같이 현재 메소스 마스터 및 주키퍼의 설정 상태가 나타나야 합니다.
  
-![marathon6](/docs/images/marathon/marathon6.png)
+![marathon6](images/marathon/marathon6.png)
 
 
 ## Start Marathon
@@ -104,7 +104,7 @@ $ sudo service marathon restart
 
 그림과 같이 화면에 입력 후 Create 버튼을 클릭합니다.
 
-![marathon7](/docs/images/marathon/marathon7.png)
+![marathon7](images/marathon/marathon7.png)
 
 수초가 지난 후 test-python 의 상태가 Running 으로 변한것을 볼 수 있습니다.
 
@@ -217,13 +217,13 @@ I0323 22:34:08.305418  6198 master.cpp:3641] Processing DECLINE call for offers:
 
 다수의 프로세스를 생성해야 함으로 cpu 는 0.1, 메모리는 32MB 로 설정하도록 합니다.
 
-![marathon8](/docs/images/marathon/marathon8.png)
+![marathon8](images/marathon/marathon8.png)
 
-![marathon9](/docs/images/marathon/marathon9.png)
+![marathon9](images/marathon/marathon9.png)
 
 어플리케이션이 디플로이 된 후, GUI 에서 어플리케이션을 클릭하게 되면 아래와 같은 화면이 나옵니다.
 
-![marathon10](/docs/images/marathon/marathon10.png)
+![marathon10](images/marathon/marathon10.png)
 
 test-python 어플리케이션이 한개의 타스크를 가동중에 있고, 이 타스크가 192.168.0.6(슬레이브 아이피):31847 포트로 서비스되고 있다는 정보를 알 수 있습니다. 
 실제로 브라우저에서 이 주소로 접속하여 웹 서버가 떠 있는지 확인하도록 합니다.
@@ -232,15 +232,15 @@ test-python 어플리케이션이 한개의 타스크를 가동중에 있고, �
 
 다시 GUI 의 어플리케이션 화면으로 돌아와서, 그림과 같이 스케일 사이즈를 3으로 설정하여 봅니다.
 
-![marathon11](/docs/images/marathon/marathon11.png)
+![marathon11](images/marathon/marathon11.png)
 
-![marathon12](/docs/images/marathon/marathon12.png)
+![marathon12](images/marathon/marathon12.png)
 
 곧 Running instances 의 숫자가 3으로 변하는 것을 볼 수 있습니다.
 
 어플리케이션 정보를 클릭하면, 세개의 타스크 리스트와 각각의 포트 바인딩 상황을 볼 수 있습니다.
 
-![marathon13](/docs/images/marathon/marathon13.png)
+![marathon13](images/marathon/marathon13.png)
 
 슬레이브 서버에서, 실제로 프로세스를 검사해 보도록 하겠습니다.
 
@@ -333,7 +333,7 @@ $ curl http://0.0.0.0:8080/v2/apps/test-python | python -m json.tool
 
 작업해야 할 목표에 대한 것을 간단한 그림으로 나타내면 다음과 같습니다.
 
-![marathon14](/docs/images/marathon/marathon14.png)
+![marathon14](images/marathon/marathon14.png)
 
 내부에 9000 포트의 웹 어플리케이션이 실행되고 있는 도커 컨테이너가 있다고 가정합니다.
  
@@ -457,7 +457,7 @@ $ curl -X POST http://192.168.0.5:8080/v2/apps -d @helloworld.json -H "Content-t
 
 또한 UI 에서 stdout 파일을 다운받아 도커 컨테이너의 구동 로그를 확인해 보도록 합니다.
 
-![marathon15](/docs/images/marathon/marathon15.png)
+![marathon15](images/marathon/marathon15.png)
 
 ```
 # 컨테이너 구동 로그
@@ -488,6 +488,6 @@ da58a06c2175        hello-world         "node nodejs-hello-wo"   10 minutes ago 
 
 다음 파트에서는 HAProxy 를 사용하여 각각의 웹 도커 컨테이너들을 하나의 도메인으로 서비스 하는 것을 배워보겠습니다.
 
-[HAProxy 학습 바로가기](/docs/training-proxy.md)
+[HAProxy 학습 바로가기](training-proxy.md)
 
  

@@ -25,13 +25,13 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 
 파일 - 가상시스템 가져오기 를 통해 다운로드 받은 ova 를 불러옵니다.
 
-![vb2](/docs/images/vb/vb2.png)
+![vb2](images/vb/vb2.png)
 
-![vb3](/docs/images/vb/vb3.png)
+![vb3](images/vb/vb3.png)
 
 생성 된 가상머신을 우클륵하여 설정 창을 불러옵니다.
 
-![vb4](/docs/images/vb/vb4.png)
+![vb4](images/vb/vb4.png)
 
 네트워크 탭에서 네트워크 어댑터를 브리지 어댑터로 설정합니다.
 
@@ -39,22 +39,22 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 
 그 후 하단의 고급 탭을 열어 가상머신의 맥 주소를 리프레쉬 하도록 합니다.
 
-![vb5](/docs/images/vb/vb5.png)
+![vb5](images/vb/vb5.png)
 
 가상 머신을 시작하면 우분투가 구동되는 모습을 볼 수 있습니다.
 
-![vb6](/docs/images/vb/vb6.png)
+![vb6](images/vb/vb6.png)
 
 로그인 아이디와 패스워드는 uengine / uengine 으로 되어있습니다.
 
-![vb7](/docs/images/vb/vb7.png)
+![vb7](images/vb/vb7.png)
 
 
 ## Find address
 
 구동 된 가상머신의 터미널에서 ifconfig 명령어를 통해 할당 된 아이피를 알 수 있습니다.
 
-![vb8](/docs/images/vb/vb8.png)
+![vb8](images/vb/vb8.png)
 
 
 [Download ova](#download-ova) 과정에서 수동으로 서버를 설치하셨을 경우에는, ssh 인스톨을 실행합니다.

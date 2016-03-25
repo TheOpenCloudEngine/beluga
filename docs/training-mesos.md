@@ -85,7 +85,7 @@ NoSQL의 한종류인 Apache HBase, 대용량 분산 큐 시스템인 Kafka등�
 
 상호조정 패턴에 대한 구현물과 구현 방법을 오픈소스로 제공
 
-![zookeeper1](/docs/images/zookeeper/zookeeper1.jpg)
+![zookeeper1](images/zookeeper/zookeeper1.jpg)
 
 #### ZNode
 
@@ -100,7 +100,7 @@ namespace hierarchy 를 가지기 때문에 관련 있는 일들을 눈에 보�
 directory 가 내용을 가질 수 있게 함으로써(혹은 file 간에 hierarchy 를 가진다고 하기도 합니다.) 
 불필요한 file 을 생성해야 하는 것을 막을 수 있습니다.
 
-![zookeeper2](/docs/images/zookeeper/zookeeper2.jpg)
+![zookeeper2](images/zookeeper/zookeeper2.jpg)
 
 
 ### Install zookeeper
@@ -415,7 +415,7 @@ leader follow 서버에는 없는 2888 포트가 사용중입니다.
 
 현재 leader 인 서버의 가상머신을 버츄얼 박스에서 종료하도록 합니다.
 
-![zookeeper3](/docs/images/zookeeper/zookeeper3.png)
+![zookeeper3](images/zookeeper/zookeeper3.png)
 
 follow 서버의 /var/log/zookeeper/zookeeper.log 에 다음의 내용이 출력되며 새로운 leader 를 선출하게 됩니다.
 
@@ -470,7 +470,7 @@ Mesos를 활용하는 기업으로는 Twitter, Facebook, eBay, Riot Games가 있
 
 아키텍처를 살펴보면 Mesos Master와 장애 발생시 대체할 Standby Master, Automatic Failover를 하도록 구성된 ZooKeeper Quorum, Mesos Slave 서버들로 구성되어 있습니다.
 
-![mesos1](/docs/images/mesos/mesos1.jpg)
+![mesos1](images/mesos/mesos1.jpg)
 
 아래 그림을 통해 Mesos가 어떻게 자원(Resource)관리와 작업(Job)을 수행하는지 살펴 보겠습니다.
 
@@ -481,7 +481,7 @@ Mesos를 활용하는 기업으로는 Twitter, Facebook, eBay, Riot Games가 있
 4. Master 서버는 Framework 1로 부터 지시받은 것을 Slave 1 서버에 전송하고, 이를 받은 Slave 1은 해당 작업을 수행 하게 됩니다.
 ```
 
-![mesos2](/docs/images/mesos/mesos2.jpg)
+![mesos2](images/mesos/mesos2.jpg)
 
 다음은 좀 더 이해를 돕기 위해 실제 구성 및 테스트를 진행 해 보도록 하겠습니다.
 
@@ -767,9 +767,9 @@ $ sudo service mesos-slave restart
 
 위의 내용을 모두 진행하셨다면 마스터서버주소:5050 포트를 브라우저에서 열어보면 메소스 UI 상에 슬레이브 하나가 등록이 되어있어야 합니다.
 
-![mesos3](/docs/images/mesos/mesos3.png)
+![mesos3](images/mesos/mesos3.png)
 
-![mesos4](/docs/images/mesos/mesos4.png)
+![mesos4](images/mesos/mesos4.png)
 
 이 슬레이브가 실제로 동작하는지 테스트를 진행하도록 합니다.
 
@@ -853,7 +853,7 @@ Received status update TASK_FINISHED for task cluster-test
 
 이 과정이 일어나는 동안 UI 에서는 다음과 같이 화면이 출력됩니다.
 
-![mesos5](/docs/images/mesos/mesos5.png)
+![mesos5](images/mesos/mesos5.png)
 
 위의 타스크 테스트까지 종료되었다면 이제 분산 프레임워크 클러스터를 운용할 준비가 끝난 것입니다.
 
@@ -869,7 +869,7 @@ Received status update TASK_FINISHED for task cluster-test
 직접 코딩을 진행하셔도 되지만, 완성 된 소스코드를 [https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip](https://s3.ap-northeast-2.amazonaws.com/beluga-uengine/tutorial/mesos-helloworld.zip) 
 에서 다운받는 것을 추천드립니다.
 
-![mesos5](/docs/images/mesos/mesos5.png)
+![mesos5](images/mesos/mesos5.png)
 
 #### Mesos framework components
 
@@ -1178,11 +1178,11 @@ framework_id {
 
 쉘을 종료하지 않는 상태로 메소스 UI 를 확인해보면 Completed Tasks 에 방금전의 타스크가 등록되어 있는 것을 확인할 수 있습니다.
 
-![mesos7](/docs/images/mesos/mesos7.png)
+![mesos7](images/mesos/mesos7.png)
 
 Sandbox 를 클릭하여 stdout 로그를 확인하여 보면 다음의 로그가 찍혀있습니다.
 
-![mesos8](/docs/images/mesos/mesos8.png)
+![mesos8](images/mesos/mesos8.png)
 
 ```
 Registered executor on 192.168.0.6
@@ -1206,6 +1206,6 @@ Command exited with status 0 (pid: 5827)
 
 ## Next Step
 
-[Mesos Marathon 학습 바로가기](/docs/training-marathon.md) 
+[Mesos Marathon 학습 바로가기](training-marathon.md) 
 
  
