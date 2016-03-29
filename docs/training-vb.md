@@ -65,6 +65,8 @@ $ sudo apt-get install ssh
 
 putty 또는 mac os x 터미널에서 가상머신으로 접속 할 수 있습니다.
 
+[putty download](https://the.earth.li/~sgtatham/putty/latest/x86/putty.exe)
+
 ```
 $ ssh uengine@192.168.0.6
 uengine@192.168.0.6's password: 

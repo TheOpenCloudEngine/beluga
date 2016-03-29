@@ -109,7 +109,7 @@ directory 가 내용을 가질 수 있게 함으로써(혹은 file 간에 hierar
 우분투에서 주키퍼를 인스톨합니다.
 
 ```
-$ sudo apt-get install zookeeper
+$ sudo apt-get install zookeeperd
 Reading package lists... Done
 Building dependency tree       
 Reading state information... Done
