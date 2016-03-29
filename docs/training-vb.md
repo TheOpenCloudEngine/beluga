@@ -32,6 +32,22 @@ Ubuntu Server 14.04 TLS 가상머신을 구축하기 위해서 ova 파일을 다
 
 생성 된 가상머신을 우클륵하여 설정 창을 불러옵니다.
 
+### 버츄얼 박스 어댑터 종류
+
+#### Bridged Networking
+ 
+![vb17](images/vb/vm17.png)
+
+#### Internal Networking
+
+![vb18](images/vb/vm18.png)
+
+#### Host Only Networking
+
+![vb19](images/vb/vm19.png)
+
+
+
 ### Wifi 환경, 공유기 환경
 
 ![vb4](images/vb/vb4.png)
