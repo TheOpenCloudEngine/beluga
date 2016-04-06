@@ -491,9 +491,39 @@ JWT는 토큰 내에 모든 정보를 다 가지고 있기 때문에, 한번 발
 
 FORCS IAM 은 OAuth 2.0 의 인증패턴과 OpenSSO 의 URL Policy Driving 의 혼합버전이라 할 수 있다.
 
-단, OpenSSO URL Policy 의 경우 개념을 파악해 DB 스키마구조를 만들어야 한다.
+단, OpenSSO URL Policy 의 경우 개념을 차용해 새로운 설계가 필요하다.
 
-인증처리 과정은 두가지를 제공하도록 한다.
+#### IAM 클라이언트 관리
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam.png)
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam1.png)
+
+#### IAM 클라이언트 매니지먼트
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam2.png)
+
+
+#### IAM 인증과정 시나리오
+
+##### Trust Client
+
+사용자가 신뢰성 있는 사이트로 접근할 경우, 즉 서비스 제공자 (E-form 서비스) 사이트를 이용할 경우의 인증 시나리오이다. 
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam4.png)
+
+##### 3Th party Client
+
+사용자가 외부 어플리케이션을 통해 서비스 제공자의 서비스를 이용할 경우의 인증 시나리오이다.
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam5.png)
+
+##### Resource Direct Access
+ 
+사용자가 리소스로 직접 접근하게 될 경우의 시나리오이다.
+
+
+
 
 
 
