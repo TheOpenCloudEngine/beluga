@@ -520,8 +520,9 @@ FORCS IAM 은 OAuth 2.0 의 인증패턴과 OpenSSO 의 URL Policy Driving 의 �
 
 ##### Resource Direct Access
  
-사용자가 리소스로 직접 접근하게 될 경우의 시나리오이다.
-
+리소스 서버 접근 시나리오이다. 이 시나리오는 E-form 서비스와 연계된 REST API 서버측에서 리소스 서버 접근시에도 동일하게 적용된다.
+ 
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth/iam6.png)
 
 
 
