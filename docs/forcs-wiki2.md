@@ -130,5 +130,24 @@ OpenAM SSO 는 전형적인 SSO 서버 수행 방식이다. 이 방식은 유저
 
 
 
+### 고가용성 구성 (세션 페일오버)
+
+![](https://github.com/TheOpenCloudEngine/beluga/blob/dev-ops/docs/images/oauth2/iamp2-3.png)
+
+로드밸런서 뒤에 포진한 OpenAM 서버에 각각의 OpenDJ CTS Store 설정과 CTS token 운영을 해주어야 함.
+
+CTS Store 의 백업 정책과 또한 필요함.
+  
+별도로 CTS Store 의 replicated 구성을 위해서 외부의 Replicated OpenDJ 디렉토리 서비스와 CTS Store 의 구성이 필요함.
+
+짧은 주기의 세션 페일오버를 구현하기 위해 CTS 를 사용한다 했는데
+
+
+ 
+ 
+
+
+
+
 
 

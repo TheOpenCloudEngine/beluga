@@ -515,6 +515,10 @@ $ ./add_insecure_registry_mac.sh <Management 아이피>
 
 ## Beluga AppStore
 
+### Sample War(OpenGraph)
+
+[https://drive.google.com/file/d/0By_yEUK4bN_wMFRiN0JzYkdKUmM/view?usp=sharing](https://drive.google.com/file/d/0By_yEUK4bN_wMFRiN0JzYkdKUmM/view?usp=sharing)
+
 ### 설치시 설정.
 
 1 . WAS구동시 아래의 설정을 넣어준다.
