@@ -26,7 +26,9 @@ public class Bootstrap {
     private final String serverClass = "org.opencloudengine.garuda.beluga.server.BelugaServer";
 
     private String serverHome;
-    private final String LIB_PATH = "/WEB-INF/lib/";
+    private String mode;
+    private String LIB_PATH = "/lib/";
+    private String DEV_LIB_PATH = "/WEB-INF/lib/";
 
     public static void main(String[] args) {
 
@@ -65,6 +67,12 @@ public class Bootstrap {
     }
 
     public void init() throws Exception {
+        mode = System.getProperty("mode");
+        if(mode != null){
+            if(mode.equals("dev")){
+                LIB_PATH = DEV_LIB_PATH;
+            }
+        }
         serverHome = System.getProperty("server.home");
 
         if (serverHome == null) {
