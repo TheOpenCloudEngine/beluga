@@ -22,10 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by swsong on 2015. 8. 7..
@@ -60,6 +57,59 @@ public class AppsAPI extends BaseAPI {
     public Response getTasks(@PathParam("clusterId") String clusterId, @PathParam("id") String appId) throws Exception {
         try {
             return marathonAPI(clusterId).requestGetAPI("/apps/" + appId + "/tasks");
+        } catch (Throwable t) {
+            logger.error("", t);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
+        }
+    }
+
+    /**
+     * 앱 디플로이를 중지한다.
+     */
+    @GET
+    @Path("/{id}/stop/{cmd}")
+    public Response stopAppDeployment(@PathParam("clusterId") String clusterId, @PathParam("id") String appId,
+                                      @PathParam("cmd") String cmd) throws Exception {
+        try {
+            boolean force = false;
+            switch (cmd) {
+                case "stop":
+                    force = true;
+                    break;
+                case "rollback":
+                    force = false;
+                    break;
+                default:
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            Response response = marathonAPI(clusterId).requestGetAPI("/apps/" + appId);
+            if (response.getStatus() == 200) {
+                boolean allDeployCancled = true;
+                String json = response.readEntity(String.class);
+                JsonNode root = JsonUtil.toJsonNode(json);
+                JsonNode app = root.get("app");
+                JsonNode deployments = app.get("deployments");
+                for (JsonNode deployment : deployments) {
+                    String deploymentId = deployment.get("id").asText();
+                    Response res = null;
+                    if (force) {
+                        res = marathonAPI(clusterId).requestDeleteAPI("/deployments/" + deploymentId);
+                    } else {
+                        res = marathonAPI(clusterId).requestDeleteAPINoneForce("/deployments/" + deploymentId);
+                    }
+                    int status = res.getStatus();
+                    if (status != 200 && status != 202) {
+                        allDeployCancled = false;
+                    }
+                }
+                if (allDeployCancled) {
+                    return Response.status(Response.Status.OK).build();
+                } else {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                }
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } catch (Throwable t) {
             logger.error("", t);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(t).build();
@@ -134,7 +184,7 @@ public class AppsAPI extends BaseAPI {
 
     /**
      * 리소스 앱을 실행한다.
-     * */
+     */
     @POST
     @Path("/resources")
     public Response deployResourceApp(@PathParam("clusterId") String clusterId, Map<String, Object> data) throws Exception {
@@ -161,11 +211,11 @@ public class AppsAPI extends BaseAPI {
             actionStatus.waitForDone();
 
             Object result = actionStatus.getResult();
-            if(result instanceof Response) {
+            if (result instanceof Response) {
                 Map<String, Object> entity = parseMarathonResponse((Response) result);
                 notifyDeployment(clusterId, entity);
-            } else if(result instanceof Exception) {
-                return Response.status(500).entity(((Exception)result).getMessage()).build();
+            } else if (result instanceof Exception) {
+                return Response.status(500).entity(((Exception) result).getMessage()).build();
             }
             return Response.ok().build();
         } catch (Throwable t) {
@@ -203,9 +253,9 @@ public class AppsAPI extends BaseAPI {
                 memory = Float.parseFloat(data.get("memory").toString());
             }
             Integer scale = (Integer) data.get("scale");
-            Map<String, String> env = (Map<String, String>) data.get("beluga_env");
+            Map<String, Object> env = (Map<String, Object>) data.get("beluga_env");
             List<Integer> ports = null;
-            if(port != null) {
+            if (port != null) {
                 ports = new ArrayList<>();
                 ports.add(port);
             }
@@ -215,9 +265,9 @@ public class AppsAPI extends BaseAPI {
             } else {
                 response = marathonAPI(clusterId).updateCommandApp(appId, command, ports, cpus, memory, scale, env);
             }
-            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 //OK
-            } else if(response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {
+            } else if (response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {
                 throw new ActionException("App is already running.");
             } else {
                 throw new ActionException("error while deploy to marathon : [" + response.getStatus() + "] " + response.getStatusInfo());
@@ -260,7 +310,7 @@ public class AppsAPI extends BaseAPI {
             /*
             * 오토스케일링 rule로 저장한다.
             * */
-            if(autoScaleConf != null) {
+            if (autoScaleConf != null) {
                 AutoScaleRule autoScaleRule = JsonUtil.json2Object(autoScaleConf, AutoScaleRule.class);
                 logger.debug("###[{}/{}] autoScaleRule > {}", clusterId, appId, autoScaleRule);
 
@@ -275,14 +325,14 @@ public class AppsAPI extends BaseAPI {
             /*
             * 중요!!! 여기서 리소스 노드와 연동할수 있는 환경변수를 넣어준다.
             * */
-            Map<String, String> env = makeEnvVariables(clusterId, data);
+            Map<String, Object> env = makeEnvVariables(clusterId, data);
 
             List<WebAppContextFile> webAppFileList = new ArrayList<>();
 
-            if(webAppContext != null && webAppFile != null) {
+            if (webAppContext != null && webAppFile != null) {
                 webAppFileList.add(new WebAppContextFile(webAppFile, webAppContext));
             }
-            if(webAppContext2 != null && webAppFile2 != null) {
+            if (webAppContext2 != null && webAppFile2 != null) {
                 webAppFileList.add(new WebAppContextFile(webAppFile2, webAppContext2));
             }
             DeployWebAppActionRequest request = new DeployWebAppActionRequest(clusterId, appId, revision, webAppFileList, webAppType, port, cpus, memory, scale, env, isUpdate);
@@ -290,11 +340,11 @@ public class AppsAPI extends BaseAPI {
             actionStatus.waitForDone();
 
             Object result = actionStatus.getResult();
-            if(result instanceof Response) {
+            if (result instanceof Response) {
                 Map<String, Object> entity = parseMarathonResponse((Response) result);
                 notifyDeployment(clusterId, entity);
-            } else if(result instanceof Exception) {
-                return Response.status(500).entity(((Exception)result).getMessage()).build();
+            } else if (result instanceof Exception) {
+                return Response.status(500).entity(((Exception) result).getMessage()).build();
             }
             return Response.ok().build();
         } catch (Throwable t) {
@@ -303,62 +353,79 @@ public class AppsAPI extends BaseAPI {
         }
     }
 
-    private Map<String, String> makeEnvVariables(String clusterId, Map<String, Object> data) {
-        Map<String, String> env = new HashMap<>();
+    private Map<String, Object> makeEnvVariables(String clusterId, Map<String, Object> data) {
+        Map<String, Object> env = new HashMap<>();
+
+        String appEnvs = (String) data.get("envs");
+        env.putAll(JsonUtils.unmarshal(appEnvs));
+
+        Map vcapServices = new HashMap();
+
         // 환경변수준비.
         List<String> resourceList = (List<String>) data.get("resourceList");
-        if(resourceList == null) {
-            return null;
-        }
-        for(String resourceId : resourceList) {
-            // marathon으로 resourceId를 조회하면서 task의 host, port를 알아내어 환경변수로 셋팅한다.
-            String resourceHost = null;
-            String resourcePort = null;
-            try {
-                Response response = marathonAPI(clusterId).requestGetAPI("/apps/" + resourceId);
-                if (response.getStatus() == 200) {
-                    String json = response.readEntity(String.class);
-                    JsonNode root = JsonUtil.toJsonNode(json);
-                    JsonNode app = root.get("app");
-                    ArrayNode tasks = (ArrayNode) app.get("tasks");
-                    if (tasks != null) {
-                        JsonNode task = tasks.get(0);
-                        if (task != null) {
-                            resourceHost = task.get("host").asText();
-                            ArrayNode ports = (ArrayNode) task.get("ports");
-                            if (ports.size() > 0) {
-                                resourcePort = String.valueOf(ports.get(0).asInt());
+        if (resourceList != null) {
+            for (String resourceId : resourceList) {
+                // marathon으로 resourceId를 조회하면서 task의 host, port를 알아내어 환경변수로 셋팅한다.
+                Map resourceEnvMap = new HashMap();
+                String resourceHost = null;
+                String resourcePort = null;
+                Map envMap = new HashMap();
+                try {
+                    Response response = marathonAPI(clusterId).requestGetAPI("/apps/" + resourceId);
+                    if (response.getStatus() == 200) {
+                        String json = response.readEntity(String.class);
+                        JsonNode root = JsonUtil.toJsonNode(json);
+                        JsonNode app = root.get("app");
+                        JsonNode resourceEnv = app.get("env");
+                        envMap = JsonUtils.unmarshal(resourceEnv.toString());
+
+                        ArrayNode tasks = (ArrayNode) app.get("tasks");
+                        if (tasks != null) {
+                            JsonNode task = tasks.get(0);
+                            if (task != null) {
+                                resourceHost = task.get("host").asText();
+                                ArrayNode ports = (ArrayNode) task.get("ports");
+                                if (ports.size() > 0) {
+                                    resourcePort = String.valueOf(ports.get(0).asInt());
+                                }
                             }
                         }
                     }
+                } catch (Throwable t) {
+                    logger.error("", t);
                 }
-            } catch (Throwable t) {
-                logger.error("", t);
+
+                if (resourceHost != null && resourcePort != null) {
+                    resourceEnvMap.put("plan", "basic");
+                    resourceEnvMap.put("env", envMap);
+                    resourceEnvMap.put("host", resourceHost);
+                    resourceEnvMap.put("port", resourcePort);
+                    vcapServices.put(resourceId, resourceEnvMap);
+
+//                    환경변수로 $OOO_HOST, $OOO_PORT 를 사용할 수 있게 해준다.
+//                    String envHostKey = resourceId + ".host";
+//                    String envPortKey = resourceId + ".port";
+//
+//                    env.put(envHostKey, resourceHost);
+//                    env.put(envPortKey, resourcePort);
+//
+//                    String webAppType = (String) data.get("type");
+//                    //Java 어플리케이션의 경우 JAVA_OPTS로 넣어주어야 System.getProperties로 받아올 수 있다.
+//                    //java opts
+//                    String javaOptsString = env.get("JAVA_OPTS");
+//                    if (javaOptsString == null) {
+//                        javaOptsString = "";
+//                    }
+//                    if (javaOptsString.length() > 0) {
+//                        javaOptsString += " ";
+//                    }
+//                    javaOptsString += ("-D" + envHostKey + "=" + resourceHost + " -D" + envPortKey + "=" + resourcePort);
+//
+//                    env.put("JAVA_OPTS", javaOptsString);
+                }
             }
-
-            if (resourceHost != null && resourcePort != null) {
-                //환경변수로 $OOO_HOST, $OOO_PORT 를 사용할 수 있게 해준다.
-                String envHostKey = resourceId + ".host";
-                String envPortKey = resourceId + ".port";
-
-                env.put(envHostKey, resourceHost);
-                env.put(envPortKey, resourcePort);
-
-                String webAppType = (String) data.get("type");
-                //Java 어플리케이션의 경우 JAVA_OPTS로 넣어주어야 System.getProperties로 받아올 수 있다.
-                //java opts
-                String javaOptsString = env.get("JAVA_OPTS");
-                if (javaOptsString == null) {
-                    javaOptsString = "";
-                }
-                if (javaOptsString.length() > 0) {
-                    javaOptsString += " ";
-                }
-                javaOptsString += ("-D" + envHostKey + "=" + resourceHost + " -D" + envPortKey + "=" + resourcePort);
-                env.put("JAVA_OPTS", javaOptsString);
-            }
-
         }
+        env.put("VCAP_SERVICES", JsonUtils.marshal(vcapServices));
         return env;
     }
 
@@ -401,22 +468,22 @@ public class AppsAPI extends BaseAPI {
     }
 
     private Map<String, Object> parseMarathonResponse(Response response) {
-        if(response == null) {
+        if (response == null) {
             return null;
         }
         String json = response.readEntity(String.class);
-        if(json == null) {
+        if (json == null) {
             return null;
         }
         return JsonUtils.unmarshal(json);
     }
 
-    private void notifyDeployment(String clusterId, Map<String, Object> entity){
-        if(entity == null) {
+    private void notifyDeployment(String clusterId, Map<String, Object> entity) {
+        if (entity == null) {
             return;
         }
         List<Map<String, Object>> deployments = (List<Map<String, Object>>) entity.get("deployments");
-        if(deployments != null) {
+        if (deployments != null) {
             HAProxyAPI haProxyAPI = clusterService(clusterId).getProxyAPI();
             for (Map<String, Object> deployment : deployments) {
                 haProxyAPI.notifyServiceChanged((String) deployment.get("id"));
@@ -424,7 +491,7 @@ public class AppsAPI extends BaseAPI {
         }
 
         String deploymentId = (String) entity.get("deploymentId");
-        if(deploymentId != null) {
+        if (deploymentId != null) {
             HAProxyAPI haProxyAPI = clusterService(clusterId).getProxyAPI();
             haProxyAPI.notifyServiceChanged(deploymentId);
         }

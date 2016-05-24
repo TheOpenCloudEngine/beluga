@@ -42,7 +42,7 @@ public class DeployWebAppAction extends RunnableAction<DeployWebAppActionRequest
         Float memory = request.getMemory();
         Integer scale = request.getScale();
         Boolean isUpdate = request.getIsUpdate();
-        Map<String, String> env = request.getEnv();
+        Map<String, Object> env = request.getEnv();
         // clusterId를 통해 인스턴스 주소를 받아온다.
         ClusterService clusterService = serviceManager.getService(ClustersService.class).getClusterService(clusterId);
         ClusterTopology topology = clusterService.getClusterTopology();

@@ -15,6 +15,7 @@ public class DockerWebAppPorts {
     public static final String JAVA7_TOMCAT7 = "java7_tomcat7";
     public static final String JAVA7_WILDFLY8_2 = "java7_wildfly8.2";
     public static final String PHP5_APACHE2 = "php5_apache2";
+
     static {
         appPortsMap = new HashMap<>();
         /* java7 wildfly8.2 */

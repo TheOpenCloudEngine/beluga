@@ -20,6 +20,9 @@ public class ScriptFileNames {
     private static final String WEBAPP_SCRIPT_FILE_ROOT = "script/webapp/";
     public static final String MERGE_IMAGE_FORMAT = "merge_%s_image.sh";
     public static final String PUSH_IMAGE = "push_image_to_registry.sh";
+    public static final String TERMINAL_OPEN = "terminal_open.sh";
+    public static final String TERMINAL_COMMIT = "terminal_commit.sh";
+    public static final String MAC_HOST = "terminal_mac_host.sh";
 
     public static String getClusterScriptPath(Environment env, String path) {
         return env.filePaths().makeRelativePath(CLUSTER_SCRIPT_FILE_ROOT + path).file().getAbsolutePath();
@@ -35,6 +38,18 @@ public class ScriptFileNames {
 
     public static String getPushImageToRegistryScriptPath(Environment env) {
         return getWebAppScriptPath(env, PUSH_IMAGE);
+    }
+
+    public static String getTerminalOpenScriptPath(Environment env) {
+        return getWebAppScriptPath(env, TERMINAL_OPEN);
+    }
+
+    public static String getTerminalCommitScriptPath(Environment env) {
+        return getWebAppScriptPath(env, TERMINAL_COMMIT);
+    }
+
+    public static String getMacHostScriptPath(Environment env) {
+        return getWebAppScriptPath(env, MAC_HOST);
     }
 
     public static String getWebAppScriptPath(Environment env, String fileName) {

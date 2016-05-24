@@ -39,7 +39,7 @@ public class DeployDockerImageAction extends RunnableAction<DeployDockerImageAct
         Float cpus = request.getCpus();
         Float memory = request.getMemory();
         Integer scale = 1;
-        Map<String, String> env = request.getEnv();
+        Map<String, Object> env = request.getEnv();
 
         // clusterId를 통해 인스턴스 주소를 받아온다.
         ClusterService clusterService = serviceManager.getService(ClustersService.class).getClusterService(clusterId);

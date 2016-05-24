@@ -54,14 +54,9 @@ public class ResourcesAPI extends BaseAPI {
             String resourceId = (String) data.get("id");
             String image = (String) data.get("image");
             String env = (String) data.get("env");
-            Map<String, String> envMap = new HashMap<>();
+            Map<String, Object> envMap = new HashMap<>();
             if(env != null && env.length() > 0) {
-                JSONObject json = new JSONObject(env);
-                Iterator<String> iter = json.keys();
-                while(iter.hasNext()) {
-                    String key = iter.next();
-                    envMap.put(key, json.getString(key));
-                }
+                envMap.putAll(JsonUtils.unmarshal(env));
             }
             DeployDockerImageActionRequest request = new DeployDockerImageActionRequest(clusterId, resourceId, image, port, cpus, memory, scale, envMap);
             ActionStatus actionStatus = actionService().request(request);

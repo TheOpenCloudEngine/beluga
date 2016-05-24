@@ -73,7 +73,7 @@ public class MarathonNativeRestTest {
         app.setCpus(0.1f);
         app.setMem(16.0f);
         app.setInstances(1);
-        Map<String, String> env = new HashMap();
+        Map<String, Object> env = new HashMap();
         env.put("MYSQL_ROOT_PASSWORD", "1111");
         app.setEnv(env);
         Gson gson = new Gson();

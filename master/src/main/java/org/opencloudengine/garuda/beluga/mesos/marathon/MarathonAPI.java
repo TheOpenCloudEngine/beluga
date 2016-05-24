@@ -67,21 +67,21 @@ public class MarathonAPI {
         return jsonString;
     }
 
-    public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public Response deployDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, getDefaultUpgradeStrategy());
         WebTarget target = getWebTarget(API_PATH_APPS);
         logger.info("{} {}", target.getUri(), toJson(appRequest));
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
-    public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public Response updateDockerApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         App appRequest = createDockerTypeApp(appId, imageName, usedPorts, cpus, memory, scale, env, null);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(toJson(appRequest)));
     }
 
-    private App createDockerTypeApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env, UpgradeStrategy upgradeStrategy) {
+    private App createDockerTypeApp(String appId, String imageName, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env, UpgradeStrategy upgradeStrategy) {
         List<PortMapping> portMappings = null;
         if(usedPorts != null) {
             portMappings = new ArrayList<>();
@@ -120,21 +120,21 @@ public class MarathonAPI {
         return app;
     }
 
-    public Response deployCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public Response deployCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale, env);
 
         WebTarget target = getWebTarget(API_PATH_APPS);
         return target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(toJson(appRequest)));
     }
 
-    public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public Response updateCommandApp(String appId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         App appRequest = createCommandApp(appId, command, usedPorts, cpus, memory, scale, env);
 
         WebTarget target = getWebTarget(API_PATH_APPS + SLASH + appId);
         return target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(toJson(appRequest)));
     }
 
-    private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    private App createCommandApp(String imageId, String command, List<Integer> usedPorts, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         App app = new App();
         app.setId(imageId);
         app.setCmd(command);
@@ -190,5 +190,13 @@ public class MarathonAPI {
     public Response requestDeleteAPI(String path) {
         WebTarget target = getWebTarget(API_PATH_VERSION + path);
         return target.queryParam("force", "true").request(MediaType.APPLICATION_JSON_TYPE).delete();
+    }
+
+    /*
+    * Marathon 의 DELETE API를 직접호출한다.
+    * */
+    public Response requestDeleteAPINoneForce(String path) {
+        WebTarget target = getWebTarget(API_PATH_VERSION + path);
+        return target.queryParam("force", "false").request(MediaType.APPLICATION_JSON_TYPE).delete();
     }
 }

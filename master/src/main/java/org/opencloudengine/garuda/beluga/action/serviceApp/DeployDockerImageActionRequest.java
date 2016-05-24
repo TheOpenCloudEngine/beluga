@@ -20,9 +20,9 @@ public class DeployDockerImageActionRequest extends ActionRequest {
     private Float cpus;
     private Float memory;
     private Integer scale;
-    private Map<String, String> env;
+    private Map<String, Object> env;
 
-    public DeployDockerImageActionRequest(String clusterId, String appId, String imageName, Integer port, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public DeployDockerImageActionRequest(String clusterId, String appId, String imageName, Integer port, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.imageName = imageName;
@@ -61,7 +61,7 @@ public class DeployDockerImageActionRequest extends ActionRequest {
         return scale;
     }
 
-    public Map<String, String> getEnv() {
+    public Map<String, Object> getEnv() {
         return env;
     }
 

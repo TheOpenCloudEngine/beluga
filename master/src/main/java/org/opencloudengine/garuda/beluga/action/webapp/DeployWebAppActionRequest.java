@@ -20,11 +20,11 @@ public class DeployWebAppActionRequest extends ActionRequest {
     private Float cpus;
     private Float memory;
     private Integer scale;
-    private Map<String, String> env;
+    private Map<String, Object> env;
     private Boolean isUpdate;
 
 
-    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, String> env) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, Object> env) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.revision = revision;
@@ -38,7 +38,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
         isUpdate = false;
     }
 
-    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, String> env, Boolean isUpdate) {
+    public DeployWebAppActionRequest(String clusterId, String appId, Integer revision, List<WebAppContextFile> webAppFileList, String webAppType, Integer port, Float cpus, Float memory, Integer scale, Map<String, Object> env, Boolean isUpdate) {
         this.clusterId = clusterId;
         this.appId = appId;
         this.revision = revision;
@@ -88,7 +88,7 @@ public class DeployWebAppActionRequest extends ActionRequest {
         return scale;
     }
 
-    public Map<String, String> getEnv() {
+    public Map<String, Object> getEnv() {
         return env;
     }
 
