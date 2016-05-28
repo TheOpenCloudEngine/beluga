@@ -12,12 +12,12 @@ https://vimeo.com/145980080
 
 ## GIS application demo
 
-1. 서비스 동적 바인딩 - https://vimeo.com/168302675
+1. 도커 제작 & 서비스 등록 - https://vimeo.com/168302786
 2. 카달로그로 부터 서비스 실행 - https://vimeo.com/168302927
-3. 도커 제작 & 서비스 등록 - https://vimeo.com/168302786
-4. 액티브 디플로이 (버전 매니지 & 롤백) - https://vimeo.com/168302824
-5. 스케일 & 오토스케일 - https://vimeo.com/168302841
-6. 어플리케이션 디플로이 - https://vimeo.com/168302924
+3. 서비스 동적 바인딩 - https://vimeo.com/168302675
+4. 어플리케이션 디플로이 - https://vimeo.com/168302924
+5. 액티브 디플로이 (버전 매니지 & 롤백) - https://vimeo.com/168302824
+6. 스케일 & 오토스케일 - https://vimeo.com/168302841
 
 
 ## 준비사항
