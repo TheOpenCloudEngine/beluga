@@ -46,6 +46,7 @@ cd $temp_dir
 
 echo FROM "$base_image" > Dockerfile
 echo RUN rm -rf /usr/local/tomcat/webapps/* >> Dockerfile
+echo RUN chmod -R 777 /usr/local/tomcat
 echo ENV CATALINA_OPTS -server -Xms64m -Xmx${jvm_xmx}m -XX:MaxPermSize=${jvm_perm_size}m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom >> Dockerfile
 
 for (( i = 0; i < arg_size; i+=2 ))
