@@ -210,6 +210,8 @@ Inbound Rule:
 | Custom TCP Rule | TCP      | 2181          | 0.0.0.0/0             |
 | MYSQL/Aurora    | TCP      | 3306          | 0.0.0.0/0             |
 | Custom TCP Rule | TCP      | 4243          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 9000          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 9090          | 0.0.0.0/0             |
 
 
 ### prepare key pair
