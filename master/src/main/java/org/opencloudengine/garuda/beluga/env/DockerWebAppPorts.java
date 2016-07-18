@@ -13,11 +13,18 @@ public class DockerWebAppPorts {
     private static Map<String, List<Integer>> appPortsMap;
 
     public static final String JAVA7_TOMCAT7 = "java7_tomcat7";
+    public static final String JAVA8_TOMCAT8 = "java8_tomcat8";
     public static final String JAVA7_WILDFLY8_2 = "java7_wildfly8.2";
     public static final String PHP5_APACHE2 = "php5_apache2";
 
     static {
         appPortsMap = new HashMap<>();
+        /* java8 tomcat8 */
+        {
+            List<Integer> ports = new ArrayList<>();
+            ports.add(8080);
+            appPortsMap.put(JAVA8_TOMCAT8, ports);
+        }
         /* java7 wildfly8.2 */
         {
             List<Integer> ports = new ArrayList<>();
