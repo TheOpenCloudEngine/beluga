@@ -212,6 +212,11 @@ Inbound Rule:
 | Custom TCP Rule | TCP      | 4243          | 0.0.0.0/0             |
 | Custom TCP Rule | TCP      | 9000          | 0.0.0.0/0             |
 | Custom TCP Rule | TCP      | 9090          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 5051          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 1900          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 7077          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 9999          | 0.0.0.0/0             |
+| Custom TCP Rule | TCP      | 8081          | 0.0.0.0/0             |
 
 
 ### prepare key pair
