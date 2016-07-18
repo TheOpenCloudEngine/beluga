@@ -75,7 +75,7 @@ https://vimeo.com/145980080
 Beluga Dev-ops 환경을 위해서 dev-ops 브런치의 소스를 다운받습니다.
 
 ```
-$ git clone https://github.com/TheOpenCloudEngine/beluga/tree/dev-ops
+$ git clone -b dev-ops --single-branch https://github.com/TheOpenCloudEngine/beluga.git
 
 ```
 
