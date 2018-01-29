@@ -1,4 +1,4 @@
-# Announcment of Retirements and New Project (프로젝트 이동 공지)
+# Announcment of Retirements and New Project (신규 프로젝트 이동 공지)
 
 - Beluga version has been retired and moved to new project  - https://github.com/TheOpenCloudEngine/uEngine-cloud
 - 벨루가 버전은 새버전인 uEngine-cloud 버전으로 업그래이드 되어 프로젝트 페이지를 이동합니다 앞으로 여기로 접속해 주십시오 - https://github.com/TheOpenCloudEngine/uEngine-cloud
