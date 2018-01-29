@@ -4,7 +4,7 @@
 - 벨루가 버전은 새버전인 uEngine-cloud 버전으로 업그래이드 되어 프로젝트 페이지를 이동합니다 앞으로 여기로 접속해 주십시오 - https://github.com/TheOpenCloudEngine/uEngine-cloud
 
 
-# Old version of Beluga [![Build Status](https://travis-ci.org/TheOpenCloudEngine/beluga.png)](https://travis-ci.org/TheOpenCloudEngine/beluga)
+# Old documentation of Beluga [![Build Status](https://travis-ci.org/TheOpenCloudEngine/beluga.png)](https://travis-ci.org/TheOpenCloudEngine/beluga)
 
 ## Demo videos
 
