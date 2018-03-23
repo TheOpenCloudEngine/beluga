@@ -98,7 +98,7 @@ Ubuntu 13.10 \n \l
 
 ```
 $ docker pull centos
-$ docker run -rm -i -t centos:6.4 /bin/bash
+$ docker run -it centos:6.4 /bin/bash
 bash-4.1#
 ```
 
